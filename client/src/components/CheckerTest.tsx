@@ -3,17 +3,17 @@ import { SDK, createDojoStore } from "@dojoengine/sdk";
 import { getEntityIdFromKeys } from "@dojoengine/utils";
 import { addAddressPadding } from "starknet";
 
-import { Models, Schema } from "./bindings.ts";
-import { useDojo } from "./hooks/useDojo.tsx";
-import useModel from "./hooks/useModel.tsx";
-import { useSystemCalls } from "./hooks/useSystemCalls.ts";
+import { Models, Schema } from "../bindings.ts";
+import { useDojo } from "../hooks/useDojo.tsx";
+import useModel from "../hooks/useModel.tsx";
+import { useSystemCalls } from "../hooks/useSystemCalls.ts";
 
-import ControllerButton from "./components/ControllerButton.tsx";
-import Board from "./components/Board";
+import ControllerButton from "./ControllerButton.tsx";
+import Board from "./Board.tsx";
 
 export const useDojoStore = createDojoStore<Schema>();
 
-function App({ sdk }: { sdk: SDK<Schema> }) {
+function CheckerTest({ sdk }: { sdk: SDK<Schema> }) {
     const {
         account,
         setup: { client },
@@ -322,4 +322,4 @@ function App({ sdk }: { sdk: SDK<Schema> }) {
     );
 }
 
-export default App;
+export default CheckerTest;
