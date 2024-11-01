@@ -41,7 +41,6 @@ async function main() {
                         <Route path="/checkers" element={<Checker sdk={sdk} />} />
                         {/* <Route path="/checkerstest" element={<CheckerTest sdk={sdk} />} /> */}
                     </Routes>
-
                 </DojoContextProvider>
             </Router>
         </StrictMode>
