@@ -4,6 +4,10 @@ import BackgroundCheckers from "../assets/BackgrounCheckers.png";
 import Board from "../assets/Board.png";
 import PieceBlack from "../assets/PieceBlack.svg";
 import PieceOrange from "../assets/PieceOrange.svg";
+import Player1 from "../assets/Player1.png";
+import Player2 from "../assets/Player1.png";
+import GameOver from "../components/GameOver";
+import Winner from "../components/Winner";
 
 interface CheckerProps {
     sdk: SDK<any>;
@@ -58,6 +62,8 @@ const Checker: React.FC<CheckerProps> = ({ sdk }) => {
     const [blackPieces] = useState<Piece[]>(initialBlackPieces);
     const [orangePieces] = useState<Piece[]>(initialOrangePieces);
     const [selectedPieceId, setSelectedPieceId] = useState<number | null>(null);
+    const [isGameOver] = useState(false);
+    const [isWinner] = useState(true);
 
     const cellSize = 88;
 
@@ -113,6 +119,33 @@ const Checker: React.FC<CheckerProps> = ({ sdk }) => {
                 backgroundPosition: "center",
             }}
         >
+            {isGameOver && <GameOver />}
+            {isWinner && <Winner />}
+            
+            <img
+                src={Player1}
+                alt="Player 1"
+                className="fixed"
+                style={{
+                    top: "100px",
+                    left: "80px",
+                    width: "400px",
+                    height: "auto",
+                }}
+            />
+
+            <img
+                src={Player2}
+                alt="Player 2"
+                className="fixed"
+                style={{
+                    top: "770px",
+                    right: "80px",
+                    width: "400px",
+                    height: "auto",
+                }}
+            />
+
             <div className="flex items-center justify-center h-full">
                 <div className="relative">
                     <img
