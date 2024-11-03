@@ -8,7 +8,7 @@ import { useDojo } from "../hooks/useDojo.tsx";
 import useModel from "../hooks/useModel.tsx";
 import { useSystemCalls } from "../hooks/useSystemCalls.ts";
 
-import ControllerButton from "./ControllerButton.tsx";
+import ControllerButton from "../connector/ControllerButton.tsx";
 import Board from "./Board.tsx";
 
 export const useDojoStore = createDojoStore<Schema>();

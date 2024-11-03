@@ -8,6 +8,7 @@ import Player1 from "../assets/Player1.png";
 import Player2 from "../assets/Player1.png";
 import GameOver from "../components/GameOver";
 import Winner from "../components/Winner";
+import CreateBurner from "../connector/CreateBurner"; // Importar el componente CreateBurner
 
 interface CheckerProps {
     sdk: SDK<any>;
@@ -63,7 +64,7 @@ const Checker: React.FC<CheckerProps> = ({ sdk }) => {
     const [orangePieces] = useState<Piece[]>(initialOrangePieces);
     const [selectedPieceId, setSelectedPieceId] = useState<number | null>(null);
     const [isGameOver] = useState(false);
-    const [isWinner] = useState(true);
+    const [isWinner] = useState(false);
 
     const cellSize = 88;
 
@@ -110,6 +111,14 @@ const Checker: React.FC<CheckerProps> = ({ sdk }) => {
         </>
     );
 
+    const handleClearBurners = () => {
+        // Lógica para limpiar los burners
+    };
+
+    const handleCreateBurner = async () => {
+        // Lógica para crear un burner (esto debe ser manejado por el componente CreateBurner)
+    };
+
     return (
         <div
             className="relative h-screen w-full"
@@ -155,6 +164,11 @@ const Checker: React.FC<CheckerProps> = ({ sdk }) => {
                     />
                     {renderPieces()}
                 </div>
+            </div>
+
+            {/* Aquí se agrega el componente CreateBurner en la esquina superior derecha */}
+            <div style={{ position: 'absolute', top: '20px', right: '20px' }}>
+                <CreateBurner />
             </div>
         </div>
     );
