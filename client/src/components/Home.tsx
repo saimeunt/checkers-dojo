@@ -85,7 +85,7 @@ const Home: React.FC = () => {
                                         wordWrap: 'break-word',
                                     }}
                                 >
-                                    sign up now
+                                   Play NOW
                                 </div>
                             </div>
                         </div>

@@ -22,7 +22,6 @@ export const useSystemCalls = () => {
         const remainingMoves = 100;
 
         state.applyOptimisticUpdate(transactionId, (draft) => {
-            // Check if the entity already exists in the draft
             if (!draft.entities[entityId]) {
                 draft.entities[entityId] = {
                     entityId,
