@@ -9,7 +9,7 @@ import { DojoContextProvider } from "./DojoContext.tsx";
 import { setupBurnerManager } from "@dojoengine/create-burner";
 import Home from "./components/Home.tsx";
 import Checker from "./components/Checker.tsx";
-// import CheckerTest from "./components/CheckerTest.tsx";
+import InitGame from "./components/InitGame.tsx";
 
 async function main() {
     const sdk = await init<Schema>(
@@ -38,8 +38,8 @@ async function main() {
                 >
                     <Routes>
                         <Route path="/" element={<Home />} />
+                        <Route path="/initgame" element={<InitGame sdk={sdk} />} />
                         <Route path="/checkers" element={<Checker sdk={sdk} />} />
-                        {/* <Route path="/checkerstest" element={<CheckerTest sdk={sdk} />} /> */}
                     </Routes>
                 </DojoContextProvider>
             </Router>

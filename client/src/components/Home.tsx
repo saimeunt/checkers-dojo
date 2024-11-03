@@ -7,7 +7,7 @@ const Home: React.FC = () => {
     const navigate = useNavigate();
 
     const handleSignUp = () => {
-        navigate('/checkers');
+        navigate('/initgame');
     };
 
     return (

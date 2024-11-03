@@ -1,4 +1,4 @@
-import { useDojoStore } from "../components/CheckerTest";
+import { useDojoStore } from "../components/Checker";
 import { Schema } from "../bindings";
 
 /**

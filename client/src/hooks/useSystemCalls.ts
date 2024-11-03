@@ -1,5 +1,5 @@
 import { getEntityIdFromKeys } from "@dojoengine/utils";
-import { useDojoStore } from "../components/CheckerTest";
+import { useDojoStore } from "../components/Checker";
 import { useDojo } from "./useDojo";
 import { v4 as uuidv4 } from "uuid";
 

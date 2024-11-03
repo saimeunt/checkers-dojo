@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { SDK } from "@dojoengine/sdk";
+import { SDK, createDojoStore } from "@dojoengine/sdk";
 import BackgroundCheckers from "../assets/BackgrounCheckers.png";
 import Board from "../assets/Board.png";
 import PieceBlack from "../assets/PieceBlack.svg";
@@ -8,17 +8,21 @@ import Player1 from "../assets/Player1.png";
 import Player2 from "../assets/Player1.png";
 import GameOver from "../components/GameOver";
 import Winner from "../components/Winner";
-import CreateBurner from "../connector/CreateBurner";
 import useDojoConnect from "../hooks/useDojoConnect";
+import {  Schema } from "../bindings.ts";
+
+// Crea el store de Dojo
+export const useDojoStore = createDojoStore<Schema>();
 
 interface CheckerProps {
   sdk: SDK<any>;
 }
 
 const Checker: React.FC<CheckerProps> = ({ sdk }) => {
-
-  const { spawn, account, position, } = useDojoConnect({ sdk });
+  const { position } = useDojoConnect({ sdk }); // Solo obtiene la posición del juego
   const [arePiecesVisible, setArePiecesVisible] = useState(false);
+  const [isGameOver] = useState(false);
+  const [isWinner] = useState(false);
 
   useEffect(() => {
     if (position) {
@@ -26,6 +30,7 @@ const Checker: React.FC<CheckerProps> = ({ sdk }) => {
     }
   }, [position]);
 
+  // Definición de las posiciones iniciales de las piezas
   interface Position {
     row: number;
     col: number;
@@ -70,21 +75,11 @@ const Checker: React.FC<CheckerProps> = ({ sdk }) => {
   const [blackPieces] = useState<Piece[]>(initialBlackPieces);
   const [orangePieces] = useState<Piece[]>(initialOrangePieces);
   const [selectedPieceId, setSelectedPieceId] = useState<number | null>(null);
-  const [isGameOver] = useState(false);
-  const [isWinner] = useState(false);
 
   const cellSize = 88;
 
   const handlePieceClick = (pieceId: number) => {
     setSelectedPieceId(selectedPieceId === pieceId ? null : pieceId);
-  };
-
-  const handleSpawnClick = async () => {
-    if (account) {
-      await spawn();
-    } else {
-      console.warn("Account not connected");
-    }
   };
 
   const renderPieces = () => (
@@ -137,53 +132,13 @@ const Checker: React.FC<CheckerProps> = ({ sdk }) => {
     >
       {isGameOver && <GameOver />}
       {isWinner && <Winner />}
-
-      <img
-        src={Player1}
-        alt="Player 1"
-        className="fixed"
-        style={{
-          top: "100px",
-          left: "80px",
-          width: "400px",
-          height: "auto",
-        }}
-      />
-
-      <img
-        src={Player2}
-        alt="Player 2"
-        className="fixed"
-        style={{
-          top: "770px",
-          right: "80px",
-          width: "400px",
-          height: "auto",
-        }}
-      />
-
+      <img src={Player1} alt="Player 1" className="fixed" style={{ top: "100px", left: "80px", width: "400px" }} />
+      <img src={Player2} alt="Player 2" className="fixed" style={{ top: "770px", right: "80px", width: "400px" }} />
       <div className="flex items-center justify-center h-full">
         <div className="relative">
-          <img
-            src={Board}
-            alt="Board"
-            className="w-[800px] h-[800px] object-contain"
-          />
-          {arePiecesVisible && renderPieces()} 
+          <img src={Board} alt="Board" className="w-[800px] h-[800px] object-contain" />
+          {arePiecesVisible && renderPieces()}
         </div>
-      </div>
-
-      <div style={{ position: 'absolute', bottom: '20px', right: '20px' }}>
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-          onClick={handleSpawnClick}
-        >
-          Spawn
-        </button>
-      </div>
-
-      <div style={{ position: 'absolute', top: '20px', right: '20px' }}>
-        <CreateBurner />
       </div>
     </div>
   );
