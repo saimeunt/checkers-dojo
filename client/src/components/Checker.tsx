@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { SDK } from "@dojoengine/sdk";
 import BackgroundCheckers from "../assets/BackgrounCheckers.png";
 import Board from "../assets/Board.png";
@@ -17,14 +17,7 @@ interface CheckerProps {
 
 const Checker: React.FC<CheckerProps> = ({ sdk }) => {
 
-  const { spawn, account, position, } = useDojoConnect({ sdk });
-  const [arePiecesVisible, setArePiecesVisible] = useState(false);
-
-  useEffect(() => {
-    if (position) {
-      setArePiecesVisible(true);
-    }
-  }, [position]);
+  const { spawn, account, } = useDojoConnect({ sdk });
 
   interface Position {
     row: number;
@@ -169,7 +162,7 @@ const Checker: React.FC<CheckerProps> = ({ sdk }) => {
             alt="Board"
             className="w-[800px] h-[800px] object-contain"
           />
-          {arePiecesVisible && renderPieces()} 
+          {renderPieces()} 
         </div>
       </div>
 
