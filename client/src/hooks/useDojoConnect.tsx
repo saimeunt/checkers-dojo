@@ -2,14 +2,14 @@ import { useEffect, useMemo } from "react";
 import { SDK, createDojoStore } from "@dojoengine/sdk";
 import { getEntityIdFromKeys } from "@dojoengine/utils";
 import { addAddressPadding } from "starknet";
-import { Models, Schema } from "../bindings.ts";
+import { schema } from "../bindings.ts";
 import { useDojo } from "./useDojo.tsx";
-import useModel from "./useModel.tsx";
+// import useModel from "./useModel.tsx";
 import { useSystemCalls } from "./useSystemCalls.ts";
 
-export const useDojoStore = createDojoStore<Schema>();
+export const useDojoStore = createDojoStore<typeof schema>();
 
-function useDojoConnect({ sdk }: { sdk: SDK<Schema> }) {
+function useDojoConnect({ sdk }: { sdk: SDK<typeof schema> }) {
   const { account } = useDojo();
   
 
@@ -32,14 +32,7 @@ function useDojoConnect({ sdk }: { sdk: SDK<Schema> }) {
         const subscription = await sdk.subscribeEntityQuery(
           {
             dojo_starter: {
-              Moves: {
-                $: {
-                  where: {
-                    player: { $is: addAddressPadding(account.account.address) },
-                  },
-                },
-              },
-              Position: {
+              Piece: {
                 $: {
                   where: {
                     player: { $is: addAddressPadding(account.account.address) },
@@ -80,7 +73,7 @@ function useDojoConnect({ sdk }: { sdk: SDK<Schema> }) {
         await sdk.getEntities(
           {
             dojo_starter: {
-              Moves: {
+              Piece: {
                 $: {
                   where: { player: { $eq: addAddressPadding(account.account.address) } },
                 },
@@ -105,10 +98,8 @@ function useDojoConnect({ sdk }: { sdk: SDK<Schema> }) {
     fetchEntities();
   }, [sdk, account?.account.address, state]);
 
-  const moves = useModel(entityId, Models.Moves);
-  const position = useModel(entityId, Models.Position);
 
-  return { spawn, account, moves, position, entities };
+  return { spawn, account,  entities };
 }
 
 export default useDojoConnect;

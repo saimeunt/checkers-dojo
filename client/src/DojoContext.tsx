@@ -7,11 +7,11 @@ import {
 import { Account } from "starknet";
 import { dojoConfig } from "../dojoConfig";
 import { DojoProvider } from "@dojoengine/core";
-import { client } from "./contracts.gen";
+import { setupWorld } from "./contracts.gen";
 
 interface DojoContextType {
     masterAccount: Account;
-    client: ReturnType<typeof client>;
+    setupWorld: ReturnType<typeof setupWorld>;
     account: BurnerAccount;
 }
 
@@ -51,7 +51,7 @@ export const DojoContextProvider = ({
         <DojoContext.Provider
             value={{
                 masterAccount,
-                client: client(dojoProvider),
+                setupWorld: setupWorld(dojoProvider),
                 account: {
                     ...burnerManagerData,
                     account: burnerManagerData.account || masterAccount,

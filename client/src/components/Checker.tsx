@@ -9,10 +9,10 @@ import Player2 from "../assets/Player1.png";
 import GameOver from "../components/GameOver";
 import Winner from "../components/Winner";
 import useDojoConnect from "../hooks/useDojoConnect";
-import {  Schema } from "../bindings.ts";
+import { schema } from "../bindings.ts";
 
 // Crea el store de Dojo
-export const useDojoStore = createDojoStore<Schema>();
+export const useDojoStore = createDojoStore<typeof schema>();
 
 interface CheckerProps {
   sdk: SDK<any>;

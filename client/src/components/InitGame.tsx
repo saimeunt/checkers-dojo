@@ -12,7 +12,7 @@ import CreateGame3 from "../assets/CreateGame3.png";
 import JoinGame2 from "../assets/JoinGame2.png"; 
 import JoinGame from "../assets/JoinGame.png";
 import ControllerButton from '../connector/ControllerButton';
-import Title from '../assets/Title.png'; // Asegúrate de que la ruta es correcta
+import Title from '../assets/Title.png';
 
 interface InitGameProps {
   sdk: SDK<any>;
@@ -30,9 +30,9 @@ const InitGame: React.FC<InitGameProps> = ({ sdk }) => {
   const handleCreateGame = async () => {
     try {
       if (account) {
-        await spawn(); // Llama a la función de spawn para crear el juego
+        await spawn(); 
         console.log("Juego creado con éxito.");
-        navigate('/checkers'); // Redirige a la página de Checkers
+        navigate('/checkers'); 
       } else {
         console.warn("Cuenta no conectada");
       }
@@ -41,7 +41,6 @@ const InitGame: React.FC<InitGameProps> = ({ sdk }) => {
     }
   };
 
-  // Controladores de mouse para iluminar las imágenes
   const handleMouseEnterCreate5 = () => {
     setHoveredImage('create5');
   };
