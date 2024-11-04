@@ -118,37 +118,37 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
   const handleMoveClick = async (move: Coordinates) => {
     if (selectedPieceId !== null) {
       const selectedPiece = [...upPieces, ...downPieces].find(piece => piece.id === selectedPieceId);
-	console.log("selectedPiece", selectedPiece?.piece.coordinates);
+   console.log("selectedPiece", selectedPiece?.piece.coordinates);
       if (selectedPiece) {
         const updatedPieces = (selectedPiece.piece.position === Position.Up ? upPieces : downPieces).map(piece => {
           if (piece.id === selectedPieceId) {
-            return { ...piece, coordinates: move }; 
+            return { ...piece, piece: { ...piece.piece, coordinates: move }}; 
           }
           return piece;
         });
-
         if (selectedPiece.piece.position === Position.Up) {
-          setUpPieces(updatedPieces);
-		  try {
-			if (account) {
-				const movedPiece = await setupWorld.actions.movePiece(account, selectedPiece.piece, move);
-				console.log("movedPiece", movedPiece?.transaction_hash);
-			} else {
-				console.warn("Cuenta no conectada");
-			}
-		} catch (error) {
-			console.error("Error al mover la pieza:", error);
-		};
+          setUpPieces(updatedPieces);  
         } else {
-          setDownPieces(updatedPieces);
+          setDownPieces(updatedPieces); 
         }
-
+  
+        try {
+          if (account) {
+            const movedPiece = await setupWorld.actions.movePiece(account, selectedPiece.piece, move);
+            console.log("movedPiece", movedPiece?.transaction_hash);
+          } else {
+            console.warn("Cuenta no conectada");
+          }
+        } catch (error) {
+          console.error("Error al mover la pieza:", error);
+        }
+  
         setSelectedPieceId(null);
         setValidMoves([]);
       }
     }
-  }
-  const renderPieces = () => (
+  };
+    const renderPieces = () => (
     <>
       {upPieces.map((piece) => (
         <img
