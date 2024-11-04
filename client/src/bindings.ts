@@ -17,7 +17,7 @@ export interface Coordinates {
 
 // Type definition for `dojo_starter::models::Piece` struct
 export interface Piece {
-	fieldOrder: string[];
+	//fieldOrder: string[];
 	player: string;
 	coordinates: Coordinates;
 	position: Position;

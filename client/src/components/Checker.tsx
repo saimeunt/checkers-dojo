@@ -9,7 +9,7 @@ import Player2 from "../assets/Player1.png";
 import GameOver from "../components/GameOver";
 import Winner from "../components/Winner";
 //import useDojoConnect from "../hooks/useDojoConnect";
-import { schema, Position, Coordinates } from "../bindings.ts";
+import { schema, Position, Coordinates, Piece } from "../bindings.ts";
 import { useDojo } from "../hooks/useDojo.tsx";
 
 // Crea el store de Dojo
@@ -28,49 +28,47 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
 } = useDojo();
 
   // Todo: Fix this type, use export
-  interface Piece {
+  interface PieceUI {
     id: number;
-    color: string;
-    position: Position;
-	coordinates: Coordinates;
+    piece: Piece;
   }
 
-  const initialBlackPieces: Piece[] = [
-    { id: 1, color: "black", position: Position.Up, coordinates: {raw: 0, col: 1} },
-    { id: 2, color: "black", position: Position.Up, coordinates: {raw: 0, col: 3} },
-    { id: 3, color: "black", position: Position.Up, coordinates: {raw: 0, col: 5} },
-    { id: 4, color: "black", position: Position.Up, coordinates: {raw: 0, col: 7} },
-    { id: 5, color: "black", position: Position.Up, coordinates: {raw: 1, col: 0} },
-    { id: 6, color: "black", position: Position.Up, coordinates: {raw: 1, col: 2} },
-    { id: 7, color: "black", position: Position.Up, coordinates: {raw: 1, col: 4} },
-    { id: 8, color: "black", position: Position.Up, coordinates: {raw: 1, col: 6} },
-    { id: 9, color: "black", position: Position.Up, coordinates: {raw: 2, col: 1} },
-    { id: 10, color: "black", position: Position.Up, coordinates: {raw: 2, col: 3} },
-    { id: 11, color: "black", position: Position.Up, coordinates: {raw: 2, col: 5} },
-    { id: 12, color: "black", position: Position.Up, coordinates: {raw: 2, col: 7} },
+  const initialBlackPieces: PieceUI[] = [
+    { id: 1, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 0, col: 1}, is_king: false, is_alive: true}},
+    { id: 2, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 0, col: 3}, is_king: false, is_alive: true}},
+    { id: 3, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 0, col: 5}, is_king: false, is_alive: true}},
+    { id: 4, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 0, col: 7}, is_king: false, is_alive: true}},
+    { id: 5, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 1, col: 0}, is_king: false, is_alive: true}},
+    { id: 6, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 1, col: 2}, is_king: false, is_alive: true}},
+    { id: 7, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 1, col: 4}, is_king: false, is_alive: true}},
+    { id: 8, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 1, col: 6}, is_king: false, is_alive: true}},
+    { id: 9, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 2, col: 1}, is_king: false, is_alive: true}},
+    { id: 10, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 2, col: 3}, is_king: false, is_alive: true}},
+    { id: 11, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 2, col: 5}, is_king: false, is_alive: true}},
+    { id: 12, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 2, col: 7}, is_king: false, is_alive: true}},
   ];
 
-  const initialOrangePieces: Piece[] = [
-    { id: 13, color: "orange", position: Position.Down, coordinates: {raw: 5, col: 0} },
-    { id: 14, color: "orange", position: Position.Down, coordinates: {raw: 5, col: 2} },
-    { id: 15, color: "orange", position: Position.Down, coordinates: {raw: 5, col: 4} },
-    { id: 16, color: "orange", position: Position.Down, coordinates: {raw: 5, col: 6} },
-    { id: 17, color: "orange", position: Position.Down, coordinates: {raw: 6, col: 1} },
-    { id: 18, color: "orange", position: Position.Down, coordinates: {raw: 6, col: 3} },
-    { id: 19, color: "orange", position: Position.Down, coordinates: {raw: 6, col: 5} },
-    { id: 20, color: "orange", position: Position.Down, coordinates: {raw: 6, col: 7} },
-    { id: 21, color: "orange", position: Position.Down, coordinates: {raw: 7, col: 0} },
-    { id: 22, color: "orange", position: Position.Down, coordinates: {raw: 7, col: 2} },
-    { id: 23, color: "orange", position: Position.Down, coordinates: {raw: 7, col: 4} },
-    { id: 24, color: "orange", position: Position.Down, coordinates: {raw: 7, col: 6} },
+  const initialOrangePieces: PieceUI[] = [
+    { id: 13, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 5, col: 0}, is_king: false, is_alive: true}},
+    { id: 14, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 5, col: 2}, is_king: false, is_alive: true}},
+    { id: 15, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 5, col: 4}, is_king: false, is_alive: true}},
+    { id: 16, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 5, col: 6}, is_king: false, is_alive: true}},
+    { id: 17, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 6, col: 1}, is_king: false, is_alive: true}},
+    { id: 18, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 6, col: 3}, is_king: false, is_alive: true}},
+    { id: 19, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 6, col: 5}, is_king: false, is_alive: true}},
+    { id: 20, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 6, col: 7}, is_king: false, is_alive: true}},
+    { id: 21, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 7, col: 0}, is_king: false, is_alive: true}},
+    { id: 22, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 7, col: 2}, is_king: false, is_alive: true}},
+    { id: 23, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 7, col: 4}, is_king: false, is_alive: true}},
+    { id: 24, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 7, col: 6}, is_king: false, is_alive: true}},
   ];
 
-  const [blackPieces, setBlackPieces] = useState<Piece[]>(initialBlackPieces);
-  const [orangePieces, setOrangePieces] = useState<Piece[]>(initialOrangePieces);
+  const [upPieces, setUpPieces] = useState<PieceUI[]>(initialBlackPieces);
+  const [downPieces, setDownPieces] = useState<PieceUI[]>(initialOrangePieces);
   
   const cellSize = 88;
 
-  const handlePieceClick = async (piece: Piece) => {
+  const handlePieceClick = async (piece: PieceUI) => {
     const pieceId = piece.id;
     console.log("Selected piece ID:", pieceId);
 
@@ -86,8 +84,8 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
 
 	try {
 		if (account) {
-			const position = piece.position;
-			const coordinates = piece.coordinates;
+			const position = piece.piece.position;
+			const coordinates = piece.piece.coordinates;
 			const canChoosePiece = await setupWorld.actions.canChoosePiece(account, position,coordinates);
 			console.log("canChoosePiece", canChoosePiece?.transaction_hash);
 		} else {
@@ -98,11 +96,11 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
 	};
   };
 
-  const calculateValidMoves = (piece: Piece): Coordinates[] => {
+  const calculateValidMoves = (piece: PieceUI): Coordinates[] => {
     const moves: Coordinates[] = [];
-    const { raw, col } = piece.coordinates;
+    const { raw, col } = piece.piece.coordinates;
 
-    if (piece.color === "black") {
+    if (piece.piece.player === "black") {
       if (raw + 1 < 8) {
         if (col - 1 >= 0) moves.push({ raw: raw + 1, col: col - 1 });
         if (col + 1 < 8) moves.push({ raw: raw + 1, col: col + 1 });
@@ -117,22 +115,32 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
     return moves;
   };
 
-  const handleMoveClick = (move: Coordinates) => {
+  const handleMoveClick = async (move: Coordinates) => {
     if (selectedPieceId !== null) {
-      const selectedPiece = [...blackPieces, ...orangePieces].find(piece => piece.id === selectedPieceId);
-
+      const selectedPiece = [...upPieces, ...downPieces].find(piece => piece.id === selectedPieceId);
+	console.log("selectedPiece", selectedPiece?.piece.coordinates);
       if (selectedPiece) {
-        const updatedPieces = (selectedPiece.color === "black" ? blackPieces : orangePieces).map(piece => {
+        const updatedPieces = (selectedPiece.piece.position === Position.Up ? upPieces : downPieces).map(piece => {
           if (piece.id === selectedPieceId) {
             return { ...piece, coordinates: move }; 
           }
           return piece;
         });
 
-        if (selectedPiece.color === "black") {
-          setBlackPieces(updatedPieces);
+        if (selectedPiece.piece.position === Position.Up) {
+          setUpPieces(updatedPieces);
+		  try {
+			if (account) {
+				const movedPiece = await setupWorld.actions.movePiece(account, selectedPiece.piece, move);
+				console.log("movedPiece", movedPiece?.transaction_hash);
+			} else {
+				console.warn("Cuenta no conectada");
+			}
+		} catch (error) {
+			console.error("Error al mover la pieza:", error);
+		};
         } else {
-          setOrangePieces(updatedPieces);
+          setDownPieces(updatedPieces);
         }
 
         setSelectedPieceId(null);
@@ -142,15 +150,15 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
   }
   const renderPieces = () => (
     <>
-      {blackPieces.map((piece) => (
+      {upPieces.map((piece) => (
         <img
           key={piece.id}
           src={PieceBlack}
-          alt={`${piece.color} piece`}
+          //alt={`${piece.color} piece`}
           className="absolute"
           style={{
-            left: `${piece.coordinates.col * cellSize + 63}px`,
-            top: `${piece.coordinates.raw * cellSize + 65}px`,
+            left: `${piece.piece.coordinates.col * cellSize + 63}px`,
+            top: `${piece.piece.coordinates.raw * cellSize + 65}px`,
             cursor: "pointer",
             width: "60px",
             height: "60px",
@@ -159,15 +167,15 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
           onClick={() => handlePieceClick(piece)} 
         />
       ))}
-      {orangePieces.map((piece) => (
+      {downPieces.map((piece) => (
         <img
           key={piece.id}
           src={PieceOrange}
-          alt={`${piece.color} piece`}
+          //alt={`${piece.color} piece`}
           className="absolute"
           style={{
-            left: `${piece.coordinates.col * cellSize + 63}px`,
-            top: `${piece.coordinates.raw * cellSize + 55}px`,
+            left: `${piece.piece.coordinates.col * cellSize + 63}px`,
+            top: `${piece.piece.coordinates.raw * cellSize + 55}px`,
             cursor: "pointer",
             width: "60px",
             height: "60px",
