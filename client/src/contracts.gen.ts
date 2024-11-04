@@ -2,7 +2,7 @@ import { DojoProvider } from "@dojoengine/core";
 import { Account } from "starknet";
 import * as models from "./bindings.ts";
 
-export async function setupWorld(provider: DojoProvider) {
+export function setupWorld(provider: DojoProvider) {
 	function actions() {
 		const namespace = "dojo_starter";
 
