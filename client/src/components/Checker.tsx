@@ -182,7 +182,7 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
           className="absolute border border-green-500"
           style={{
             left: `${move.col * cellSize + 63}px`,
-            top: `${move.row * cellSize + 58}px`,
+            top: `${move.raw * cellSize + 58}px`,
             width: "60px",
             height: "60px",
             cursor: "pointer",
