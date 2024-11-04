@@ -1,14 +1,15 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-
-import App from "./App.tsx";
-
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"; // Importa Routes y Route
 import "./index.css";
 import { init } from "@dojoengine/sdk";
 import { Schema, schema } from "./bindings.ts";
 import { dojoConfig } from "../dojoConfig.ts";
 import { DojoContextProvider } from "./DojoContext.tsx";
 import { setupBurnerManager } from "@dojoengine/create-burner";
+import Home from "./components/Home.tsx";
+import Checker from "./components/Checker.tsx";
+import InitGame from "./components/InitGame.tsx";
 
 async function main() {
     const sdk = await init<Schema>(
@@ -31,11 +32,17 @@ async function main() {
 
     createRoot(document.getElementById("root")!).render(
         <StrictMode>
-            <DojoContextProvider
-                burnerManager={await setupBurnerManager(dojoConfig)}
-            >
-                <App sdk={sdk} />
-            </DojoContextProvider>
+            <Router>
+                <DojoContextProvider
+                    burnerManager={await setupBurnerManager(dojoConfig)}
+                >
+                    <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/initgame" element={<InitGame sdk={sdk} />} />
+                        <Route path="/checkers" element={<Checker sdk={sdk} />} />
+                    </Routes>
+                </DojoContextProvider>
+            </Router>
         </StrictMode>
     );
 }
