@@ -120,16 +120,30 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
       const selectedPiece = [...upPieces, ...downPieces].find(piece => piece.id === selectedPieceId);
    console.log("selectedPiece", selectedPiece?.piece.coordinates);
       if (selectedPiece) {
-        const updatedPieces = (selectedPiece.piece.position === Position.Up ? upPieces : downPieces).map(piece => {
+        let piecesToUpdate;
+        if (selectedPiece.piece.position === Position.Up) {
+          piecesToUpdate = upPieces;
+        } else if (selectedPiece.piece.position === Position.Down) {
+          piecesToUpdate = downPieces;
+        } else {
+          console.warn('Piece has invalid position: Position.None');
+          return;
+        }
+
+        const updatedPieces = piecesToUpdate.map(piece => {
           if (piece.id === selectedPieceId) {
             return { ...piece, piece: { ...piece.piece, coordinates: move }}; 
           }
           return piece;
         });
-        if (selectedPiece.piece.position === Position.Up) {
-          setUpPieces(updatedPieces);  
+        
+        // Set pieces based on position
+        if (selectedPiece.piece.position === Position.Down) {
+          setDownPieces(updatedPieces);
+        } else if (selectedPiece.piece.position === Position.Up) {
+          setUpPieces(updatedPieces);
         } else {
-          setDownPieces(updatedPieces); 
+          console.warn('Piece has invalid position: Position.None');
         }
   
         try {
