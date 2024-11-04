@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import { SDK, createDojoStore } from "@dojoengine/sdk";
 import BackgroundCheckers from "../assets/BackgrounCheckers.png";
 import Board from "../assets/Board.png";
@@ -26,7 +26,6 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
     setup: { setupWorld },
   } = useDojo();
 
-  // Definición de las posiciones iniciales de las piezas
   interface Position {
     row: number;
     col: number;
@@ -107,15 +106,14 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
     return moves;
   };
 
-
-  const movePiece = (move: Position) => {
+  const handleMoveClick = (move: Position) => {
     if (selectedPieceId !== null) {
       const selectedPiece = [...blackPieces, ...orangePieces].find(piece => piece.id === selectedPieceId);
 
       if (selectedPiece) {
         const updatedPieces = (selectedPiece.color === "black" ? blackPieces : orangePieces).map(piece => {
           if (piece.id === selectedPieceId) {
-            return { ...piece, position: move };
+            return { ...piece, position: move }; 
           }
           return piece;
         });
@@ -148,7 +146,7 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
             height: "60px",
             border: selectedPieceId === piece.id ? "2px solid yellow" : "none",
           }}
-          onClick={() => handlePieceClick(piece)}
+          onClick={() => handlePieceClick(piece)} 
         />
       ))}
       {orangePieces.map((piece) => (
@@ -165,7 +163,7 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
             height: "60px",
             border: selectedPieceId === piece.id ? "2px solid yellow" : "none",
           }}
-          onClick={() => handlePieceClick(piece)}
+          onClick={() => handlePieceClick(piece)} 
         />
       ))}
       {validMoves.map((move, index) => (
@@ -180,7 +178,7 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
             cursor: "pointer",
             backgroundColor: "rgba(0, 255, 0, 0.5)", 
           }}
-          onClick={() => movePiece(move)} 
+          onClick={() => handleMoveClick(move)} 
         />
       ))}
     </>
