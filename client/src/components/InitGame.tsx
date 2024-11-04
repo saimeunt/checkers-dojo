@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CreateBurner from "../connector/CreateBurner"; 
+import CreateBurner from "../connector/CreateBurner";
 // import useDojoConnect from "../hooks/useDojoConnect"; 
-import InitGameBackground from "../assets/InitGameBackground.png"; 
-import { SDK, createDojoStore } from "@dojoengine/sdk"; 
+import InitGameBackground from "../assets/InitGameBackground.png";
+import { SDK, createDojoStore } from "@dojoengine/sdk";
 import Witch from "../assets/Witch.png";
 import CreateGame from "../assets/CreateGame.png";
 import CreateGame4 from "../assets/CreateGame4.png";
 import CreateGame2 from "../assets/CreateGame2.png";
 import CreateGame3 from "../assets/CreateGame3.png";
-import JoinGame2 from "../assets/JoinGame2.png"; 
+import JoinGame2 from "../assets/JoinGame2.png";
 import JoinGame from "../assets/JoinGame.png";
 import ControllerButton from '../connector/ControllerButton';
 import Title from '../assets/Title.png';
@@ -19,28 +19,28 @@ import { useDojo } from "../hooks/useDojo.tsx";
 
 export const useDojoStore = createDojoStore<typeof schema>();
 
-function InitGame({ sdk }: { sdk: SDK<typeof schema> }) {
+function InitGame({ }: { sdk: SDK<typeof schema> }) {
 
-	const {
-        account,
-        //setup: { setupWorld },
-    } = useDojo();
+  const {
+    account,
+    //setup: { setupWorld },
+  } = useDojo();
 
-	// const state = useDojoStore((state) => state);
-    // const entities = useDojoStore((state) => state.entities);
-const { spawn } = useSystemCalls();
+  // const state = useDojoStore((state) => state);
+  // const entities = useDojoStore((state) => state.entities);
+  const { spawn } = useSystemCalls();
   const navigate = useNavigate();
 
-  // Estado para controlar el brillo y zoom de las imágenes
+
   const [hoveredImage, setHoveredImage] = useState<null | 'create5' | 'join'>(null);
 
-  // Lógica para manejar la conexión de la wallet y crear el juego
+
   const handleCreateGame = async () => {
     try {
       if (account) {
-        await spawn(); 
+        await spawn();
         console.log("Juego creado con éxito.");
-        navigate('/checkers'); 
+        navigate('/checkers');
       } else {
         console.warn("Cuenta no conectada");
       }
@@ -80,7 +80,7 @@ const { spawn } = useSystemCalls();
         overflow: "hidden",
       }}
     >
-      {/* Capa oscura superpuesta solo sobre la imagen de fondo */}
+
       <div
         style={{
           position: 'absolute',
@@ -92,8 +92,8 @@ const { spawn } = useSystemCalls();
           zIndex: 0,
         }}
       />
-      
-      {/* Título */}
+
+
       <img
         src={Title}
         alt="Título"
@@ -101,23 +101,25 @@ const { spawn } = useSystemCalls();
           zIndex: 2,
           marginTop: '60px',
           width: 'auto',
-          height: '100px', // Ajusta la altura según sea necesario
+          height: '100px',
         }}
       />
 
-      {/* Parte de conexión con los botones */}
-      <div style={{ 
-        zIndex: 2, 
-        marginTop: '20px', 
-        display: 'flex', 
-        justifyContent: 'center', // Centra horizontalmente
-        width: '100%', 
+      <div style={{
+        zIndex: 2,
+        marginTop: '20px',
+        display: 'flex',
+        justifyContent: 'center', 
+        width: '100%',
       }}>
-        <CreateBurner />
-        <ControllerButton />
+        <div style={{ marginRight: '40px' }}>
+          <ControllerButton />
+        </div>
+        <div>
+          <CreateBurner />
+        </div>
       </div>
 
-      {/* Imágenes adicionales centradas con efecto hover */}
       <img
         src={CreateGame4}
         alt="Crear Juego 1"
@@ -142,12 +144,12 @@ const { spawn } = useSystemCalls();
           position: 'absolute',
           top: '45%',
           left: '50%',
-          transform: 'translate(-50%, -50%) scale(' + (hoveredImage === 'create5' ? '1.1' : '1') + ')', // Efecto de zoom
+          transform: 'translate(-50%, -50%) scale(' + (hoveredImage === 'create5' ? '1.1' : '1') + ')', 
           width: '400px',
           height: 'auto',
           zIndex: 2,
           cursor: 'pointer',
-          filter: hoveredImage === 'create5' ? 'brightness(1.2)' : 'brightness(1)', // Aumenta brillo en hover
+          filter: hoveredImage === 'create5' ? 'brightness(1.2)' : 'brightness(1)', 
         }}
       />
       <img
@@ -182,8 +184,7 @@ const { spawn } = useSystemCalls();
           filter: 'brightness(0.5)',
         }}
       />
-      
-      {/* Imagen de Crear Juego 5 */}
+
       <img
         src={JoinGame2}
         alt="Crear Juego 5"
@@ -194,17 +195,16 @@ const { spawn } = useSystemCalls();
           position: 'absolute',
           top: '70%',
           left: '30%',
-          transform: 'translate(-48%, -50%) scale(' + (hoveredImage === 'create5' || hoveredImage === 'join' ? '1.1' : '1') + ')', // Efecto de zoom
+          transform: 'translate(-48%, -50%) scale(' + (hoveredImage === 'create5' || hoveredImage === 'join' ? '1.1' : '1') + ')', 
           width: '300px',
           height: 'auto',
           zIndex: 99,
           cursor: 'pointer',
-          filter: hoveredImage === 'create5' || hoveredImage === 'join' ? 'brightness(1.2)' : 'brightness(0.5)', // Oscuro si no está en hover
+          filter: hoveredImage === 'create5' || hoveredImage === 'join' ? 'brightness(1.2)' : 'brightness(0.5)', 
           transition: 'transform 0.2s',
         }}
       />
-      
-      {/* Imagen de la bruja centrada */}
+
       <img
         src={Witch}
         alt="Bruja"
@@ -219,7 +219,6 @@ const { spawn } = useSystemCalls();
         }}
       />
 
-      {/* Imagen de Unirse al juego */}
       <img
         src={JoinGame}
         alt="Unirse al juego"
@@ -229,16 +228,16 @@ const { spawn } = useSystemCalls();
           position: 'absolute',
           top: '70%',
           left: '50%',
-          transform: 'translate(-50%, -50%) scale(' + (hoveredImage === 'create5' || hoveredImage === 'join' ? '1.1' : '1') + ')', // Efecto de zoom
+          transform: 'translate(-50%, -50%) scale(' + (hoveredImage === 'create5' || hoveredImage === 'join' ? '1.1' : '1') + ')', 
           width: '950px',
           height: 'auto',
           zIndex: 2,
           cursor: 'pointer',
-          filter: hoveredImage === 'create5' || hoveredImage === 'join' ? 'brightness(1.2)' : 'brightness(1)', // Ilumina si está en hover
+          filter: hoveredImage === 'create5' || hoveredImage === 'join' ? 'brightness(1.2)' : 'brightness(1)', 
           transition: 'transform 0.2s',
         }}
         onClick={() => {
-          // Aquí puedes definir la lógica para "Unirse al juego" si es necesario
+
         }}
       />
     </div>
