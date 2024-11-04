@@ -1,8 +1,6 @@
-import { getEntityIdFromKeys } from "@dojoengine/utils";
 import { useDojoStore } from "../components/Checker";
 import { useDojo } from "./useDojo";
 import { v4 as uuidv4 } from "uuid";
-import { Position } from "../bindings";
 
 export const useSystemCalls = () => {
     const state = useDojoStore((state) => state);
@@ -12,13 +10,8 @@ export const useSystemCalls = () => {
         account: { account },
     } = useDojo();
 
-    const generateEntityId = () => {
-        if (!account) throw new Error("Account is not defined");
-        return getEntityIdFromKeys([BigInt(account.address)]);
-    };
 
     const spawn = async () => {
-        const entityId = generateEntityId();
         const transactionId = uuidv4();
 
 		console.log("before apply optimistic update");

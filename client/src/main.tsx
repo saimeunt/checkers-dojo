@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"; // Importa Routes y Route
 import "./index.css";
 import { init } from "@dojoengine/sdk";
-import { Schema, schema } from "./bindings.ts";
+import { schema } from "./bindings.ts";
 import { dojoConfig } from "../dojoConfig.ts";
 import { DojoContextProvider } from "./DojoContext.tsx";
 import { setupBurnerManager } from "@dojoengine/create-burner";
@@ -12,7 +12,7 @@ import Checker from "./components/Checker.tsx";
 import InitGame from "./components/InitGame.tsx";
 
 async function main() {
-    const sdk = await init<Schema>(
+    const sdk = await init<typeof schema>(
         {
             client: {
                 rpcUrl: dojoConfig.rpcUrl,

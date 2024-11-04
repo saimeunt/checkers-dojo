@@ -2,7 +2,6 @@ import React from "react";
 import LogoMarquis from "../assets/LogoMarquis.png";
 import ConnectWallet from "../assets/ConnectWallet.svg";
 import useControllerAccount from "../hooks/useControllerAccount"; 
-import CreateBurner from "../connector/CreateBurner";
 
 const LoginSignUpButton: React.FC = () => {
   return (
@@ -42,7 +41,7 @@ const LoginSignUpButton: React.FC = () => {
 };
 const ConnectWalletButton: React.FC = () => {
     const {
-        userAccountController,
+        // userAccountController,
         userName,
         isConnected,
         handleConnect,

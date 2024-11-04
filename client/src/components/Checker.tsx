@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { SDK, createDojoStore } from "@dojoengine/sdk";
 import BackgroundCheckers from "../assets/BackgrounCheckers.png";
 import Board from "../assets/Board.png";
@@ -8,7 +8,6 @@ import Player1 from "../assets/Player1.png";
 import Player2 from "../assets/Player1.png";
 import GameOver from "../components/GameOver";
 import Winner from "../components/Winner";
-import useDojoConnect from "../hooks/useDojoConnect";
 import { schema } from "../bindings.ts";
 
 // Crea el store de Dojo
@@ -18,17 +17,12 @@ interface CheckerProps {
   sdk: SDK<any>;
 }
 
-const Checker: React.FC<CheckerProps> = ({ sdk }) => {
-  const { position } = useDojoConnect({ sdk }); // Solo obtiene la posición del juego
-  const [arePiecesVisible, setArePiecesVisible] = useState(false);
+const Checker: React.FC<CheckerProps> = ({ }) => {
+ const [arePiecesVisible,] = useState(false);
   const [isGameOver] = useState(false);
   const [isWinner] = useState(false);
 
-  useEffect(() => {
-    if (position) {
-      setArePiecesVisible(true);
-    }
-  }, [position]);
+
 
   // Definición de las posiciones iniciales de las piezas
   interface Position {

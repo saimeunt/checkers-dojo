@@ -1,6 +1,5 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { SDK, createDojoStore } from "@dojoengine/sdk";
-import { getEntityIdFromKeys } from "@dojoengine/utils";
 import { addAddressPadding } from "starknet";
 import { schema } from "../bindings.ts";
 import { useDojo } from "./useDojo.tsx";
@@ -19,10 +18,6 @@ function useDojoConnect({ sdk }: { sdk: SDK<typeof schema> }) {
 
   const { spawn } = useSystemCalls();
 
-  const entityId = useMemo(
-    () => getEntityIdFromKeys([BigInt(account?.account.address)]),
-    [account?.account.address]
-  );
 
   useEffect(() => {
     let unsubscribe: (() => void) | undefined;
