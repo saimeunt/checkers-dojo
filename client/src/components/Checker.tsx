@@ -100,7 +100,7 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
     const moves: Coordinates[] = [];
     const { raw, col } = piece.piece.coordinates;
 
-    if (piece.piece.player === "black") {
+    if (piece.piece.position === Position.Up) {
       if (raw + 1 < 8) {
         if (col - 1 >= 0) moves.push({ raw: raw + 1, col: col - 1 });
         if (col + 1 < 8) moves.push({ raw: raw + 1, col: col + 1 });
