@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CreateBurner from "../connector/CreateBurner"; 
-import useDojoConnect from "../hooks/useDojoConnect"; 
+// import useDojoConnect from "../hooks/useDojoConnect"; 
 import InitGameBackground from "../assets/InitGameBackground.png"; 
-import { SDK } from "@dojoengine/sdk"; 
+import { SDK, createDojoStore } from "@dojoengine/sdk"; 
 import Witch from "../assets/Witch.png";
 import CreateGame from "../assets/CreateGame.png";
 import CreateGame4 from "../assets/CreateGame4.png";
@@ -13,14 +13,22 @@ import JoinGame2 from "../assets/JoinGame2.png";
 import JoinGame from "../assets/JoinGame.png";
 import ControllerButton from '../connector/ControllerButton';
 import Title from '../assets/Title.png';
+import { schema } from "../bindings.ts";
+import { useSystemCalls } from "../hooks/useSystemCalls.ts";
+import { useDojo } from "../hooks/useDojo.tsx";
 
-interface InitGameProps {
-  sdk: SDK<any>;
-}
+export const useDojoStore = createDojoStore<typeof schema>();
 
-const InitGame: React.FC<InitGameProps> = ({ sdk }) => {
-  
-  const { spawn, account } = useDojoConnect({ sdk });
+function InitGame({ sdk }: { sdk: SDK<typeof schema> }) {
+
+	const {
+        account,
+        //setup: { setupWorld },
+    } = useDojo();
+
+	// const state = useDojoStore((state) => state);
+    // const entities = useDojoStore((state) => state.entities);
+const { spawn } = useSystemCalls();
   const navigate = useNavigate();
 
   // Estado para controlar el brillo y zoom de las imágenes

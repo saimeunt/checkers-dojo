@@ -10,8 +10,9 @@ export const useSystemCalls = () => {
         account: { account },
     } = useDojo();
 
-
     const spawn = async () => {
+
+		// Todo: Generate entityId and improve/implement optimistic update
         const transactionId = uuidv4();
 
 		console.log("before apply optimistic update");

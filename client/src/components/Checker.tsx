@@ -8,21 +8,27 @@ import Player1 from "../assets/Player1.png";
 import Player2 from "../assets/Player1.png";
 import GameOver from "../components/GameOver";
 import Winner from "../components/Winner";
+//import useDojoConnect from "../hooks/useDojoConnect";
 import { schema } from "../bindings.ts";
+import { useDojo } from "../hooks/useDojo.tsx";
 
 // Crea el store de Dojo
 export const useDojoStore = createDojoStore<typeof schema>();
 
-interface CheckerProps {
-  sdk: SDK<any>;
-}
+// interface CheckerProps {
+//   sdk: SDK<any>;
+// }
 
-const Checker: React.FC<CheckerProps> = ({ }) => {
- const [arePiecesVisible,] = useState(false);
+function Checker({sdk}: {sdk: SDK<typeof schema>}){
+  //const { position } = useDojoConnect({ sdk }); // Solo obtiene la posición del juego
+  const [arePiecesVisible, setArePiecesVisible] = useState(true);
   const [isGameOver] = useState(false);
   const [isWinner] = useState(false);
 
-
+  const {
+	account,
+	setup: { setupWorld },
+} = useDojo();
 
   // Definición de las posiciones iniciales de las piezas
   interface Position {
@@ -72,8 +78,19 @@ const Checker: React.FC<CheckerProps> = ({ }) => {
 
   const cellSize = 88;
 
-  const handlePieceClick = (pieceId: number) => {
+  const handlePieceClick = async (piece: Piece) => {
+	const pieceId = piece.id;
+	console.log("pieceId", pieceId);
     setSelectedPieceId(selectedPieceId === pieceId ? null : pieceId);
+	// try {
+	// 	if (account) {
+	// 		await setupWorld.actions.canChoosePiece(account: account.account, piece.position, piece.position);
+	// 	} else {
+	// 		console.warn("Cuenta no conectada");
+	// 	}
+	// } catch (error) {
+	// 	console.error("Error al mover la pieza:", error);
+	// }
   };
 
   const renderPieces = () => (
@@ -92,7 +109,7 @@ const Checker: React.FC<CheckerProps> = ({ }) => {
             height: "60px",
             border: selectedPieceId === piece.id ? "2px solid yellow" : "none",
           }}
-          onClick={() => handlePieceClick(piece.id)}
+          onClick={() => handlePieceClick(piece)}
         />
       ))}
       {orangePieces.map((piece) => (
