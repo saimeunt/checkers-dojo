@@ -16,7 +16,7 @@ export const useDojoStore = createDojoStore<typeof schema>();
 
 function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
   const [arePiecesVisible] = useState(true);
-  const [isGameOver] = useState(false);
+  const [isGameOver] = useState(true);
   const [isWinner] = useState(false);
   const [selectedPieceId, setSelectedPieceId] = useState<number | null>(null);
   const [validMoves, setValidMoves] = useState<Position[]>([]);
