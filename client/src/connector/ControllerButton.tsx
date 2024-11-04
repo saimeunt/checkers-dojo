@@ -16,8 +16,9 @@ const ControllerButton: React.FC = () => {
         className="flex items-center rounded-md overflow-hidden font-bold cursor-pointer pl-2"
         style={{
           background: isConnected
-            ? "linear-gradient(to right, #191a1d 40%, #800000 40%)"
+            ? "#800080"  
             : "linear-gradient(to right, #191a1d 40%, rgba(172, 148, 25, 1) 40%)",
+          color: 'white', 
           width: '200px',
           height: '40px',
         }}
@@ -32,7 +33,7 @@ const ControllerButton: React.FC = () => {
           }}
         />
         <span
-          className="text-white flex-grow text-left"
+          className="flex-grow text-left"
           style={{
             lineHeight: '40px',
             marginLeft: '40px' 
@@ -41,8 +42,6 @@ const ControllerButton: React.FC = () => {
           {isConnected ? userName : "Controller"}
         </span>
       </button>
-
-
     </div>
   );
 };
