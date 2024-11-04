@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import { SDK, createDojoStore } from "@dojoengine/sdk";
 import BackgroundCheckers from "../assets/BackgrounCheckers.png";
 import Board from "../assets/Board.png";
@@ -20,13 +20,12 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
   const [isGameOver] = useState(false);
   const [isWinner] = useState(false);
   const [selectedPieceId, setSelectedPieceId] = useState<number | null>(null);
-  const [validMoves, setValidMoves] = useState<Position[]>([]);
+  const [validMoves, setValidMoves] = useState<Coordinates[]>([]);
 
   const {
 	account: { account },
 	setup: { setupWorld },
 } = useDojo();
-
 
   // Todo: Fix this type, use export
   interface Piece {
@@ -72,9 +71,19 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
   const cellSize = 88;
 
   const handlePieceClick = async (piece: Piece) => {
-	const pieceId = piece.id;
-	console.log("pieceId", pieceId);
-    setSelectedPieceId(selectedPieceId === pieceId ? null : pieceId);
+    const pieceId = piece.id;
+    console.log("Selected piece ID:", pieceId);
+
+    if (selectedPieceId === pieceId) {
+      setSelectedPieceId(null);
+      setValidMoves([]);
+    } else {
+      setSelectedPieceId(pieceId);
+      const moves = calculateValidMoves(piece);
+      console.log("Valid moves for piece", pieceId, ":", moves);
+      setValidMoves(moves); 
+    };
+
 	try {
 		if (account) {
 			const position = piece.position;
@@ -86,9 +95,51 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
 		}
 	} catch (error) {
 		console.error("Error al mover la pieza:", error);
-	}
+	};
   };
 
+  const calculateValidMoves = (piece: Piece): Coordinates[] => {
+    const moves: Coordinates[] = [];
+    const { raw, col } = piece.coordinates;
+
+    if (piece.color === "black") {
+      if (raw + 1 < 8) {
+        if (col - 1 >= 0) moves.push({ raw: raw + 1, col: col - 1 });
+        if (col + 1 < 8) moves.push({ raw: raw + 1, col: col + 1 });
+      }
+    } else {
+      if (raw - 1 >= 0) {
+        if (col - 1 >= 0) moves.push({ raw: raw - 1, col: col - 1 });
+        if (col + 1 < 8) moves.push({ raw: raw - 1, col: col + 1 });
+      }
+    }
+
+    return moves;
+  };
+
+  const handleMoveClick = (move: Coordinates) => {
+    if (selectedPieceId !== null) {
+      const selectedPiece = [...blackPieces, ...orangePieces].find(piece => piece.id === selectedPieceId);
+
+      if (selectedPiece) {
+        const updatedPieces = (selectedPiece.color === "black" ? blackPieces : orangePieces).map(piece => {
+          if (piece.id === selectedPieceId) {
+            return { ...piece, coordinates: move }; 
+          }
+          return piece;
+        });
+
+        if (selectedPiece.color === "black") {
+          setBlackPieces(updatedPieces);
+        } else {
+          setOrangePieces(updatedPieces);
+        }
+
+        setSelectedPieceId(null);
+        setValidMoves([]);
+      }
+    }
+  }
   const renderPieces = () => (
     <>
       {blackPieces.map((piece) => (
@@ -105,7 +156,7 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
             height: "60px",
             border: selectedPieceId === piece.id ? "2px solid yellow" : "none",
           }}
-          onClick={() => handlePieceClick(piece)}
+          onClick={() => handlePieceClick(piece)} 
         />
       ))}
       {orangePieces.map((piece) => (
@@ -122,7 +173,7 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
             height: "60px",
             border: selectedPieceId === piece.id ? "2px solid yellow" : "none",
           }}
-          onClick={() => handlePieceClick(piece)}
+          onClick={() => handlePieceClick(piece)} 
         />
       ))}
       {validMoves.map((move, index) => (
@@ -137,7 +188,7 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
             cursor: "pointer",
             backgroundColor: "rgba(0, 255, 0, 0.5)", 
           }}
-          onClick={() => movePiece(move)} 
+          onClick={() => handleMoveClick(move)} 
         />
       ))}
     </>
