@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { SDK, createDojoStore } from "@dojoengine/sdk";
 import BackgroundCheckers from "../assets/BackgrounCheckers.png";
 import Board from "../assets/Board.png";
@@ -8,27 +8,23 @@ import Player1 from "../assets/Player1.png";
 import Player2 from "../assets/Player1.png";
 import GameOver from "../components/GameOver";
 import Winner from "../components/Winner";
-//import useDojoConnect from "../hooks/useDojoConnect";
 import { schema } from "../bindings.ts";
 import { useDojo } from "../hooks/useDojo.tsx";
 
 // Crea el store de Dojo
 export const useDojoStore = createDojoStore<typeof schema>();
 
-// interface CheckerProps {
-//   sdk: SDK<any>;
-// }
-
-function Checker({sdk}: {sdk: SDK<typeof schema>}){
-  //const { position } = useDojoConnect({ sdk }); // Solo obtiene la posición del juego
-  const [arePiecesVisible, setArePiecesVisible] = useState(true);
+function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
+  const [arePiecesVisible] = useState(true);
   const [isGameOver] = useState(false);
   const [isWinner] = useState(false);
+  const [selectedPieceId, setSelectedPieceId] = useState<number | null>(null);
+  const [validMoves, setValidMoves] = useState<Position[]>([]);
 
   const {
-	account,
-	setup: { setupWorld },
-} = useDojo();
+    account,
+    setup: { setupWorld },
+  } = useDojo();
 
   // Definición de las posiciones iniciales de las piezas
   interface Position {
@@ -72,25 +68,68 @@ function Checker({sdk}: {sdk: SDK<typeof schema>}){
     { id: 24, color: "orange", position: { row: 7, col: 6 } },
   ];
 
-  const [blackPieces] = useState<Piece[]>(initialBlackPieces);
-  const [orangePieces] = useState<Piece[]>(initialOrangePieces);
-  const [selectedPieceId, setSelectedPieceId] = useState<number | null>(null);
-
+  const [blackPieces, setBlackPieces] = useState<Piece[]>(initialBlackPieces);
+  const [orangePieces, setOrangePieces] = useState<Piece[]>(initialOrangePieces);
+  
   const cellSize = 88;
 
-  const handlePieceClick = async (piece: Piece) => {
-	const pieceId = piece.id;
-	console.log("pieceId", pieceId);
-    setSelectedPieceId(selectedPieceId === pieceId ? null : pieceId);
-	// try {
-	// 	if (account) {
-	// 		await setupWorld.actions.canChoosePiece(account: account.account, piece.position, piece.position);
-	// 	} else {
-	// 		console.warn("Cuenta no conectada");
-	// 	}
-	// } catch (error) {
-	// 	console.error("Error al mover la pieza:", error);
-	// }
+  const handlePieceClick = (piece: Piece) => {
+    const pieceId = piece.id;
+    console.log("Selected piece ID:", pieceId);
+
+    if (selectedPieceId === pieceId) {
+      setSelectedPieceId(null);
+      setValidMoves([]);
+    } else {
+      setSelectedPieceId(pieceId);
+      const moves = calculateValidMoves(piece);
+      console.log("Valid moves for piece", pieceId, ":", moves);
+      setValidMoves(moves); 
+    }
+  };
+
+  const calculateValidMoves = (piece: Piece): Position[] => {
+    const moves: Position[] = [];
+    const { row, col } = piece.position;
+
+    if (piece.color === "black") {
+      if (row + 1 < 8) {
+        if (col - 1 >= 0) moves.push({ row: row + 1, col: col - 1 });
+        if (col + 1 < 8) moves.push({ row: row + 1, col: col + 1 });
+      }
+    } else {
+      if (row - 1 >= 0) {
+        if (col - 1 >= 0) moves.push({ row: row - 1, col: col - 1 });
+        if (col + 1 < 8) moves.push({ row: row - 1, col: col + 1 });
+      }
+    }
+
+    return moves;
+  };
+
+
+  const movePiece = (move: Position) => {
+    if (selectedPieceId !== null) {
+      const selectedPiece = [...blackPieces, ...orangePieces].find(piece => piece.id === selectedPieceId);
+
+      if (selectedPiece) {
+        const updatedPieces = (selectedPiece.color === "black" ? blackPieces : orangePieces).map(piece => {
+          if (piece.id === selectedPieceId) {
+            return { ...piece, position: move };
+          }
+          return piece;
+        });
+
+        if (selectedPiece.color === "black") {
+          setBlackPieces(updatedPieces);
+        } else {
+          setOrangePieces(updatedPieces);
+        }
+
+        setSelectedPieceId(null);
+        setValidMoves([]);
+      }
+    }
   };
 
   const renderPieces = () => (
@@ -126,7 +165,22 @@ function Checker({sdk}: {sdk: SDK<typeof schema>}){
             height: "60px",
             border: selectedPieceId === piece.id ? "2px solid yellow" : "none",
           }}
-          onClick={() => handlePieceClick(piece.id)}
+          onClick={() => handlePieceClick(piece)}
+        />
+      ))}
+      {validMoves.map((move, index) => (
+        <div
+          key={index}
+          className="absolute border border-green-500"
+          style={{
+            left: `${move.col * cellSize + 63}px`,
+            top: `${move.row * cellSize + 58}px`,
+            width: "60px",
+            height: "60px",
+            cursor: "pointer",
+            backgroundColor: "rgba(0, 255, 0, 0.5)", 
+          }}
+          onClick={() => movePiece(move)} 
         />
       ))}
     </>
@@ -153,6 +207,6 @@ function Checker({sdk}: {sdk: SDK<typeof schema>}){
       </div>
     </div>
   );
-};
+}
 
 export default Checker;
