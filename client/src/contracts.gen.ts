@@ -1,6 +1,6 @@
 import { DojoProvider } from "@dojoengine/core";
 import { Account } from "starknet";
-import * as models from "./bindings.ts";
+import { Position, Coordinates, Piece } from "./bindings.ts";
 
 export function setupWorld(provider: DojoProvider) {
 	function actions() {
@@ -54,7 +54,7 @@ export function setupWorld(provider: DojoProvider) {
 			}
 		};
 
-		const canChoosePiece = async (account: Account, position: models.Position, coordinatesPosition: models.Coordinates) => {
+		const canChoosePiece = async (account: Account, position: Position, coordinatesPosition: Coordinates) => {
 			try {
 				return await provider.execute(
 
@@ -70,7 +70,7 @@ export function setupWorld(provider: DojoProvider) {
 			}
 		};
 
-		const movePiece = async (account: Account, currentPiece: models.Piece, newCoordinatesPosition: models.Coordinates) => {
+		const movePiece = async (account: Account, currentPiece: Piece, newCoordinatesPosition: Coordinates) => {
 			try {
 				return await provider.execute(
 

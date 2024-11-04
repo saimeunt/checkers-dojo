@@ -10,7 +10,7 @@ export interface PieceValue {
 
 // Type definition for `dojo_starter::models::Coordinates` struct
 export interface Coordinates {
-	fieldOrder: string[];
+	//fieldOrder: string[];
 	raw: number;
 	col: number;
 }
