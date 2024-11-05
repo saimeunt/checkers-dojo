@@ -63,7 +63,7 @@ yarn start
 
 ## Play
 
-After completing the steps above, access the Checkers game by navigating to `http://localhost:5173` in your web browser.
+After completing the steps above, access the Checkers game by navigating to `http://localhost:3000` in your web browser.
 
 ---
 
