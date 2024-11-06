@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import CreateBurner from "../connector/CreateBurner";
 import InitGameBackground from "../assets/InitGameBackground.png";
 import { SDK, createDojoStore } from "@dojoengine/sdk";
-import Witch from "../assets/Witch.png";
 import CreateGame from "../assets/CreateGame.png";
 import CreateGame2 from "../assets/CreateGame2.png";
 import JoinGame from "../assets/JoinGame.png";
@@ -94,7 +93,7 @@ function InitGame({ }: { sdk: SDK<typeof schema> }) {
 
       {/* Botón de "Crear Juego" */}
       <img
-        src={isHoveredCreate ? CreateGame2 : CreateGame}
+        src={isHoveredCreate ? CreateGame : CreateGame2}
         alt="Crear Juego"
         onClick={handleCreateGame}
         onMouseEnter={() => setIsHoveredCreate(true)}
@@ -128,20 +127,6 @@ function InitGame({ }: { sdk: SDK<typeof schema> }) {
           zIndex: 2,
           cursor: 'pointer',
           transition: 'transform 0.2s',
-        }}
-      />
-
-      <img
-        src={Witch}
-        alt="Bruja"
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: '70%',
-          transform: 'translate(-50%, -50%)',
-          width: '450px',
-          height: 'auto',
-          zIndex: 2,
         }}
       />
     </div>

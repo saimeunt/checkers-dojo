@@ -1,15 +1,16 @@
 import Image from "next/image";
 import BannerChecker from "@/public/landingpage/BannerChecker.png";
 import BannerChecker2 from "@/public/landingpage/BannerChecker2.png";
+import DojoLogo from "@/public/landingpage/DojoLogo.png";  
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-import { useRouter } from "next/navigation"; // Para la navegación de Next.js
+import { useRouter } from "next/navigation"; 
 import useGetUserInfo from "~~/utils/api/hooks/useGetUserInfo";
 
-const data = [BannerChecker, BannerChecker2];
+const data = [BannerChecker2, BannerChecker];
 
 export default function CheckerSection() {
   const router = useRouter();
@@ -32,12 +33,18 @@ export default function CheckerSection() {
 
           <div className="relative w-fit">
             <button
-              className="relative z-50 normal-button-think signup-btn text-white"
+              className="relative z-50 normal-button-think signup-btn text-white flex items-center justify-center space-x-3 border-2 border-[#00ECFFE5] rounded-full py-2 px-4"  // Agregado justify-center para centrar el contenido
               onClick={() => {
                 window.location.href = "http://localhost:5173/initgame";
               }}
             >
-              Go to Play Game
+              <Image
+                src={DojoLogo}
+                alt="Logo"
+                width={200} 
+                height={20}
+                className="mr-2 left-2px"
+              />
             </button>
             <Image
               src={"/landingpage/animation-btn.png"}
@@ -81,11 +88,12 @@ export default function CheckerSection() {
             {data.map((item, index) => (
               <SwiperSlide key={index}>
                 <div className="h-full w-full flex flex-col justify-center overflow-hidden rounded-[24px]">
+                  {/* Imagen del banner con borde y sombra */}
                   <Image
                     src={item}
                     width={1000}
                     height={400}
-                    className="h-full w-full object-cover rounded-[24px]"
+                    className="h-full w-full object-cover rounded-[24px] border-[2px] border-[#00ECFFE5] z-20 shadow-xl shadow-[#00ECFFE5]"
                     alt="banner"
                   />
                 </div>

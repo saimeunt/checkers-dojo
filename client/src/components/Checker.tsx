@@ -5,17 +5,16 @@ import Board from "../assets/Board.png";
 import PieceBlack from "../assets/PieceBlack.svg";
 import PieceOrange from "../assets/PieceOrange.svg";
 import Player1 from "../assets/Player1.png";
-import Player2 from "../assets/Player1.png";
+import Player2 from "../assets/Player2.png";
 import GameOver from "../components/GameOver";
 import Winner from "../components/Winner";
-//import useDojoConnect from "../hooks/useDojoConnect";
 import { schema, Position, Coordinates, Piece } from "../bindings.ts";
 import { useDojo } from "../hooks/useDojo.tsx";
 
 // Crea el store de Dojo
 export const useDojoStore = createDojoStore<typeof schema>();
 
-function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
+function Checker({ }: { sdk: SDK<typeof schema> }) {
   const [arePiecesVisible] = useState(true);
   const [isGameOver] = useState(false);
   const [isWinner] = useState(false);
