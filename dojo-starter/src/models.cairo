@@ -31,21 +31,21 @@ impl PositionIntoFelt252 of Into<Position, felt252> {
 
 #[derive(Copy, Drop, Serde, IntrospectPacked, Debug)]
 pub struct Coordinates {
-    pub raw: u32,
+    pub row: u32,
     pub col: u32
 }
 
 #[generate_trait]
 impl PositionImpl of PositionTrait {
     fn is_zero(self: Coordinates) -> bool {
-        if self.raw - self.col == 0 {
+        if self.row - self.col == 0 {
             return true;
         }
         false
     }
 
     fn is_equal(self: Coordinates, b: Coordinates) -> bool {
-        self.raw == b.raw && self.col == b.col
+        self.row == b.row && self.col == b.col
     }
 }
 // #[cfg(test)]
