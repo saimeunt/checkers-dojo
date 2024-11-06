@@ -10,6 +10,14 @@ trait IActions<T> {
     fn move_piece(ref self: T, current_piece: Piece, new_coordinates_position: Coordinates);
 }
 
+if square.piece.is_alive 
+piece_row = square.coordinates.row;
+piece_col = square.coordinates.col;
+
+new_square.piece = current_square.piece
+current_square.piece = None
+
+
 // dojo decorator
 #[dojo::contract]
 pub mod actions {
@@ -23,6 +31,13 @@ pub mod actions {
     #[derive(Copy, Drop, Serde)]
     #[dojo::event]
     pub struct Moved {
+        #[key]
+        pub player: ContractAddress,
+        pub coordinates: Coordinates,
+    }
+    #[derive(Copy, Drop, Serde)]
+    #[dojo::event]
+    pub struct Killed {
         #[key]
         pub player: ContractAddress,
         pub coordinates: Coordinates,
@@ -310,7 +325,7 @@ pub mod actions {
             }
 
             // Get the player's piece from the world by its coordinates.
-            let piece: Piece = world.read_model((player, coordinates_position));
+            let piece: Piece = world.read_model((coordinates_position));
 
             // Check if the piece belongs to the position and is alive.
             // TODO: Fow now we only support one player. later we will add support for multiple
@@ -338,16 +353,8 @@ pub mod actions {
             let is_valid_position = check_is_valid_position(new_coordinates_position);
             assert(is_valid_position, 'Invalid coordinates');
 
-            // Retrieve the player's piece from the world by its coordinates.
-            let square: Piece = world.read_model((player, new_coordinates_position));
-
             // Update the piece's coordinates based on the new coordinates.
             let updated_piece = update_piece_position(current_piece, square);
-
-            // Write the new coordinates to the world.
-            world.write_model(@updated_piece);
-            // Emit an event to the world to notify about the player's move.
-            world.emit_event(@Moved { player, coordinates: new_coordinates_position });
         }
     }
     #[generate_trait]
@@ -357,6 +364,27 @@ pub mod actions {
         // constant.
         fn world_default(self: @ContractState) -> dojo::world::WorldStorage {
             self.world(@"dojo_starter")
+        }
+
+        fn change_is_alive(self: @ContractState, current_piece: Piece, new_coordinates_position: Coordinates) {
+            let mut world = self.world_default();
+            let square: Piece = world.read_model((new_coordinates_position));
+
+            // Update the piece attributes based on the new coordinates.
+            square.is_alive = true;
+            square.player = current_piece.player;
+            square.position = current_piece.position;
+
+            world.write_model(@square);
+
+            // Update the current piece attributes.
+            current_piece.is_alive = false;
+            current_piece.player = 0x0;
+            current_piece.position = Position::None;
+            // Write the new coordinates to the world.
+            world.write_model(@current_piece);
+            // Emit an event about the move
+            world.emit_event(@Moved { square.player, coordinates: square.coordinates });
         }
 
         fn check_has_valid_moves(self: @ContractState, piece: Piece) -> bool {
@@ -383,19 +411,7 @@ pub mod actions {
                         };
                         let target_square: Piece = world
                             .read_model((piece.player, target_down_left));
-                        // Check if the target square is alive (has a piece)
-                        if (target_square.is_alive) {
-                            // Check if the jump target square is not alive (has no piece)
-                            let target_jump = Coordinates {
-                                row: piece_row + 2, col: piece_col - 2
-                            };
 
-                            let target_square_jump: Piece = world
-                                .read_model((piece.player, target_jump));
-                            return !target_square_jump.is_alive;
-                        } else {
-                            return !target_square.is_alive;
-                        }
                     }
 
                     // Check down-right diagonal
@@ -404,21 +420,7 @@ pub mod actions {
                             row: piece_row + 1, col: piece_col + 1
                         };
                         let target_square: Piece = world
-                            .read_model((piece.player, target_down_right));
-                        
-                        // Check if the target square is alive (has a piece)
-                        if (target_square.is_alive) {
-                            // Check if the jump target square is not alive (has no piece)
-                            let target_jump = Coordinates {
-                                row: piece_row + 2, col: piece_col + 2
-                            };
-
-                            let target_square_jump: Piece = world
-                                .read_model((piece.player, target_jump));
-                            return !target_square_jump.is_alive;
-                        } else {
-                            return !target_square.is_alive;
-                        }
+                            .read_model((target_down_right));
                     }
                     false
                 },
@@ -431,7 +433,7 @@ pub mod actions {
                     // Check up-left diagonal
                     if piece_col > 0 {
                         let target_up_left = Coordinates { row: piece_row - 1, col: piece_col - 1 };
-                        let target_square: Piece = world.read_model((piece.player, target_up_left));
+                        let target_square: Piece = world.read_model((target_up_left));
                         return !target_square.is_alive;
                     }
 
@@ -441,7 +443,7 @@ pub mod actions {
                             row: piece_row - 1, col: piece_col + 1
                         };
                         let target_square: Piece = world
-                            .read_model((piece.player, target_up_right));
+                            .read_model((target_up_right));
                         return !target_square.is_alive;
                     }
                     false
@@ -452,11 +454,117 @@ pub mod actions {
     }
 }
 
+fn is_jump_possible(self: @ContractState, piece: Piece, square: Piece) -> bool {
+    let world = self.world_default();
+    if piece.coordinates.col > square.coordinates.col {
+        // Move left
+        match piece.position => {
+            Position::Up => {
+                let jump_coordinates = Coordinates {
+                    row: piece.coordinates.row + 2,
+                    col: piece.coordinates.col - 2
+                };
+                let jump_square: Piece = world.read_model((jump_coordinates));
+                return !jump_square.is_alive;
+            },
+            Position::Down => {
+                let jump_coordinates = Coordinates {
+                    row: piece.coordinates.row - 2,
+                    col: piece.coordinates.col - 2
+                };
+                let jump_square: Piece = world.read_model((jump_coordinates));
+                return !jump_square.is_alive;
+            }
+        }
+    } else {
+        // Move right
+        match piece.position => {
+            Position::Up => {
+                let jump_coordinates = Coordinates {
+                    row: piece.coordinates.row + 2,
+                    col: piece.coordinates.col + 2
+                };
+                let jump_square: Piece = world.read_model((jump_coordinates));
+                return !jump_square.is_alive;
+            },
+            Position::Down => {
+                let jump_coordinates = Coordinates {
+                    row: piece.coordinates.row - 2,
+                    col: piece.coordinates.col + 2
+                };
+                let jump_square: Piece = world.read_model((jump_coordinates));
+                return !jump_square.is_alive;
+            }
+        }
+    }
+}
+
+fn update_alive_position(self: @ContractState, mut piece: Piece, mut square: Piece) {
+    let can_jump = is_jump_possible(piece, square);
+    if can_jump {
+        // Kill the piece
+        let mut world = self.world_default();
+        square.is_alive = false;
+        square.player = 0x0;
+        square.position = Position::None;
+
+        world.write_model(@square)
+
+        // TODO: Update the player model saying -1 piece
+        let player = piece.player;
+        let coordinates = square.coordinates;
+        world.emit_event(@Killed { player, coordinates });
+        // Make the jump
+        if piece.coordinates.col > square.coordinates.col {
+            // Move left
+            match piece.position {
+                Position::Up => {
+                    let new_coordinates = Coordinates {
+                        row: piece.coordinates.row + 2,
+                        col: piece.coordinates.col - 2
+                    };
+                    change_is_alive(piece, new_coordinates);
+                },
+                Position::Down => {
+                    let new_coordinates = Coordinates {
+                        row: piece.coordinates.row - 2,
+                        col: piece.coordinates.col - 2
+                    };
+                    change_is_alive(piece, new_coordinates);
+                }
+            }
+        } else {
+            // Move right
+            match piece.position {
+                Position::Up => {
+                    let new_coordinates = Coordinates {
+                        row: piece.coordinates.row + 2,
+                        col: piece.coordinates.col + 2
+                    };
+                    change_is_alive(piece, new_coordinates);
+                },
+                Position::Down => {
+                    let new_coordinates = Coordinates {
+                        row: piece.coordinates.row - 2,
+                        col: piece.coordinates.col + 2
+                    };
+                    change_is_alive(piece, new_coordinates);
+                }
+            }
+        }        
+    }
+   
+}
 // Todo: Improve this function to check if the new coordinates is valid.
-fn update_piece_position(mut piece: Piece, square: Piece) -> Piece {
-    piece.coordinates.row = square.coordinates.row;
-    piece.coordinates.col = square.coordinates.col;
-    piece
+fn update_piece_position(mut piece: Piece, square: Piece) {
+    // Check if there is a piece in the square
+    if square.is_alive {
+       update_alive_position(piece, square);
+    } else {
+        // Get the coordinates of the square and do the swap
+        let coordinates = square.coordinates;
+        change_is_alive(piece, coordinates);
+    }
 }
 
 fn check_is_valid_position(coordinates: Coordinates) -> bool {
