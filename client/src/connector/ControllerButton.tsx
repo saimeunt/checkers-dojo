@@ -1,5 +1,5 @@
-// ControllerButton.tsx
 import useControllerAccount from "../hooks/useControllerAccount";
+import Cartridge from "../assets/Cartridge.png";
 
 const ControllerButton: React.FC = () => {
   const {
@@ -15,16 +15,14 @@ const ControllerButton: React.FC = () => {
         onClick={isConnected ? handleDisconnect : handleConnect}
         className="flex items-center rounded-md overflow-hidden font-bold cursor-pointer pl-2"
         style={{
-          background: isConnected
-            ? "#800080"  
-            : "linear-gradient(to right, #191a1d 40%, rgba(172, 148, 25, 1) 40%)",
+          background: "linear-gradient(to right, #EE7921 40%, #520066 40%)", // Gradiente con amarillo a la izquierda y violeta a la derecha
           color: 'white', 
           width: '200px',
           height: '40px',
         }}
       >
         <img
-          src="https://x.cartridge.gg/favicon-48x48.png"
+          src={Cartridge}
           alt="User Icon"
           className="h-8 w-8 rounded-full"
           style={{

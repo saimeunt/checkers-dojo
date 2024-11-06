@@ -1,92 +1,122 @@
 import React, { useState } from "react";
 import { useDojo } from "../hooks/useDojo.tsx";
+import ConnectWallet from "../assets/ConnectWallet.png";
 
 const CreateBurner: React.FC = () => {
-    const { account } = useDojo(); // Contexto de la cuenta
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Estado para manejar el desplegable
+  const { account } = useDojo();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-    const handleCreateBurner = async () => {
-        if (account) {
-            await account.create(); // Crear un nuevo burner
-        }
-    };
+  const handleCreateBurner = async () => {
+    if (account) {
+      await account.create();
+    }
+  };
 
-    const handleToggleDropdown = () => {
-        setIsDropdownOpen(!isDropdownOpen); // Alternar el estado del desplegable
-    };
+  const handleToggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
 
-    const handleSelectAccount = (address: string) => {
-        account?.select(address); // Seleccionar la cuenta
-        setIsDropdownOpen(false); // Cerrar el desplegable
-    };
+  const handleSelectAccount = (address: string) => {
+    account?.select(address);
+    setIsDropdownOpen(false);
+  };
 
-    const handleClearBurners = async () => {
-        await account.clear(); // Limpiar los burners
-        account.select(""); // Restablecer la cuenta conectada
-        setIsDropdownOpen(false); // Cerrar el desplegable
-    };
+  const handleClearBurners = async () => {
+    await account.clear();
+    account.select("");
+    setIsDropdownOpen(false);
+  };
 
-    // Obtener dirección de la cuenta conectada
-    const slicedAddress = account?.account.address
-        ? `${account.account.address.slice(0, 4)}...${account.account.address.slice(-4)}`
-        : "Connect your Account"; // Mensaje cuando no hay cuenta conectada
+  const slicedAddress = account?.account.address
+    ? `${account.account.address.slice(0, 5)}...${account.account.address.slice(-4)}`
+    : "Connect Wallet";
 
-    return (
-        <div className="relative inline-block">
-            <button
-                className="flex items-center justify-between w-64 px-4 py-2 bg-gray-800 text-white text-sm sm:text-base rounded-md border border-purple-600 hover:bg-gray-700 transition-colors duration-300"
-                onClick={handleToggleDropdown}
+  return (
+    <div>
+      <button
+        onClick={handleToggleDropdown}
+        className="flex items-center rounded-md overflow-hidden font-bold cursor-pointer pl-2"
+        style={{
+          background: "linear-gradient(to right, #EE7921 40%, #520066 40%)", // Gradiente con amarillo y violeta
+          color: "white",
+          width: "240px",
+          height: "40px",
+        }}
+      >
+        <img
+          src={ConnectWallet}
+          alt="Wallet Icon"
+          className="h-6 w-6"
+          style={{
+            marginLeft: "30px",
+          }}
+        />
+        <span
+          className="flex-grow text-right" // Texto alineado a la derecha
+          style={{
+            lineHeight: "40px",
+            marginRight: "5px",
+          }}
+        >
+          {slicedAddress}
+        </span>
+        <span
+          className={`ml-2 transform transition-transform duration-300 ${
+            isDropdownOpen ? "rotate-180" : ""
+          }`}
+          style={{ 
+            color: "white",
+            marginRight: "10px" }} 
+        >
+          ▼
+        </span>
+      </button>
+      {isDropdownOpen && (
+        <div
+          className="absolute mt-2 w-64 z-10 rounded-md shadow-lg"
+          style={{
+            backgroundColor: "#2C2F33", 
+            border: "1px solid #520066", 
+            color: "white",
+          }}
+        >
+          <div className="p-4">
+            <label
+              htmlFor="signer-select"
+              className="block text-sm font-medium mb-2"
+              style={{ color: "#ffffff99" }}
             >
-                {account?.isDeploying ? "Deploying Burner..." : `Connected: ${slicedAddress}`}
-                <span className={`transform transition-transform duration-300 ${isDropdownOpen ? "rotate-180" : ""}`}>
-                    ▼
-                </span>
-            </button>
-            {isDropdownOpen && (
-                <div
-                    className="absolute p-4 w-64 z-10 border rounded-md overflow-y-auto max-h-48"
-                    style={{
-                        backgroundColor: '#2C2F33', // Fondo gris oscuro
-                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)', // Sombra sutil
-                        borderColor: '#8602B64D', // Borde con el tono proporcionado
-                    }}
-                >
-                    <div className="mb-4">
-                        <label
-                            htmlFor="signer-select"
-                            className="block text-sm font-medium text-gray-300 mb-2" // Texto gris claro para contraste
-                        >
-                            Select Burner:
-                        </label>
-                        <select
-                            id="signer-select"
-                            className="w-full px-3 py-2 text-base text-gray-800 bg-white border border-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            value={account?.account.address || ""}
-                            onChange={(e) => handleSelectAccount(e.target.value)}
-                        >
-                            {account?.list().map((acc, index) => (
-                                <option value={acc.address} key={index} className="text-gray-800">
-                                    {acc.address}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <button
-                        className="w-full mb-2 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out"
-                        onClick={handleCreateBurner}
-                    >
-                        Create New Burner
-                    </button>
-                    <button
-                        className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out"
-                        onClick={handleClearBurners}
-                    >
-                        Clear Burners
-                    </button>
-                </div>
-            )}
+              Select Burner:
+            </label>
+            <select
+              id="signer-select"
+              className="w-full px-3 py-2 text-sm bg-white text-gray-800 rounded-md focus:outline-none"
+              value={account?.account.address || ""}
+              onChange={(e) => handleSelectAccount(e.target.value)}
+            >
+              {account?.list().map((acc, index) => (
+                <option value={acc.address} key={index} className="text-gray-800">
+                  {acc.address}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            className="w-full mb-2 bg-[#520066] hover:bg-[#6A0080] text-white font-semibold text-sm py-1 px-3 rounded-md transition duration-300 ease-in-out"
+            onClick={handleCreateBurner}
+          >
+            Create New Burner
+          </button>
+          <button
+            className="w-full bg-[#520066] hover:bg-[#6A0080] text-white font-semibold text-sm py-1 px-3 rounded-md transition duration-300 ease-in-out"
+            onClick={handleClearBurners}
+          >
+            Clear Burners
+          </button>
         </div>
-    );
+      )}
+    </div>
+  );
 };
 
 export default CreateBurner;

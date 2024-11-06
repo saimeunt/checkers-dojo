@@ -35,7 +35,7 @@ export default function CheckerSection() {
             <button
               className="relative z-50 normal-button-think signup-btn text-white flex items-center justify-center space-x-3 border-2 border-[#00ECFFE5] rounded-full py-2 px-4"  // Agregado justify-center para centrar el contenido
               onClick={() => {
-                window.location.href = "http://localhost:5173/initgame";
+                window.location.href = "http://localhost:5173/creategame";
               }}
             >
               <Image
