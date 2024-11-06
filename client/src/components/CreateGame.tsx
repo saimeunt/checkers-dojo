@@ -5,9 +5,11 @@ import InitGameBackground from "../assets/InitGameBackground.png";
 import { SDK } from "@dojoengine/sdk";
 import { schema } from "../bindings.ts";
 import ControllerButton from '../connector/ControllerButton';
-import Title from '../assets/Title.png';
+
 import LoadingCreate from "../assets/LoadingCreate.png";
+import ChoicePlayer from "../assets/ChoicePlayer.png";
 import ButtonCreate from "../assets/ButtonCreate.png";
+import Return from "../assets/Return.png";
 
 // Imágenes de los diferentes jugadores
 import Player1 from "../assets/Player1_0.png";
@@ -23,22 +25,18 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
   const { spawn } = useSystemCalls();
   const navigate = useNavigate();
   const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleCreateGame = async () => {
+  const handleCreateRoom = async () => {
     try {
       if (account) {
-        setIsLoading(true);
         await spawn();
         console.log("Juego creado con éxito.");
-        navigate('/initgame');
+        navigate('/checkers');
       } else {
         console.warn("Cuenta no conectada");
       }
     } catch (error) {
       console.error("Error al crear el juego:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -46,7 +44,6 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
     setSelectedPlayer(playerIndex);
   };
 
-  // Array con las imágenes de los jugadores
   const playerImages = [Player1, Player2, Player3, Player4];
 
   return (
@@ -73,20 +70,30 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
         }}
       />
 
-      {/* Título del juego */}
-      <img
-        src={Title}
-        alt="Título"
+      {/* Botón de "Return" */}
+      <button
+        onClick={() => {
+          window.location.href = 'http://localhost:3000'; 
+        }}
         style={{
           position: 'absolute',
-          top: '60px',
-          left: '50%',
-          transform: 'translateX(-50%)',
+          top: '20px',
+          left: '20px',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
           zIndex: 2,
-          width: 'auto',
-          height: '100px',
         }}
-      />
+      >
+        <img
+          src={Return}
+          alt="Return"
+          style={{
+            width: '50px',
+            height: '50px',
+          }}
+        />
+      </button>
 
       {/* Sección superior derecha con CreateBurner y ControllerButton */}
       <div
@@ -104,27 +111,68 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
       </div>
 
       {/* Barra de carga */}
-      {isLoading && (
+      <div
+        style={{
+          top: '20px',
+          right: '20px',
+          display: 'flex',
+          gap: '20px',
+          zIndex: 2,
+        }}
+      >
         <img
           src={LoadingCreate}
           alt="Cargando"
           style={{
             position: 'absolute',
-            top: '100px',
+            top: '300px',
             left: '50%',
             transform: 'translateX(-50%)',
-            width: '100px',
+            width: '1500px',
             height: '10px',
-            zIndex: 2,
+            zIndex: 5,
           }}
         />
-      )}
+      </div>
+
+      {/* ChoicePlayer */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '390px',
+          left: '46%',
+          transform: 'translateX(-50%)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          zIndex: 5,
+        }}
+      >
+        <span
+          style={{
+            color: 'white',
+            fontSize: '24px',
+            fontWeight: 'bold',
+            marginBottom: '-40px',
+          }}
+        >
+          CHOICE AVATAR
+        </span>
+        <img
+          src={ChoicePlayer}
+          alt="Choice Player"
+          style={{
+            width: '300px',
+            height: '40px',
+          }}
+        />
+      </div>
 
       {/* Selección de jugadores */}
       <div
         style={{
           position: 'absolute',
-          top: '300px',
+          top: '450px',
           left: '50%',
           transform: 'translateX(-50%)',
           display: 'flex',
@@ -140,9 +188,8 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
               width: '100px',
               height: '100px',
               borderRadius: '10px',
-              border: `3px solid ${
-                selectedPlayer === index ? '#EE7921' : '#520066'
-              }`,
+              border: `3px solid ${selectedPlayer === index ? '#EE7921' : '#520066'
+                }`,
               backgroundImage: `url(${playerImage})`,
               backgroundSize: 'cover',
               cursor: 'pointer',
@@ -153,7 +200,7 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
 
       {/* Botón de "Create Game" */}
       <button
-        onClick={handleCreateGame}
+        onClick={handleCreateRoom}
         style={{
           position: 'absolute',
           bottom: '200px',
