@@ -383,7 +383,19 @@ pub mod actions {
                         };
                         let target_square: Piece = world
                             .read_model((piece.player, target_down_left));
-                        return !target_square.is_alive;
+                        // Check if the target square is alive (has a piece)
+                        if (target_square.is_alive) {
+                            // Check if the jump target square is not alive (has no piece)
+                            let target_jump = Coordinates {
+                                row: piece_row + 2, col: piece_col - 2
+                            };
+
+                            let target_square_jump: Piece = world
+                                .read_model((piece.player, target_jump));
+                            return !target_square_jump.is_alive;
+                        } else {
+                            return !target_square.is_alive;
+                        }
                     }
 
                     // Check down-right diagonal
@@ -393,7 +405,20 @@ pub mod actions {
                         };
                         let target_square: Piece = world
                             .read_model((piece.player, target_down_right));
-                        return !target_square.is_alive;
+                        
+                        // Check if the target square is alive (has a piece)
+                        if (target_square.is_alive) {
+                            // Check if the jump target square is not alive (has no piece)
+                            let target_jump = Coordinates {
+                                row: piece_row + 2, col: piece_col + 2
+                            };
+
+                            let target_square_jump: Piece = world
+                                .read_model((piece.player, target_jump));
+                            return !target_square_jump.is_alive;
+                        } else {
+                            return !target_square.is_alive;
+                        }
                     }
                     false
                 },
