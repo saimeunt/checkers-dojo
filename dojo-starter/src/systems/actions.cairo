@@ -139,6 +139,32 @@ pub mod actions {
             self.world(@"dojo_starter")
         }
 
+        fn check_diagonal_path(self: @ContractState, start_row: u8, start_col: u8, row_step: u8, col_step: u8) -> bool {
+            let mut row = start_row;
+            let mut col = start_col;
+            let world = self.world_default();
+            let mut good_move = false;
+
+            loop {
+                row += row_step;
+                col += col_step;
+
+                let valid = self.check_is_valid_position(Coordinates { row, col });
+
+                if valid {
+                    let target_square: Piece = world.read_model((row, col));
+
+                    if target_square.is_alive {
+                        break;
+                    }
+                    good_move = true;
+                }; 
+                break;
+            };
+            good_move
+        }
+
+
         fn initialize_player_pieces(
             ref self: ContractState,
             player: ContractAddress,
@@ -198,10 +224,36 @@ pub mod actions {
             let world = self.world_default();
             let piece_row = piece.row;
             let piece_col = piece.col;
-
             // Only handling non-king pieces for now
-            if piece.is_king {
-                return false;
+            if piece.is_king == true {
+                // For kings, check all four directions using only unsigned integers
+                // Moving up (subtract) is only possible if we're not at row 0
+                let can_move_up = piece_row > 0;
+                let can_move_left = piece_col > 0;
+                
+                let mut has_valid_move = false;
+
+                // Down-right (both increment)
+                if piece_row != 7 {
+                    has_valid_move = has_valid_move || self.check_diagonal_path(piece_row, piece_col, 1, 1);
+                }
+                
+                // Down-left (row increment, col decrement but only if col > 0)
+                if can_move_left {
+                    has_valid_move = has_valid_move || self.check_diagonal_path(piece_row, piece_col, 1, 0);
+                }
+                
+                // Up-right (row decrement but only if row > 0, col increment)
+                if can_move_up {
+                    has_valid_move = has_valid_move || self.check_diagonal_path(piece_row - 1, piece_col, 0, 1);
+                }
+                
+                // Up-left (both decrement but only if both > 0)
+                if can_move_up && can_move_left {
+                    has_valid_move = has_valid_move || self.check_diagonal_path(piece_row - 1, piece_col - 1, 0, 0);
+                }
+
+                return has_valid_move;
             }
 
             match piece.position {

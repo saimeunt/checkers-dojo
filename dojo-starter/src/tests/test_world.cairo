@@ -655,7 +655,7 @@ mod tests {
     }    
 
     #[test]
-    fn test_piece_becomes_king() {
+    fn test_move_king_piece() {
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
 
@@ -761,5 +761,21 @@ mod tests {
         assert!(actual_piece.is_alive == true, "piece is not alive");
         assert!(actual_piece.is_king == true, "piece is king");
         assert!(actual_piece.position == Position::Up, "piece is not right team");
-    }
+
+        let can_move = actions_system.can_choose_piece(Position::Up, new_cords);
+
+        assert!(can_move == true, "can move king piece");
+
+        let new_coordinates_position = Coordinates { row: 3, col: 4};
+        let current_cords = Coordinates { row: 7, col: 0 };
+        let current_piece: Piece = world.read_model((current_cords));
+        actions_system.move_piece(current_piece, new_coordinates_position);
+        let new_piece: Piece = world.read_model(new_coordinates_position);
+
+        assert!(new_piece.row == 3, "piece x is wrong");
+        assert!(new_piece.col == 4, "piece y is wrong");
+        assert!(new_piece.is_alive == true, "piece is not alive");
+        assert!(new_piece.is_king == true, "piece is king");
+        assert!(new_piece.position == Position::Up, "piece is not right team");
+    }    
 }
