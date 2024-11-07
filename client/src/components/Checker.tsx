@@ -6,6 +6,7 @@ import { useDojo } from "../hooks/useDojo";
 import GameOver from "../components/GameOver";
 import Winner from "../components/Winner";
 import { createInitialPieces, PieceUI, Coordinates } from "./InitPieces";
+import ControllerButton from '../connector/ControllerButton';
 
 import BackgroundCheckers from "../assets/BackgrounCheckers.png";
 import Board from "../assets/Board.png";
@@ -187,6 +188,20 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
         backgroundPosition: "center",
       }}
     >
+       {/* Sección superior derecha con CreateBurner y ControllerButton */}
+       <div
+        style={{
+          position: 'absolute',
+          top: '20px',
+          right: '20px',
+          display: 'flex',
+          gap: '20px',
+          zIndex: 2,
+        }}
+      >
+        <ControllerButton />
+    
+      </div>
       {isGameOver && <GameOver />}
       {isWinner && <Winner />}
       <img

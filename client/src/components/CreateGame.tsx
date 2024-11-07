@@ -18,8 +18,6 @@ import Player2 from "../assets/Player2_0.png";
 import Player3 from "../assets/Player3_0.png";
 import Player4 from "../assets/Player4_0.png";
 
-
-
 function CreateGame({ }: { sdk: SDK<typeof schema> }) {
   const { account } = useDojo();
   const { spawn } = useSystemCalls();
