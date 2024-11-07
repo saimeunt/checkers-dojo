@@ -38,9 +38,6 @@ pub mod actions {
     #[abi(embed_v0)]
     impl ActionsImpl of IActions<ContractState> {
         fn spawn(ref self: ContractState) {
-            // Get the default world.
-            let mut world = self.world_default();
-
             // Get the address of the current caller, possibly the player's address.
             let player = get_caller_address();
 
@@ -211,16 +208,17 @@ pub mod actions {
                         let target_down_left = Coordinates {
                             row: piece_row + 1, col: piece_col - 1
                         };
-                        let _target_square: Piece = world
+                        let target_square: Piece = world
                             .read_model((piece.player, target_down_left));
-                    }
+                        return !target_square.is_alive;}
 
                     // Check down-right diagonal
                     if piece_col + 1 < 8 {
                         let target_down_right = Coordinates {
                             row: piece_row + 1, col: piece_col + 1
                         };
-                        let _target_square: Piece = world.read_model((target_down_right));
+                        let target_square: Piece = world.read_model((target_down_right));
+                        return !target_square.is_alive;
                     }
                     false
                 },
