@@ -31,12 +31,12 @@ mod tests {
         let mut world = spawn_test_world([ndef].span());
 
         // Test initial piece
-        let piece_position_77 = Coordinates { raw: 7, col: 7 };
+        let piece_position_77 = Coordinates { row: 7, col: 7 };
         let piece: Piece = world.read_model((caller, piece_position_77));
         assert(piece.position == Position::None && piece.is_alive == false, 'initial piece wrong');
 
         // Test write_model_test
-        let piece_vec = Coordinates { raw: 1, col: 1 };
+        let piece_vec = Coordinates { row: 1, col: 1 };
         let piece = Piece {
             player: caller,
             coordinates: piece_vec,
@@ -72,207 +72,207 @@ mod tests {
         assert(pieces.len() == 24, 'wrong number of pieces');
 
         // test zero row
-        let invalid_piece_position00 = Coordinates { raw: 0, col: 0 }; // Empty square
+        let invalid_piece_position00 = Coordinates { row: 0, col: 0 }; // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position00);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position01 = Coordinates { raw: 0, col: 1 };
+        let invalid_piece_position01 = Coordinates { row: 0, col: 1 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position01);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position02 = Coordinates { raw: 0, col: 2 }; // Empty square
+        let invalid_piece_position02 = Coordinates { row: 0, col: 2 }; // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position02);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position03 = Coordinates { raw: 0, col: 3 };
+        let invalid_piece_position03 = Coordinates { row: 0, col: 3 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position03);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position04 = Coordinates { raw: 0, col: 4 }; // Empty square
+        let invalid_piece_position04 = Coordinates { row: 0, col: 4 }; // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position04);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position05 = Coordinates { raw: 0, col: 5 };
+        let invalid_piece_position05 = Coordinates { row: 0, col: 5 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position05);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position06 = Coordinates { raw: 0, col: 6 }; // Empty square
+        let invalid_piece_position06 = Coordinates { row: 0, col: 6 }; // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position06);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position07 = Coordinates { raw: 0, col: 7 };
+        let invalid_piece_position07 = Coordinates { row: 0, col: 7 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position07);
         assert(!can_choose_piece, 'should be false');
 
         // test first row
-        let invalid_piece_position10 = Coordinates { raw: 1, col: 0 };
+        let invalid_piece_position10 = Coordinates { row: 1, col: 0 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position10);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position11 = Coordinates { raw: 1, col: 1 }; // Empty square
+        let invalid_piece_position11 = Coordinates { row: 1, col: 1 }; // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position11);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position12 = Coordinates { raw: 1, col: 2 };
+        let invalid_piece_position12 = Coordinates { row: 1, col: 2 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position12);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position13 = Coordinates { raw: 1, col: 3 }; // Empty square
+        let invalid_piece_position13 = Coordinates { row: 1, col: 3 }; // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position13);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position14 = Coordinates { raw: 1, col: 4 };
+        let invalid_piece_position14 = Coordinates { row: 1, col: 4 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position14);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position15 = Coordinates { raw: 1, col: 5 }; // Empty square
+        let invalid_piece_position15 = Coordinates { row: 1, col: 5 }; // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position15);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position16 = Coordinates { raw: 1, col: 6 };
+        let invalid_piece_position16 = Coordinates { row: 1, col: 6 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position16);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position17 = Coordinates { raw: 1, col: 7 }; // Empty square
+        let invalid_piece_position17 = Coordinates { row: 1, col: 7 }; // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position17);
         assert(!can_choose_piece, 'should be false');
 
         // test second row
-        let invalid_piece_position20 = Coordinates { raw: 2, col: 0 }; // Empty square
+        let invalid_piece_position20 = Coordinates { row: 2, col: 0 }; // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position20);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position22 = Coordinates { raw: 2, col: 2 }; // Empty square
+        let invalid_piece_position22 = Coordinates { row: 2, col: 2 }; // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position22);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position24 = Coordinates { raw: 2, col: 4 }; // Empty square
+        let invalid_piece_position24 = Coordinates { row: 2, col: 4 }; // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position24);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position26 = Coordinates { raw: 2, col: 6 }; // Empty square
+        let invalid_piece_position26 = Coordinates { row: 2, col: 6 }; // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position26);
         assert(!can_choose_piece, 'should be false');
 
         // test fifth row
-        let invalid_piece_position51 = Coordinates { raw: 5, col: 1 }; // Empty square
+        let invalid_piece_position51 = Coordinates { row: 5, col: 1 }; // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position51);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position53 = Coordinates { raw: 5, col: 3 }; // Empty square
+        let invalid_piece_position53 = Coordinates { row: 5, col: 3 }; // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position53);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position55 = Coordinates { raw: 5, col: 5 }; // Empty square
+        let invalid_piece_position55 = Coordinates { row: 5, col: 5 }; // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position55);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position57 = Coordinates { raw: 5, col: 7 }; // Empty square
+        let invalid_piece_position57 = Coordinates { row: 5, col: 7 }; // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position57);
         assert(!can_choose_piece, 'should be false');
 
         // test sixth row
-        let invalid_piece_position60 = Coordinates { raw: 6, col: 0 }; // Empty square
+        let invalid_piece_position60 = Coordinates { row: 6, col: 0 }; // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position60);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position61 = Coordinates { raw: 6, col: 1 };
+        let invalid_piece_position61 = Coordinates { row: 6, col: 1 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position61);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position62 = Coordinates { raw: 6, col: 2 }; // Empty square
+        let invalid_piece_position62 = Coordinates { row: 6, col: 2 }; // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position62);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position63 = Coordinates { raw: 6, col: 3 };
+        let invalid_piece_position63 = Coordinates { row: 6, col: 3 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position63);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position64 = Coordinates { raw: 6, col: 4 }; // Empty square
+        let invalid_piece_position64 = Coordinates { row: 6, col: 4 }; // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position64);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position65 = Coordinates { raw: 6, col: 5 };
+        let invalid_piece_position65 = Coordinates { row: 6, col: 5 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position65);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position66 = Coordinates { raw: 6, col: 6 }; // Empty square
+        let invalid_piece_position66 = Coordinates { row: 6, col: 6 }; // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position66);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position67 = Coordinates { raw: 6, col: 7 };
+        let invalid_piece_position67 = Coordinates { row: 6, col: 7 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position67);
         assert(!can_choose_piece, 'should be false');
 
         // test seventh row
-        let invalid_piece_position70 = Coordinates { raw: 7, col: 0 };
+        let invalid_piece_position70 = Coordinates { row: 7, col: 0 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position70);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position71 = Coordinates { raw: 7, col: 1 };
+        let invalid_piece_position71 = Coordinates { row: 7, col: 1 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position71);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position72 = Coordinates { raw: 7, col: 2 };
+        let invalid_piece_position72 = Coordinates { row: 7, col: 2 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position72);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position73 = Coordinates { raw: 7, col: 3 };
+        let invalid_piece_position73 = Coordinates { row: 7, col: 3 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position73);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position74 = Coordinates { raw: 7, col: 4 };
+        let invalid_piece_position74 = Coordinates { row: 7, col: 4 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position74);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position75 = Coordinates { raw: 7, col: 5 };
+        let invalid_piece_position75 = Coordinates { row: 7, col: 5 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position75);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position76 = Coordinates { raw: 7, col: 6 };
+        let invalid_piece_position76 = Coordinates { row: 7, col: 6 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position76);
         assert(!can_choose_piece, 'should be false');
 
-        let invalid_piece_position77 = Coordinates { raw: 7, col: 7 };
+        let invalid_piece_position77 = Coordinates { row: 7, col: 7 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position77);
         assert(!can_choose_piece, 'should be false');
@@ -290,41 +290,41 @@ mod tests {
         actions_system.spawn();
 
         // test third row
-        let valid_piece_position21 = Coordinates { raw: 2, col: 1 };
+        let valid_piece_position21 = Coordinates { row: 2, col: 1 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, valid_piece_position21);
         assert(can_choose_piece, 'should be true');
-        let valid_piece_position23 = Coordinates { raw: 2, col: 3 };
+        let valid_piece_position23 = Coordinates { row: 2, col: 3 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, valid_piece_position23);
         assert(can_choose_piece, 'should be true');
 
-        let valid_piece_position25 = Coordinates { raw: 2, col: 5 };
+        let valid_piece_position25 = Coordinates { row: 2, col: 5 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, valid_piece_position25);
         assert(can_choose_piece, 'should be true');
 
-        let valid_piece_position27 = Coordinates { raw: 2, col: 7 };
+        let valid_piece_position27 = Coordinates { row: 2, col: 7 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, valid_piece_position27);
         assert(can_choose_piece, 'should be true');
         // test fifth row
-        let valid_piece_position50 = Coordinates { raw: 5, col: 0 };
+        let valid_piece_position50 = Coordinates { row: 5, col: 0 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, valid_piece_position50);
         assert(can_choose_piece, 'should be true');
 
-        let valid_piece_position52 = Coordinates { raw: 5, col: 2 };
+        let valid_piece_position52 = Coordinates { row: 5, col: 2 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, valid_piece_position52);
         assert(can_choose_piece, 'should be true');
 
-        let valid_piece_position54 = Coordinates { raw: 5, col: 4 };
+        let valid_piece_position54 = Coordinates { row: 5, col: 4 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, valid_piece_position54);
         assert(can_choose_piece, 'should be true');
 
-        let valid_piece_position56 = Coordinates { raw: 5, col: 6 };
+        let valid_piece_position56 = Coordinates { row: 5, col: 6 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, valid_piece_position56);
         assert(can_choose_piece, 'should be true');
@@ -342,13 +342,13 @@ mod tests {
         let actions_system = IActionsDispatcher { contract_address };
 
         actions_system.spawn();
-        let valid_piece_position = Coordinates { raw: 2, col: 1 };
+        let valid_piece_position = Coordinates { row: 2, col: 1 };
 
         let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position);
         assert(can_choose_piece, 'can_choose_piece failed');
 
         let current_piece = world.read_model((caller, valid_piece_position));
-        let new_coordinates_position = Coordinates { raw: 3, col: 1 };
+        let new_coordinates_position = Coordinates { row: 3, col: 1 };
         actions_system.move_piece(current_piece, new_coordinates_position);
     }
     #[test]
@@ -363,13 +363,13 @@ mod tests {
         let actions_system = IActionsDispatcher { contract_address };
 
         actions_system.spawn();
-        let valid_piece_position = Coordinates { raw: 2, col: 7 };
+        let valid_piece_position = Coordinates { row: 2, col: 7 };
 
         let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position);
         assert(can_choose_piece, 'can_choose_piece failed');
 
         let current_piece = world.read_model((caller, valid_piece_position));
-        let new_coordinates_position = Coordinates { raw: 3, col: 8 };
+        let new_coordinates_position = Coordinates { row: 3, col: 8 };
         actions_system.move_piece(current_piece, new_coordinates_position);
     }
 
@@ -384,11 +384,11 @@ mod tests {
         let actions_system = IActionsDispatcher { contract_address };
 
         actions_system.spawn();
-        let valid_piece_position = Coordinates { raw: 2, col: 1 };
+        let valid_piece_position = Coordinates { row: 2, col: 1 };
         let initial_piece_position: Piece = world.read_model((caller, valid_piece_position));
 
         assert(
-            initial_piece_position.coordinates.raw == 2
+            initial_piece_position.coordinates.row == 2
                 && initial_piece_position.coordinates.col == 1,
             'wrong initial piece'
         );
@@ -398,16 +398,125 @@ mod tests {
         let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position);
         assert(can_choose_piece, 'can_choose_piece failed');
         let current_piece: Piece = world.read_model((caller, valid_piece_position));
-        let new_coordinates_position = Coordinates { raw: 3, col: 0 };
+        let new_coordinates_position = Coordinates { row: 3, col: 0 };
         actions_system.move_piece(current_piece, new_coordinates_position);
 
         let new_position: Piece = world.read_model((caller, new_coordinates_position));
 
-        assert!(new_position.coordinates.raw == 3, "piece x is wrong");
+        assert!(new_position.coordinates.row == 3, "piece x is wrong");
         assert!(new_position.coordinates.col == 0, "piece y is wrong");
         assert!(new_position.is_alive == true, "piece is not alive");
         assert!(new_position.is_king == false, "piece is king");
     }
+
+    #[test]
+    fn test_move_piece23_down_left() {
+        let caller = starknet::contract_address_const::<0x0>();
+
+        let ndef = namespace_def();
+        let mut world = spawn_test_world([ndef].span());
+
+        let (contract_address, _) = world.dns(@"actions").unwrap();
+        let actions_system = IActionsDispatcher { contract_address };
+
+        actions_system.spawn();
+        let valid_piece_position = Coordinates { row: 2, col: 3 };
+        let initial_piece_position: Piece = world.read_model((caller, valid_piece_position));
+
+        assert(
+            initial_piece_position.coordinates.row == 2
+                && initial_piece_position.coordinates.col == 3,
+            'wrong initial piece'
+        );
+        assert(initial_piece_position.is_king == false, 'wrong initial piece');
+        assert(initial_piece_position.is_alive == true, 'wrong initial piece');
+
+        let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position);
+        assert(can_choose_piece, 'can_choose_piece failed');
+        let current_piece: Piece = world.read_model((caller, valid_piece_position));
+        let new_coordinates_position = Coordinates { row: 3, col: 2 };
+        actions_system.move_piece(current_piece, new_coordinates_position);
+
+        let new_position: Piece = world.read_model((caller, new_coordinates_position));
+
+        assert!(new_position.coordinates.row == 3, "piece x is wrong");
+        assert!(new_position.coordinates.col == 2, "piece y is wrong");
+        assert!(new_position.is_alive == true, "piece is not alive");
+        assert!(new_position.is_king == false, "piece is king");
+    }
+
+    #[test]
+    fn test_move_piece25_down_left() {
+        let caller = starknet::contract_address_const::<0x0>();
+
+        let ndef = namespace_def();
+        let mut world = spawn_test_world([ndef].span());
+
+        let (contract_address, _) = world.dns(@"actions").unwrap();
+        let actions_system = IActionsDispatcher { contract_address };
+
+        actions_system.spawn();
+        let valid_piece_position = Coordinates { row: 2, col: 5 };
+        let initial_piece_position: Piece = world.read_model((caller, valid_piece_position));
+
+        assert(
+            initial_piece_position.coordinates.row == 2
+                && initial_piece_position.coordinates.col == 5,
+            'wrong initial piece'
+        );
+        assert(initial_piece_position.is_king == false, 'wrong initial piece');
+        assert(initial_piece_position.is_alive == true, 'wrong initial piece');
+
+        let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position);
+        assert(can_choose_piece, 'can_choose_piece failed');
+        let current_piece: Piece = world.read_model((caller, valid_piece_position));
+        let new_coordinates_position = Coordinates { row: 3, col: 4 };
+        actions_system.move_piece(current_piece, new_coordinates_position);
+
+        let new_position: Piece = world.read_model((caller, new_coordinates_position));
+
+        assert!(new_position.coordinates.row == 3, "piece x is wrong");
+        assert!(new_position.coordinates.col == 4, "piece y is wrong");
+        assert!(new_position.is_alive == true, "piece is not alive");
+        assert!(new_position.is_king == false, "piece is king");
+    }    
+
+    #[test]
+    fn test_move_piece27_down_left() {
+        let caller = starknet::contract_address_const::<0x0>();
+
+        let ndef = namespace_def();
+        let mut world = spawn_test_world([ndef].span());
+
+        let (contract_address, _) = world.dns(@"actions").unwrap();
+        let actions_system = IActionsDispatcher { contract_address };
+
+        actions_system.spawn();
+        let valid_piece_position = Coordinates { row: 2, col: 7 };
+        let initial_piece_position: Piece = world.read_model((caller, valid_piece_position));
+
+        assert(
+            initial_piece_position.coordinates.row == 2
+                && initial_piece_position.coordinates.col == 7,
+            'wrong initial piece'
+        );
+        assert(initial_piece_position.is_king == false, 'wrong initial piece');
+        assert(initial_piece_position.is_alive == true, 'wrong initial piece');
+
+        let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position);
+        assert(can_choose_piece, 'can_choose_piece failed');
+        let current_piece: Piece = world.read_model((caller, valid_piece_position));
+        let new_coordinates_position = Coordinates { row: 3, col: 6 };
+        actions_system.move_piece(current_piece, new_coordinates_position);
+
+        let new_position: Piece = world.read_model((caller, new_coordinates_position));
+
+        assert!(new_position.coordinates.row == 3, "piece x is wrong");
+        assert!(new_position.coordinates.col == 6, "piece y is wrong");
+        assert!(new_position.is_alive == true, "piece is not alive");
+        assert!(new_position.is_king == false, "piece is king");
+    }    
+
     #[test]
     fn test_move_piece21_down_right() {
         let caller = starknet::contract_address_const::<0x0>();
@@ -419,11 +528,11 @@ mod tests {
         let actions_system = IActionsDispatcher { contract_address };
 
         actions_system.spawn();
-        let valid_piece_position = Coordinates { raw: 2, col: 1 };
+        let valid_piece_position = Coordinates { row: 2, col: 1 };
         let initial_piece_position: Piece = world.read_model((caller, valid_piece_position));
 
         assert(
-            initial_piece_position.coordinates.raw == 2
+            initial_piece_position.coordinates.row == 2
                 && initial_piece_position.coordinates.col == 1,
             'wrong initial piece'
         );
@@ -433,12 +542,12 @@ mod tests {
         let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position);
         assert(can_choose_piece, 'can_choose_piece failed');
         let current_piece: Piece = world.read_model((caller, valid_piece_position));
-        let new_coordinates_position = Coordinates { raw: 3, col: 2 };
+        let new_coordinates_position = Coordinates { row: 3, col: 2 };
         actions_system.move_piece(current_piece, new_coordinates_position);
 
         let new_position: Piece = world.read_model((caller, new_coordinates_position));
 
-        assert!(new_position.coordinates.raw == 3, "piece x is wrong");
+        assert!(new_position.coordinates.row == 3, "piece x is wrong");
         assert!(new_position.coordinates.col == 2, "piece y is wrong");
         assert!(new_position.is_alive == true, "piece is not alive");
         assert!(new_position.is_king == false, "piece is king");
@@ -455,11 +564,11 @@ mod tests {
         let actions_system = IActionsDispatcher { contract_address };
 
         actions_system.spawn();
-        let valid_piece_position = Coordinates { raw: 2, col: 1 };
+        let valid_piece_position = Coordinates { row: 2, col: 1 };
         let initial_piece_position: Piece = world.read_model((caller, valid_piece_position));
 
         assert(
-            initial_piece_position.coordinates.raw == 2
+            initial_piece_position.coordinates.row == 2
                 && initial_piece_position.coordinates.col == 1,
             'wrong initial piece'
         );
@@ -469,27 +578,27 @@ mod tests {
         let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position);
         assert(can_choose_piece, 'can_choose_piece failed');
         let current_piece: Piece = world.read_model((caller, valid_piece_position));
-        let new_coordinates_position = Coordinates { raw: 3, col: 2 };
+        let new_coordinates_position = Coordinates { row: 3, col: 2 };
         actions_system.move_piece(current_piece, new_coordinates_position);
 
         let new_position: Piece = world.read_model((caller, new_coordinates_position));
 
-        assert!(new_position.coordinates.raw == 3, "piece x is wrong");
+        assert!(new_position.coordinates.row == 3, "piece x is wrong");
         assert!(new_position.coordinates.col == 2, "piece y is wrong");
         assert!(new_position.is_alive == true, "piece is not alive");
         assert!(new_position.is_king == false, "piece is king");
 
-        let valid_piece_position56 = Coordinates { raw: 5, col: 6 };
+        let valid_piece_position56 = Coordinates { row: 5, col: 6 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, valid_piece_position56);
         assert(can_choose_piece, 'can_choose_piece failed');
         let current_piece: Piece = world.read_model((caller, valid_piece_position56));
-        let new_coordinates_position = Coordinates { raw: 4, col: 5 };
+        let new_coordinates_position = Coordinates { row: 4, col: 5 };
         actions_system.move_piece(current_piece, new_coordinates_position);
 
         let new_position: Piece = world.read_model((caller, new_coordinates_position));
 
-        assert!(new_position.coordinates.raw == 4, "piece x is wrong");
+        assert!(new_position.coordinates.row == 4, "piece x is wrong");
         assert!(new_position.coordinates.col == 5, "piece y is wrong");
         assert!(new_position.is_alive == true, "piece is not alive");
         assert!(new_position.is_king == false, "piece is king");

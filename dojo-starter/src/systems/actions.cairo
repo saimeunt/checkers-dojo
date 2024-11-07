@@ -10,6 +10,14 @@ trait IActions<T> {
     fn move_piece(ref self: T, current_piece: Piece, new_coordinates_position: Coordinates);
 }
 
+if square.piece.is_alive 
+piece_row = square.coordinates.row;
+piece_col = square.coordinates.col;
+
+new_square.piece = current_square.piece
+current_square.piece = None
+
+
 // dojo decorator
 #[dojo::contract]
 pub mod actions {
@@ -27,6 +35,13 @@ pub mod actions {
         pub player: ContractAddress,
         pub coordinates: Coordinates,
     }
+    #[derive(Copy, Drop, Serde)]
+    #[dojo::event]
+    pub struct Killed {
+        #[key]
+        pub player: ContractAddress,
+        pub coordinates: Coordinates,
+    }
 
     #[abi(embed_v0)]
     impl ActionsImpl of IActions<ContractState> {
@@ -40,7 +55,7 @@ pub mod actions {
             // Update the world state with the new data.
 
             // Create the pieces for the player. Upper side of the board.
-            let coord_01 = Coordinates { raw: 0, col: 1 };
+            let coord_01 = Coordinates { row: 0, col: 1 };
             let piece_01 = Piece {
                 player,
                 coordinates: coord_01,
@@ -48,7 +63,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_03 = Coordinates { raw: 0, col: 3 };
+            let coord_03 = Coordinates { row: 0, col: 3 };
             let piece_03 = Piece {
                 player,
                 coordinates: coord_03,
@@ -56,7 +71,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_05 = Coordinates { raw: 0, col: 5 };
+            let coord_05 = Coordinates { row: 0, col: 5 };
             let piece_05 = Piece {
                 player,
                 coordinates: coord_05,
@@ -64,7 +79,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_07 = Coordinates { raw: 0, col: 7 };
+            let coord_07 = Coordinates { row: 0, col: 7 };
             let piece_07 = Piece {
                 player,
                 coordinates: coord_07,
@@ -72,7 +87,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_10 = Coordinates { raw: 1, col: 0 };
+            let coord_10 = Coordinates { row: 1, col: 0 };
             let piece_10 = Piece {
                 player,
                 coordinates: coord_10,
@@ -80,7 +95,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_12 = Coordinates { raw: 1, col: 2 };
+            let coord_12 = Coordinates { row: 1, col: 2 };
             let piece_12 = Piece {
                 player,
                 coordinates: coord_12,
@@ -88,7 +103,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_14 = Coordinates { raw: 1, col: 4 };
+            let coord_14 = Coordinates { row: 1, col: 4 };
             let piece_14 = Piece {
                 player,
                 coordinates: coord_14,
@@ -96,7 +111,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_16 = Coordinates { raw: 1, col: 6 };
+            let coord_16 = Coordinates { row: 1, col: 6 };
             let piece_16 = Piece {
                 player,
                 coordinates: coord_16,
@@ -104,7 +119,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_21 = Coordinates { raw: 2, col: 1 };
+            let coord_21 = Coordinates { row: 2, col: 1 };
             let piece_21 = Piece {
                 player,
                 coordinates: coord_21,
@@ -112,7 +127,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_23 = Coordinates { raw: 2, col: 3 };
+            let coord_23 = Coordinates { row: 2, col: 3 };
             let piece_23 = Piece {
                 player,
                 coordinates: coord_23,
@@ -120,7 +135,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_25 = Coordinates { raw: 2, col: 5 };
+            let coord_25 = Coordinates { row: 2, col: 5 };
             let piece_25 = Piece {
                 player,
                 coordinates: coord_25,
@@ -128,7 +143,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_27 = Coordinates { raw: 2, col: 7 };
+            let coord_27 = Coordinates { row: 2, col: 7 };
             let piece_27 = Piece {
                 player,
                 coordinates: coord_27,
@@ -154,7 +169,7 @@ pub mod actions {
             // Important: For now we will use the same player for all the pieces.
 
             // Create the pieces for the player. Lower side of the board.
-            let coord_50 = Coordinates { raw: 5, col: 0 };
+            let coord_50 = Coordinates { row: 5, col: 0 };
             let piece_50 = Piece {
                 player,
                 coordinates: coord_50,
@@ -162,7 +177,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_52 = Coordinates { raw: 5, col: 2 };
+            let coord_52 = Coordinates { row: 5, col: 2 };
             let piece_52 = Piece {
                 player,
                 coordinates: coord_52,
@@ -170,7 +185,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_54 = Coordinates { raw: 5, col: 4 };
+            let coord_54 = Coordinates { row: 5, col: 4 };
             let piece_54 = Piece {
                 player,
                 coordinates: coord_54,
@@ -178,7 +193,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_56 = Coordinates { raw: 5, col: 6 };
+            let coord_56 = Coordinates { row: 5, col: 6 };
             let piece_56 = Piece {
                 player,
                 coordinates: coord_56,
@@ -186,7 +201,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_61 = Coordinates { raw: 6, col: 1 };
+            let coord_61 = Coordinates { row: 6, col: 1 };
             let piece_61 = Piece {
                 player,
                 coordinates: coord_61,
@@ -194,7 +209,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_63 = Coordinates { raw: 6, col: 3 };
+            let coord_63 = Coordinates { row: 6, col: 3 };
             let piece_63 = Piece {
                 player,
                 coordinates: coord_63,
@@ -202,7 +217,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_65 = Coordinates { raw: 6, col: 5 };
+            let coord_65 = Coordinates { row: 6, col: 5 };
             let piece_65 = Piece {
                 player,
                 coordinates: coord_65,
@@ -210,7 +225,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_67 = Coordinates { raw: 6, col: 7 };
+            let coord_67 = Coordinates { row: 6, col: 7 };
             let piece_67 = Piece {
                 player,
                 coordinates: coord_67,
@@ -218,7 +233,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_70 = Coordinates { raw: 7, col: 0 };
+            let coord_70 = Coordinates { row: 7, col: 0 };
             let piece_70 = Piece {
                 player,
                 coordinates: coord_70,
@@ -226,7 +241,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_72 = Coordinates { raw: 7, col: 2 };
+            let coord_72 = Coordinates { row: 7, col: 2 };
             let piece_72 = Piece {
                 player,
                 coordinates: coord_72,
@@ -234,7 +249,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_74 = Coordinates { raw: 7, col: 4 };
+            let coord_74 = Coordinates { row: 7, col: 4 };
             let piece_74 = Piece {
                 player,
                 coordinates: coord_74,
@@ -242,7 +257,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
-            let coord_76 = Coordinates { raw: 7, col: 6 };
+            let coord_76 = Coordinates { row: 7, col: 6 };
             let piece_76 = Piece {
                 player,
                 coordinates: coord_76,
@@ -310,7 +325,7 @@ pub mod actions {
             }
 
             // Get the player's piece from the world by its coordinates.
-            let piece: Piece = world.read_model((player, coordinates_position));
+            let piece: Piece = world.read_model((coordinates_position));
 
             // Check if the piece belongs to the position and is alive.
             // TODO: Fow now we only support one player. later we will add support for multiple
@@ -338,16 +353,8 @@ pub mod actions {
             let is_valid_position = check_is_valid_position(new_coordinates_position);
             assert(is_valid_position, 'Invalid coordinates');
 
-            // Retrieve the player's piece from the world by its coordinates.
-            let square: Piece = world.read_model((player, new_coordinates_position));
-
             // Update the piece's coordinates based on the new coordinates.
             let updated_piece = update_piece_position(current_piece, square);
-
-            // Write the new coordinates to the world.
-            world.write_model(@updated_piece);
-            // Emit an event to the world to notify about the player's move.
-            world.emit_event(@Moved { player, coordinates: new_coordinates_position });
         }
     }
     #[generate_trait]
@@ -359,9 +366,30 @@ pub mod actions {
             self.world(@"dojo_starter")
         }
 
+        fn change_is_alive(self: @ContractState, current_piece: Piece, new_coordinates_position: Coordinates) {
+            let mut world = self.world_default();
+            let square: Piece = world.read_model((new_coordinates_position));
+
+            // Update the piece attributes based on the new coordinates.
+            square.is_alive = true;
+            square.player = current_piece.player;
+            square.position = current_piece.position;
+
+            world.write_model(@square);
+
+            // Update the current piece attributes.
+            current_piece.is_alive = false;
+            current_piece.player = 0x0;
+            current_piece.position = Position::None;
+            // Write the new coordinates to the world.
+            world.write_model(@current_piece);
+            // Emit an event about the move
+            world.emit_event(@Moved { square.player, coordinates: square.coordinates });
+        }
+
         fn check_has_valid_moves(self: @ContractState, piece: Piece) -> bool {
             let world = self.world_default();
-            let piece_raw = piece.coordinates.raw;
+            let piece_row = piece.coordinates.row;
             let piece_col = piece.coordinates.col;
 
             // Only handling non-king pieces for now
@@ -372,51 +400,50 @@ pub mod actions {
             match piece.position {
                 Position::Up => {
                     // Check forward moves (down direction)
-                    if piece_raw + 1 >= 8 {
+                    if piece_row + 1 >= 8 {
                         return false;
                     }
 
                     // Check down-left diagonal
                     if piece_col > 0 {
                         let target_down_left = Coordinates {
-                            raw: piece_raw + 1, col: piece_col - 1
+                            row: piece_row + 1, col: piece_col - 1
                         };
                         let target_square: Piece = world
                             .read_model((piece.player, target_down_left));
-                        return !target_square.is_alive;
+
                     }
 
                     // Check down-right diagonal
                     if piece_col + 1 < 8 {
                         let target_down_right = Coordinates {
-                            raw: piece_raw + 1, col: piece_col + 1
+                            row: piece_row + 1, col: piece_col + 1
                         };
                         let target_square: Piece = world
-                            .read_model((piece.player, target_down_right));
-                        return !target_square.is_alive;
+                            .read_model((target_down_right));
                     }
                     false
                 },
                 Position::Down => {
                     // Check forward moves (up direction)
-                    if piece_raw == 0 {
+                    if piece_row == 0 {
                         return false;
                     }
 
                     // Check up-left diagonal
                     if piece_col > 0 {
-                        let target_up_left = Coordinates { raw: piece_raw - 1, col: piece_col - 1 };
-                        let target_square: Piece = world.read_model((piece.player, target_up_left));
+                        let target_up_left = Coordinates { row: piece_row - 1, col: piece_col - 1 };
+                        let target_square: Piece = world.read_model((target_up_left));
                         return !target_square.is_alive;
                     }
 
                     // Check up-right diagonal
                     if piece_col + 1 < 8 {
                         let target_up_right = Coordinates {
-                            raw: piece_raw - 1, col: piece_col + 1
+                            row: piece_row - 1, col: piece_col + 1
                         };
                         let target_square: Piece = world
-                            .read_model((piece.player, target_up_right));
+                            .read_model((target_up_right));
                         return !target_square.is_alive;
                     }
                     false
@@ -427,20 +454,126 @@ pub mod actions {
     }
 }
 
+fn is_jump_possible(self: @ContractState, piece: Piece, square: Piece) -> bool {
+    let world = self.world_default();
+    if piece.coordinates.col > square.coordinates.col {
+        // Move left
+        match piece.position => {
+            Position::Up => {
+                let jump_coordinates = Coordinates {
+                    row: piece.coordinates.row + 2,
+                    col: piece.coordinates.col - 2
+                };
+                let jump_square: Piece = world.read_model((jump_coordinates));
+                return !jump_square.is_alive;
+            },
+            Position::Down => {
+                let jump_coordinates = Coordinates {
+                    row: piece.coordinates.row - 2,
+                    col: piece.coordinates.col - 2
+                };
+                let jump_square: Piece = world.read_model((jump_coordinates));
+                return !jump_square.is_alive;
+            }
+        }
+    } else {
+        // Move right
+        match piece.position => {
+            Position::Up => {
+                let jump_coordinates = Coordinates {
+                    row: piece.coordinates.row + 2,
+                    col: piece.coordinates.col + 2
+                };
+                let jump_square: Piece = world.read_model((jump_coordinates));
+                return !jump_square.is_alive;
+            },
+            Position::Down => {
+                let jump_coordinates = Coordinates {
+                    row: piece.coordinates.row - 2,
+                    col: piece.coordinates.col + 2
+                };
+                let jump_square: Piece = world.read_model((jump_coordinates));
+                return !jump_square.is_alive;
+            }
+        }
+    }
+}
+
+fn update_alive_position(self: @ContractState, mut piece: Piece, mut square: Piece) {
+    let can_jump = is_jump_possible(piece, square);
+    if can_jump {
+        // Kill the piece
+        let mut world = self.world_default();
+        square.is_alive = false;
+        square.player = 0x0;
+        square.position = Position::None;
+
+        world.write_model(@square)
+
+        // TODO: Update the player model saying -1 piece
+        let player = piece.player;
+        let coordinates = square.coordinates;
+        world.emit_event(@Killed { player, coordinates });
+        // Make the jump
+        if piece.coordinates.col > square.coordinates.col {
+            // Move left
+            match piece.position {
+                Position::Up => {
+                    let new_coordinates = Coordinates {
+                        row: piece.coordinates.row + 2,
+                        col: piece.coordinates.col - 2
+                    };
+                    change_is_alive(piece, new_coordinates);
+                },
+                Position::Down => {
+                    let new_coordinates = Coordinates {
+                        row: piece.coordinates.row - 2,
+                        col: piece.coordinates.col - 2
+                    };
+                    change_is_alive(piece, new_coordinates);
+                }
+            }
+        } else {
+            // Move right
+            match piece.position {
+                Position::Up => {
+                    let new_coordinates = Coordinates {
+                        row: piece.coordinates.row + 2,
+                        col: piece.coordinates.col + 2
+                    };
+                    change_is_alive(piece, new_coordinates);
+                },
+                Position::Down => {
+                    let new_coordinates = Coordinates {
+                        row: piece.coordinates.row - 2,
+                        col: piece.coordinates.col + 2
+                    };
+                    change_is_alive(piece, new_coordinates);
+                }
+            }
+        }        
+    }
+   
+}
 // Todo: Improve this function to check if the new coordinates is valid.
-fn update_piece_position(mut piece: Piece, square: Piece) -> Piece {
-    piece.coordinates.raw = square.coordinates.raw;
-    piece.coordinates.col = square.coordinates.col;
-    piece
+fn update_piece_position(mut piece: Piece, square: Piece) {
+    // Check if there is a piece in the square
+    if square.is_alive {
+       update_alive_position(piece, square);
+    } else {
+        // Get the coordinates of the square and do the swap
+        let coordinates = square.coordinates;
+        change_is_alive(piece, coordinates);
+    }
 }
 
 fn check_is_valid_position(coordinates: Coordinates) -> bool {
-    let raw = coordinates.raw;
+    let row = coordinates.row;
     let col = coordinates.col;
     // Check if the coordinates is out of bounds
-    if raw < 8 && col < 8 {
+    if row < 8 && col < 8 {
         // Check if the coordinates is valid on the board setup
-        match raw {
+        match row {
             0 => col == 1 || col == 3 || col == 5 || col == 7,
             1 => col == 0 || col == 2 || col == 4 || col == 6,
             2 => col == 1 || col == 3 || col == 5 || col == 7,
