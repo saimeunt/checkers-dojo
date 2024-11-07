@@ -1,9 +1,12 @@
 import { DojoProvider } from "@dojoengine/core";
 import { Account } from "starknet";
-import { Position, Coordinates, Piece } from "./bindings.ts";
+import { Position, Piece } from "./models.gen.ts";
+
 
 export function setupWorld(provider: DojoProvider) {
-	function actions() {
+
+
+	async function actions() {
 		const namespace = "dojo_starter";
 
 		const worldDispatcher = async (account: Account) => {
@@ -54,10 +57,15 @@ export function setupWorld(provider: DojoProvider) {
 			}
 		};
 
+
+			interface Coordinates {
+        row: number;
+        col: number;
+      }
+
 		const canChoosePiece = async (account: Account, position: Position, coordinatesPosition: Coordinates) => {
 			try {
 				return await provider.execute(
-
 					account,
 					{
 						contractName: "actions",
@@ -96,6 +104,6 @@ export function setupWorld(provider: DojoProvider) {
 	}
 
 	return {
-		actions: actions(),
-	};
+    actions: actions(),
+  };
 }

@@ -70,10 +70,11 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
 
     try {
       if (account) {
-        const canChoosePiece = await setupWorld.actions.canChoosePiece(
+        let {raw,col} = piece.piece.coordinates
+        const canChoosePiece = await(await setupWorld.actions).canChoosePiece(
           account,
           piece.piece.position,
-          piece.piece.coordinates
+          { row: raw, col:col  }
         );
         console.log("canChoosePiece", canChoosePiece?.transaction_hash);
       }
@@ -110,7 +111,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
 
         try {
           if (account) {
-            const movedPiece = await setupWorld.actions.movePiece(
+            const movedPiece = await (await setupWorld.actions).movePiece(
               account,
               selectedPiece.piece,
               move
@@ -142,7 +143,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
             height: "60px",
             border: selectedPieceId === piece.id ? "2px solid yellow" : "none",
           }}
-          onClick={() => handlePieceClick(piece)}
+          onClick={async () => await handlePieceClick(piece)}
         />
       ))}
       {downPieces.map((piece) => (
@@ -199,7 +200,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           zIndex: 2,
         }}
       >
-        <ControllerButton />
+        {/* <ControllerButton /> */}
     
       </div>
       {isGameOver && <GameOver />}
