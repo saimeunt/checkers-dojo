@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { SDK, createDojoStore } from "@dojoengine/sdk";
+import GameOver from "../components/GameOver";
+import Winner from "../components/Winner";
+import { schema, Position, Coordinates, Piece } from "../bindings.ts";
+import { useDojo } from "../hooks/useDojo.tsx";
+
 import BackgroundCheckers from "../assets/BackgrounCheckers.png";
 import Board from "../assets/Board.png";
 import PieceBlack from "../assets/PieceBlack.svg";
 import PieceOrange from "../assets/PieceOrange.svg";
 import Player1 from "../assets/Player1.png";
 import Player2 from "../assets/Player2.png";
-import GameOver from "../components/GameOver";
-import Winner from "../components/Winner";
-import { schema, Position, Coordinates, Piece } from "../bindings.ts";
-import { useDojo } from "../hooks/useDojo.tsx";
+import Return from "../assets/Return.png";
 
 // Crea el store de Dojo
 export const useDojoStore = createDojoStore<typeof schema>();
@@ -233,6 +235,31 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           <img src={Board} alt="Board" className="w-[800px] h-[800px] object-contain" />
           {arePiecesVisible && renderPieces()}
         </div>
+
+         {/* Botón de "Return" */}
+      <button
+        onClick={() => {
+          window.location.href = '/initgame'; 
+        }}
+        style={{
+          position: 'absolute',
+          top: '20px',
+          left: '20px',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          zIndex: 2,
+        }}
+      >
+        <img
+          src={Return}
+          alt="Return"
+          style={{
+            width: '50px',
+            height: '50px',
+          }}
+        />
+      </button>
       </div>
     </div>
   );

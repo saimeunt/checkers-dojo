@@ -1,24 +1,24 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CreateBurner from "../connector/CreateBurner";
-import InitGameBackground from "../assets/InitGameBackground.png";
 import { SDK } from "@dojoengine/sdk";
 import { schema } from "../bindings.ts";
 import ControllerButton from '../connector/ControllerButton';
+import { useSystemCalls } from "../hooks/useSystemCalls";
+import { useDojo } from "../hooks/useDojo";
 
 import LoadingCreate from "../assets/LoadingCreate.png";
 import ChoicePlayer from "../assets/ChoicePlayer.png";
 import ButtonCreate from "../assets/ButtonCreate.png";
-import Return from "../assets/Return.png";
 
-// Imágenes de los diferentes jugadores
+import InitGameBackground from "../assets/InitGameBackground.png";
+import Return from "../assets/Return.png";
 import Player1 from "../assets/Player1_0.png";
 import Player2 from "../assets/Player2_0.png";
 import Player3 from "../assets/Player3_0.png";
 import Player4 from "../assets/Player4_0.png";
 
-import { useSystemCalls } from "../hooks/useSystemCalls";
-import { useDojo } from "../hooks/useDojo";
+
 
 function CreateGame({ }: { sdk: SDK<typeof schema> }) {
   const { account } = useDojo();
@@ -73,7 +73,7 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
       {/* Botón de "Return" */}
       <button
         onClick={() => {
-          window.location.href = 'http://localhost:3000'; 
+          window.location.href = '/initgame'; 
         }}
         style={{
           position: 'absolute',
