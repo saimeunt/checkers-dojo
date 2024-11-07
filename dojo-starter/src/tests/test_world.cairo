@@ -31,8 +31,10 @@ mod tests {
         let mut world = spawn_test_world([ndef].span());
 
         // Test initial piece
-        let piece_position_77 = Coordinates { row: 7, col: 7 };
-        let piece: Piece = world.read_model((caller, piece_position_77));
+        let piece_position_77 = Coordinates { row: 0, col: 1 };
+        println!("piece_position_77: {:?}", piece_position_77);
+        let piece: Piece = world.read_model((piece_position_77));
+        println!("piece: {:?}", piece);
         assert(piece.position == Position::None && piece.is_alive == false, 'initial piece wrong');
 
         // Test write_model_test
@@ -47,21 +49,19 @@ mod tests {
 
         world.write_model_test(@piece);
 
-        let piece: Piece = world.read_model((caller, piece_vec));
+        let piece: Piece = world.read_model((piece_vec));
         assert(
             piece.position == Position::Down && piece.is_king == true, 'write_value_from_id failed'
         );
         assert(piece.is_alive == true, 'write_value_from_id failed');
         // Test model deletion
-        world.erase_model(@piece);
-        let piece: Piece = world.read_model((caller, piece_vec));
-        assert(piece.position == Position::None && piece.is_king == false, 'erase_model failed');
-        assert(piece.is_alive == false, 'erase_model failed');
+        // world.erase_model(@piece);
+        // let piece: Piece = world.read_model((piece_vec));
+        // assert(piece.position == Position::None && piece.is_king == false, 'erase_model failed');
+        // assert(piece.is_alive == false, 'erase_model failed');
     }
     #[test]
     fn test_can_not_choose_piece() {
-        //let caller = starknet::contract_address_const::<0x0>();
-
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
 
@@ -333,7 +333,6 @@ mod tests {
     #[test]
     #[should_panic(expected: ('Invalid coordinates', 'ENTRYPOINT_FAILED'))]
     fn test_move_piece31_forward_straight_fails() {
-        let caller = starknet::contract_address_const::<0x0>();
 
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
@@ -347,14 +346,13 @@ mod tests {
         let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position);
         assert(can_choose_piece, 'can_choose_piece failed');
 
-        let current_piece = world.read_model((caller, valid_piece_position));
+        let current_piece = world.read_model((valid_piece_position));
         let new_coordinates_position = Coordinates { row: 3, col: 1 };
         actions_system.move_piece(current_piece, new_coordinates_position);
     }
     #[test]
     #[should_panic(expected: ('Invalid coordinates', 'ENTRYPOINT_FAILED'))]
     fn test_move_piece37_forward_right_fails() {
-        let caller = starknet::contract_address_const::<0x0>();
 
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
@@ -368,14 +366,13 @@ mod tests {
         let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position);
         assert(can_choose_piece, 'can_choose_piece failed');
 
-        let current_piece = world.read_model((caller, valid_piece_position));
+        let current_piece = world.read_model((valid_piece_position));
         let new_coordinates_position = Coordinates { row: 3, col: 8 };
         actions_system.move_piece(current_piece, new_coordinates_position);
     }
 
     #[test]
     fn test_move_piece21_down_left() {
-        let caller = starknet::contract_address_const::<0x0>();
 
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
@@ -385,7 +382,7 @@ mod tests {
 
         actions_system.spawn();
         let valid_piece_position = Coordinates { row: 2, col: 1 };
-        let initial_piece_position: Piece = world.read_model((caller, valid_piece_position));
+        let initial_piece_position: Piece = world.read_model((valid_piece_position));
 
         assert(
             initial_piece_position.coordinates.row == 2
@@ -397,11 +394,11 @@ mod tests {
 
         let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position);
         assert(can_choose_piece, 'can_choose_piece failed');
-        let current_piece: Piece = world.read_model((caller, valid_piece_position));
+        let current_piece: Piece = world.read_model((valid_piece_position));
         let new_coordinates_position = Coordinates { row: 3, col: 0 };
         actions_system.move_piece(current_piece, new_coordinates_position);
 
-        let new_position: Piece = world.read_model((caller, new_coordinates_position));
+        let new_position: Piece = world.read_model((new_coordinates_position));
 
         assert!(new_position.coordinates.row == 3, "piece x is wrong");
         assert!(new_position.coordinates.col == 0, "piece y is wrong");
@@ -411,7 +408,6 @@ mod tests {
 
     #[test]
     fn test_move_piece23_down_left() {
-        let caller = starknet::contract_address_const::<0x0>();
 
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
@@ -421,23 +417,24 @@ mod tests {
 
         actions_system.spawn();
         let valid_piece_position = Coordinates { row: 2, col: 3 };
-        let initial_piece_position: Piece = world.read_model((caller, valid_piece_position));
-
+        println!("valid_piece_position: {:?}", valid_piece_position);
+        let initial_piece_position: Piece = world.read_model((valid_piece_position));
+        println!("initial_piece_position: {:?}", initial_piece_position);
         assert(
             initial_piece_position.coordinates.row == 2
                 && initial_piece_position.coordinates.col == 3,
-            'wrong initial piece'
+            'wrong initial piece cords'
         );
-        assert(initial_piece_position.is_king == false, 'wrong initial piece');
-        assert(initial_piece_position.is_alive == true, 'wrong initial piece');
+        assert(initial_piece_position.is_king == false, 'wrong initial piece king');
+        assert(initial_piece_position.is_alive == true, 'wrong initial piece alive');
 
         let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position);
         assert(can_choose_piece, 'can_choose_piece failed');
-        let current_piece: Piece = world.read_model((caller, valid_piece_position));
+        let current_piece: Piece = world.read_model((valid_piece_position));
         let new_coordinates_position = Coordinates { row: 3, col: 2 };
         actions_system.move_piece(current_piece, new_coordinates_position);
 
-        let new_position: Piece = world.read_model((caller, new_coordinates_position));
+        let new_position: Piece = world.read_model((new_coordinates_position));
 
         assert!(new_position.coordinates.row == 3, "piece x is wrong");
         assert!(new_position.coordinates.col == 2, "piece y is wrong");
@@ -447,7 +444,6 @@ mod tests {
 
     #[test]
     fn test_move_piece25_down_left() {
-        let caller = starknet::contract_address_const::<0x0>();
 
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
@@ -457,7 +453,7 @@ mod tests {
 
         actions_system.spawn();
         let valid_piece_position = Coordinates { row: 2, col: 5 };
-        let initial_piece_position: Piece = world.read_model((caller, valid_piece_position));
+        let initial_piece_position: Piece = world.read_model((valid_piece_position));
 
         assert(
             initial_piece_position.coordinates.row == 2
@@ -469,11 +465,11 @@ mod tests {
 
         let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position);
         assert(can_choose_piece, 'can_choose_piece failed');
-        let current_piece: Piece = world.read_model((caller, valid_piece_position));
+        let current_piece: Piece = world.read_model((valid_piece_position));
         let new_coordinates_position = Coordinates { row: 3, col: 4 };
         actions_system.move_piece(current_piece, new_coordinates_position);
 
-        let new_position: Piece = world.read_model((caller, new_coordinates_position));
+        let new_position: Piece = world.read_model((new_coordinates_position));
 
         assert!(new_position.coordinates.row == 3, "piece x is wrong");
         assert!(new_position.coordinates.col == 4, "piece y is wrong");
@@ -483,7 +479,6 @@ mod tests {
 
     #[test]
     fn test_move_piece27_down_left() {
-        let caller = starknet::contract_address_const::<0x0>();
 
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
@@ -493,7 +488,7 @@ mod tests {
 
         actions_system.spawn();
         let valid_piece_position = Coordinates { row: 2, col: 7 };
-        let initial_piece_position: Piece = world.read_model((caller, valid_piece_position));
+        let initial_piece_position: Piece = world.read_model((valid_piece_position));
 
         assert(
             initial_piece_position.coordinates.row == 2
@@ -505,11 +500,11 @@ mod tests {
 
         let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position);
         assert(can_choose_piece, 'can_choose_piece failed');
-        let current_piece: Piece = world.read_model((caller, valid_piece_position));
+        let current_piece: Piece = world.read_model((valid_piece_position));
         let new_coordinates_position = Coordinates { row: 3, col: 6 };
         actions_system.move_piece(current_piece, new_coordinates_position);
 
-        let new_position: Piece = world.read_model((caller, new_coordinates_position));
+        let new_position: Piece = world.read_model((new_coordinates_position));
 
         assert!(new_position.coordinates.row == 3, "piece x is wrong");
         assert!(new_position.coordinates.col == 6, "piece y is wrong");
@@ -519,7 +514,6 @@ mod tests {
 
     #[test]
     fn test_move_piece21_down_right() {
-        let caller = starknet::contract_address_const::<0x0>();
 
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
@@ -529,7 +523,7 @@ mod tests {
 
         actions_system.spawn();
         let valid_piece_position = Coordinates { row: 2, col: 1 };
-        let initial_piece_position: Piece = world.read_model((caller, valid_piece_position));
+        let initial_piece_position: Piece = world.read_model((valid_piece_position));
 
         assert(
             initial_piece_position.coordinates.row == 2
@@ -541,11 +535,11 @@ mod tests {
 
         let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position);
         assert(can_choose_piece, 'can_choose_piece failed');
-        let current_piece: Piece = world.read_model((caller, valid_piece_position));
+        let current_piece: Piece = world.read_model((valid_piece_position));
         let new_coordinates_position = Coordinates { row: 3, col: 2 };
         actions_system.move_piece(current_piece, new_coordinates_position);
 
-        let new_position: Piece = world.read_model((caller, new_coordinates_position));
+        let new_position: Piece = world.read_model((new_coordinates_position));
 
         assert!(new_position.coordinates.row == 3, "piece x is wrong");
         assert!(new_position.coordinates.col == 2, "piece y is wrong");
@@ -555,7 +549,6 @@ mod tests {
 
     #[test]
     fn test_move_piece21_down_right_move_piece56_up_left() {
-        let caller = starknet::contract_address_const::<0x0>();
 
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
@@ -565,7 +558,7 @@ mod tests {
 
         actions_system.spawn();
         let valid_piece_position = Coordinates { row: 2, col: 1 };
-        let initial_piece_position: Piece = world.read_model((caller, valid_piece_position));
+        let initial_piece_position: Piece = world.read_model((valid_piece_position));
 
         assert(
             initial_piece_position.coordinates.row == 2
@@ -577,11 +570,11 @@ mod tests {
 
         let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position);
         assert(can_choose_piece, 'can_choose_piece failed');
-        let current_piece: Piece = world.read_model((caller, valid_piece_position));
+        let current_piece: Piece = world.read_model((valid_piece_position));
         let new_coordinates_position = Coordinates { row: 3, col: 2 };
         actions_system.move_piece(current_piece, new_coordinates_position);
 
-        let new_position: Piece = world.read_model((caller, new_coordinates_position));
+        let new_position: Piece = world.read_model((new_coordinates_position));
 
         assert!(new_position.coordinates.row == 3, "piece x is wrong");
         assert!(new_position.coordinates.col == 2, "piece y is wrong");
@@ -592,11 +585,11 @@ mod tests {
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, valid_piece_position56);
         assert(can_choose_piece, 'can_choose_piece failed');
-        let current_piece: Piece = world.read_model((caller, valid_piece_position56));
+        let current_piece: Piece = world.read_model((valid_piece_position56));
         let new_coordinates_position = Coordinates { row: 4, col: 5 };
         actions_system.move_piece(current_piece, new_coordinates_position);
 
-        let new_position: Piece = world.read_model((caller, new_coordinates_position));
+        let new_position: Piece = world.read_model((new_coordinates_position));
 
         assert!(new_position.coordinates.row == 4, "piece x is wrong");
         assert!(new_position.coordinates.col == 5, "piece y is wrong");

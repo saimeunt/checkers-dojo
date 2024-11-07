@@ -10,18 +10,10 @@ trait IActions<T> {
     fn move_piece(ref self: T, current_piece: Piece, new_coordinates_position: Coordinates);
 }
 
-if square.piece.is_alive 
-piece_row = square.coordinates.row;
-piece_col = square.coordinates.col;
-
-new_square.piece = current_square.piece
-current_square.piece = None
-
-
 // dojo decorator
 #[dojo::contract]
 pub mod actions {
-    use super::{IActions, update_piece_position, check_is_valid_position};
+    use super::IActions;
     use starknet::{ContractAddress, get_caller_address};
     use dojo_starter::models::{Piece, Coordinates, Position};
 
@@ -127,6 +119,7 @@ pub mod actions {
                 is_king: false,
                 is_alive: true
             };
+            let player = starknet::contract_address_const::<0x10>();
             let coord_23 = Coordinates { row: 2, col: 3 };
             let piece_23 = Piece {
                 player,
@@ -316,10 +309,10 @@ pub mod actions {
             let mut world = self.world_default();
 
             // Get the address of the current caller, possibly the player's address.
-            let player = get_caller_address();
+            //let player = get_caller_address();
 
             // Check is current coordinates is valid
-            let is_valid_position = check_is_valid_position(coordinates_position);
+            let is_valid_position = self.check_is_valid_position(coordinates_position);
             if !is_valid_position {
                 return false;
             }
@@ -347,16 +340,23 @@ pub mod actions {
             // Get the address of the current caller, possibly the player's address.
 
             let mut world = self.world_default();
-            let player = get_caller_address();
+            //let player = get_caller_address();
 
             // Check is new coordinates is valid
-            let is_valid_position = check_is_valid_position(new_coordinates_position);
+            let is_valid_position = self.check_is_valid_position(new_coordinates_position);
             assert(is_valid_position, 'Invalid coordinates');
 
+            let row = new_coordinates_position.row;
+            let col = new_coordinates_position.col;
+
+            // Get the piece from the world by its coordinates.
+            let square: Piece = world.read_model((new_coordinates_position));
+
             // Update the piece's coordinates based on the new coordinates.
-            let updated_piece = update_piece_position(current_piece, square);
+            self.update_piece_position(current_piece, square);
         }
     }
+
     #[generate_trait]
     impl InternalImpl of InternalTrait {
         // Need a function since byte array can't be const.
@@ -366,9 +366,9 @@ pub mod actions {
             self.world(@"dojo_starter")
         }
 
-        fn change_is_alive(self: @ContractState, current_piece: Piece, new_coordinates_position: Coordinates) {
+        fn change_is_alive(self: @ContractState, mut current_piece: Piece, new_coordinates_position: Coordinates) {
             let mut world = self.world_default();
-            let square: Piece = world.read_model((new_coordinates_position));
+            let mut square: Piece = world.read_model((new_coordinates_position));
 
             // Update the piece attributes based on the new coordinates.
             square.is_alive = true;
@@ -379,12 +379,12 @@ pub mod actions {
 
             // Update the current piece attributes.
             current_piece.is_alive = false;
-            current_piece.player = 0x0;
+            current_piece.player = starknet::contract_address_const::<0x0>();
             current_piece.position = Position::None;
             // Write the new coordinates to the world.
             world.write_model(@current_piece);
             // Emit an event about the move
-            world.emit_event(@Moved { square.player, coordinates: square.coordinates });
+            world.emit_event(@Moved { player: square.player, coordinates: square.coordinates });
         }
 
         fn check_has_valid_moves(self: @ContractState, piece: Piece) -> bool {
@@ -409,7 +409,7 @@ pub mod actions {
                         let target_down_left = Coordinates {
                             row: piece_row + 1, col: piece_col - 1
                         };
-                        let target_square: Piece = world
+                        let _target_square: Piece = world
                             .read_model((piece.player, target_down_left));
 
                     }
@@ -419,7 +419,7 @@ pub mod actions {
                         let target_down_right = Coordinates {
                             row: piece_row + 1, col: piece_col + 1
                         };
-                        let target_square: Piece = world
+                        let _target_square: Piece = world
                             .read_model((target_down_right));
                     }
                     false
@@ -451,140 +451,145 @@ pub mod actions {
                 _ => false
             }
         }
-    }
-}
 
-fn is_jump_possible(self: @ContractState, piece: Piece, square: Piece) -> bool {
-    let world = self.world_default();
-    if piece.coordinates.col > square.coordinates.col {
-        // Move left
-        match piece.position => {
-            Position::Up => {
-                let jump_coordinates = Coordinates {
-                    row: piece.coordinates.row + 2,
-                    col: piece.coordinates.col - 2
-                };
-                let jump_square: Piece = world.read_model((jump_coordinates));
-                return !jump_square.is_alive;
-            },
-            Position::Down => {
-                let jump_coordinates = Coordinates {
-                    row: piece.coordinates.row - 2,
-                    col: piece.coordinates.col - 2
-                };
-                let jump_square: Piece = world.read_model((jump_coordinates));
-                return !jump_square.is_alive;
-            }
-        }
-    } else {
-        // Move right
-        match piece.position => {
-            Position::Up => {
-                let jump_coordinates = Coordinates {
-                    row: piece.coordinates.row + 2,
-                    col: piece.coordinates.col + 2
-                };
-                let jump_square: Piece = world.read_model((jump_coordinates));
-                return !jump_square.is_alive;
-            },
-            Position::Down => {
-                let jump_coordinates = Coordinates {
-                    row: piece.coordinates.row - 2,
-                    col: piece.coordinates.col + 2
-                };
-                let jump_square: Piece = world.read_model((jump_coordinates));
-                return !jump_square.is_alive;
-            }
-        }
-    }
-}
-
-fn update_alive_position(self: @ContractState, mut piece: Piece, mut square: Piece) {
-    let can_jump = is_jump_possible(piece, square);
-    if can_jump {
-        // Kill the piece
-        let mut world = self.world_default();
-        square.is_alive = false;
-        square.player = 0x0;
-        square.position = Position::None;
-
-        world.write_model(@square)
-
-        // TODO: Update the player model saying -1 piece
-        let player = piece.player;
-        let coordinates = square.coordinates;
-        world.emit_event(@Killed { player, coordinates });
-        // Make the jump
-        if piece.coordinates.col > square.coordinates.col {
-            // Move left
-            match piece.position {
-                Position::Up => {
-                    let new_coordinates = Coordinates {
-                        row: piece.coordinates.row + 2,
-                        col: piece.coordinates.col - 2
-                    };
-                    change_is_alive(piece, new_coordinates);
-                },
-                Position::Down => {
-                    let new_coordinates = Coordinates {
-                        row: piece.coordinates.row - 2,
-                        col: piece.coordinates.col - 2
-                    };
-                    change_is_alive(piece, new_coordinates);
+        fn is_jump_possible(self: @ContractState, piece: Piece, square: Piece) -> bool {
+            let world = self.world_default();
+            if piece.coordinates.col > square.coordinates.col {
+                // Move left
+                match piece.position {
+                    Position::Up => {
+                        let jump_coordinates = Coordinates {
+                            row: piece.coordinates.row + 2,
+                            col: piece.coordinates.col - 2
+                        };
+                        let jump_square: Piece = world.read_model((jump_coordinates));
+                        return !jump_square.is_alive;
+                    },
+                    Position::Down => {
+                        let jump_coordinates = Coordinates {
+                            row: piece.coordinates.row - 2,
+                            col: piece.coordinates.col - 2
+                        };
+                        let jump_square: Piece = world.read_model((jump_coordinates));
+                        return !jump_square.is_alive;
+                    },
+                    _ => false
+                }
+            } else {
+                // Move right
+                match piece.position {
+                    Position::Up => {
+                        let jump_coordinates = Coordinates {
+                            row: piece.coordinates.row + 2,
+                            col: piece.coordinates.col + 2
+                        };
+                        let jump_square: Piece = world.read_model((jump_coordinates));
+                        return !jump_square.is_alive;
+                    },
+                    Position::Down => {
+                        let jump_coordinates = Coordinates {
+                            row: piece.coordinates.row - 2,
+                            col: piece.coordinates.col + 2
+                        };
+                        let jump_square: Piece = world.read_model((jump_coordinates));
+                        return !jump_square.is_alive;
+                    },
+                    _ => false
                 }
             }
-        } else {
-            // Move right
-            match piece.position {
-                Position::Up => {
-                    let new_coordinates = Coordinates {
-                        row: piece.coordinates.row + 2,
-                        col: piece.coordinates.col + 2
-                    };
-                    change_is_alive(piece, new_coordinates);
-                },
-                Position::Down => {
-                    let new_coordinates = Coordinates {
-                        row: piece.coordinates.row - 2,
-                        col: piece.coordinates.col + 2
-                    };
-                    change_is_alive(piece, new_coordinates);
-                }
-            }
-        }        
-    }
-   
-}
-// Todo: Improve this function to check if the new coordinates is valid.
-fn update_piece_position(mut piece: Piece, square: Piece) {
-    // Check if there is a piece in the square
-    if square.is_alive {
-       update_alive_position(piece, square);
-    } else {
-        // Get the coordinates of the square and do the swap
-        let coordinates = square.coordinates;
-        change_is_alive(piece, coordinates);
-    }
-}
-
-fn check_is_valid_position(coordinates: Coordinates) -> bool {
-    let row = coordinates.row;
-    let col = coordinates.col;
-    // Check if the coordinates is out of bounds
-    if row < 8 && col < 8 {
-        // Check if the coordinates is valid on the board setup
-        match row {
-            0 => col == 1 || col == 3 || col == 5 || col == 7,
-            1 => col == 0 || col == 2 || col == 4 || col == 6,
-            2 => col == 1 || col == 3 || col == 5 || col == 7,
-            3 => col == 0 || col == 2 || col == 4 || col == 6,
-            4 => col == 1 || col == 3 || col == 5 || col == 7,
-            5 => col == 0 || col == 2 || col == 4 || col == 6,
-            6 => col == 1 || col == 3 || col == 5 || col == 7,
-            7 => col == 0 || col == 2 || col == 4 || col == 6,
-            _ => false,
         }
-    } else {
-        false
+
+        fn update_alive_position(ref self: ContractState, mut piece: Piece, mut square: Piece) {
+            let can_jump = self.is_jump_possible(piece, square);
+            if can_jump {
+                // Kill the piece
+                let mut world = self.world_default();
+                square.is_alive = false;
+                square.player = starknet::contract_address_const::<0x0>();
+                square.position = Position::None;
+
+                world.write_model(@square);
+
+                // TODO: Update the player model saying -1 piece
+                let player = piece.player;
+                let coordinates = square.coordinates;
+                world.emit_event(@Killed { player, coordinates });
+                // Make the jump
+                if piece.coordinates.col > square.coordinates.col {
+                    // Move left
+                    match piece.position {
+                        Position::Up => {
+                            let new_coordinates = Coordinates {
+                                row: piece.coordinates.row + 2,
+                                col: piece.coordinates.col - 2
+                            };
+                            self.change_is_alive(piece, new_coordinates);
+                        },
+                        Position::Down => {
+                            let new_coordinates = Coordinates {
+                                row: piece.coordinates.row - 2,
+                                col: piece.coordinates.col - 2
+                            };
+                            self.change_is_alive(piece, new_coordinates);
+                        },
+                        _ => {}
+                    }
+                } else {
+                    // Move right
+                    match piece.position {
+                        Position::Up => {
+                            let new_coordinates = Coordinates {
+                                row: piece.coordinates.row + 2,
+                                col: piece.coordinates.col + 2
+                            };
+                            self.change_is_alive(piece, new_coordinates);
+                        },
+                        Position::Down => {
+                            let new_coordinates = Coordinates {
+                                row: piece.coordinates.row - 2,
+                                col: piece.coordinates.col + 2
+                            };
+                            self.change_is_alive(piece, new_coordinates);
+                        },
+                        _ => {}
+                    }
+                }        
+            }
+        
+        }
+
+        // Todo: Improve this function to check if the new coordinates is valid.
+        fn update_piece_position(ref self: ContractState, mut piece: Piece, square: Piece) {
+            // Check if there is a piece in the square
+            if square.is_alive {
+            self.update_alive_position(piece, square);
+            } else {
+                // Get the coordinates of the square and do the swap
+                let coordinates = square.coordinates;
+                self.change_is_alive(piece, coordinates);
+            }
+        }
+
+        fn check_is_valid_position(self: @ContractState, coordinates: Coordinates) -> bool {
+            let row = coordinates.row;
+            let col = coordinates.col;
+            // Check if the coordinates is out of bounds
+            if row < 8 && col < 8 {
+                // Check if the coordinates is valid on the board setup
+                match row {
+                    0 => col == 1 || col == 3 || col == 5 || col == 7,
+                    1 => col == 0 || col == 2 || col == 4 || col == 6,
+                    2 => col == 1 || col == 3 || col == 5 || col == 7,
+                    3 => col == 0 || col == 2 || col == 4 || col == 6,
+                    4 => col == 1 || col == 3 || col == 5 || col == 7,
+                    5 => col == 0 || col == 2 || col == 4 || col == 6,
+                    6 => col == 1 || col == 3 || col == 5 || col == 7,
+                    7 => col == 0 || col == 2 || col == 4 || col == 6,
+                    _ => false,
+                }
+            } else {
+                false
+            }
+        }
     }
 }
