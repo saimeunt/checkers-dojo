@@ -409,7 +409,7 @@ pub mod actions {
         // Todo: Improve this function to check if the new coordinates is valid.
         fn update_piece_position(ref self: ContractState, mut piece: Piece, square: Piece) {
             // Check if there is a piece in the square
-            if square.is_alive {
+            if square.is_alive && piece.position != square.position {
                 self.update_alive_position(piece, square);
             } else {
                 // Get the coordinates of the square and do the swap

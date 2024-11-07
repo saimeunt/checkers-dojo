@@ -635,9 +635,7 @@ mod tests {
         let eat_position = Coordinates { row: 4, col: 3};
         let killing_position = Coordinates { row: 3, col: 2};
         let killing_piece: Piece = world.read_model((killing_position));
-        println!("killing piece");
         actions_system.move_piece(killing_piece, eat_position);
-        println!("killed piece");
 
         let killed_piece: Piece = world.read_model((eat_position));
         assert!(killed_piece.row == 4, "piece x is wrong");
