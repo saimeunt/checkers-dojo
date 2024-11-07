@@ -4,4 +4,5 @@ import manifest from "../dojo-starter/manifest_dev.json";
 
 export const dojoConfig = createDojoConfig({
     manifest,
+    toriiUrl: "http://localhost:8080",
 });

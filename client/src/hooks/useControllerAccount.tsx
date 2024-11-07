@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import ControllerConnector from "@cartridge/connector";
-import { ControllerOptions } from "@cartridge/controller";
+import { ControllerOptions, ControllerAccounts } from "@cartridge/controller";
 
 const ETH_TOKEN_ADDRESS = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
 
@@ -11,6 +11,7 @@ const useControllerAccount = () => {
   const [userAccountController, setUserAccount] = useState<string | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [usernames, setUsernames] = useState<ControllerAccounts>({});
 
   useEffect(() => {
     const controllerOptions: ControllerOptions = {
@@ -65,12 +66,26 @@ const useControllerAccount = () => {
     }
   };
 
+  // New function to fetch multiple usernames
+  const fetchUsernames = async (addresses: string[]) => {
+    if (!connector) return;
+
+    try {
+      const usernames = await connector.controller.fetchControllers(addresses);
+      setUsernames(usernames);
+    } catch (error) {
+      console.error("Error fetching usernames:", error);
+    }
+  };
+
   return {
     userAccountController,
     userName,
     isConnected,
     handleConnect,
     handleDisconnect,
+    fetchUsernames,
+    usernames,
   };
 };
 
