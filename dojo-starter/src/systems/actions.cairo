@@ -168,10 +168,17 @@ pub mod actions {
             let mut world = self.world_default();
             let mut square: Piece = world.read_model((new_coordinates_position));
 
+            // Check if the piece can be promoted to a king
+            if current_piece.position == Position::Up && new_coordinates_position.row == 7 {
+                current_piece.is_king = true;
+            } else if current_piece.position == Position::Down && new_coordinates_position.row == 0 {
+                current_piece.is_king = true;
+            }
             // Update the piece attributes based on the new coordinates.
             square.is_alive = true;
             square.player = current_piece.player;
             square.position = current_piece.position;
+            square.is_king = current_piece.is_king;
 
             world.write_model(@square);
 
@@ -179,6 +186,7 @@ pub mod actions {
             current_piece.is_alive = false;
             current_piece.player = starknet::contract_address_const::<0x0>();
             current_piece.position = Position::None;
+            current_piece.is_king = false;
             // Write the new coordinates to the world.
             world.write_model(@current_piece);
             let coordinates = Coordinates { row: square.row, col: square.col };
