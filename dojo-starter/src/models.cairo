@@ -3,9 +3,11 @@ use starknet::ContractAddress;
 #[derive(Copy, Drop, Serde, Debug)]
 #[dojo::model]
 pub struct Piece {
-    pub player: ContractAddress,
     #[key]
-    pub coordinates: Coordinates,
+    pub row: u8,
+    #[key]
+    pub col: u8,
+    pub player: ContractAddress,
     pub position: Position,
     pub is_king: bool,
     pub is_alive: bool,
@@ -30,8 +32,8 @@ impl PositionIntoFelt252 of Into<Position, felt252> {
 
 #[derive(Copy, Drop, Serde, IntrospectPacked, Debug)]
 pub struct Coordinates {
-    pub row: u32,
-    pub col: u32
+    pub row: u8,
+    pub col: u8
 }
 
 #[generate_trait]
