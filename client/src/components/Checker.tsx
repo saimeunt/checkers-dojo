@@ -269,7 +269,6 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           zIndex: 2,
         }}
       >
-        <ControllerButton />
       </div>
       {isGameOver && <GameOver />}
       {isWinner && <Winner />}
