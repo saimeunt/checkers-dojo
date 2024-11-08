@@ -2,6 +2,8 @@
 import { Position } from "../bindings";
 
 export interface Coordinates {
+  capturedPiece: any;
+  isCapture: any;
   row: number;
   col: number;
 }
@@ -21,7 +23,7 @@ export interface Piece {
 export interface PieceUI {
   id: number;
   piece: Piece;
-}
+};
 
 export const createInitialPieces = (playerAddress: string) => {
 
@@ -61,3 +63,5 @@ export const createInitialPieces = (playerAddress: string) => {
     initialOrangePieces
   };
 };
+
+export { Position };
