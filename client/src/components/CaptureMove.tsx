@@ -37,7 +37,6 @@ const CaptureMoves: React.FC<CaptureMovesProps> = ({
       const enemyCol = col + colOffset;
       const landingRow = row + rowOffset * 2;
       const landingCol = col + colOffset * 2;
-
       const capturedPiece = enemyPieces.find(
         (p) => p.piece.row === enemyRow && p.piece.col === enemyCol
       );
@@ -51,6 +50,12 @@ const CaptureMoves: React.FC<CaptureMovesProps> = ({
         moves.push({
           move: { row: landingRow, col: landingCol },
           capturedPiece,
+        });
+        
+        console.log('Posible captura detectada:', {
+          captor: piece,
+          capturedPiece,
+          landingPosition: { row: landingRow, col: landingCol },
         });
       }
     });

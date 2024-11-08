@@ -30,58 +30,102 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
   const [selectedPieceId, setSelectedPieceId] = useState<number | null>(null);
   const [validMoves, setValidMoves] = useState<Coordinates[]>([]);
   
-  // Inicializar piezas usando la función de InitPieces
   const { initialBlackPieces, initialOrangePieces } = createInitialPieces(account.address);
   const [upPieces, setUpPieces] = useState<PieceUI[]>(initialBlackPieces);
   const [downPieces, setDownPieces] = useState<PieceUI[]>(initialOrangePieces);
   
   const cellSize = 88;
 
-  const calculateValidMoves = (piece: PieceUI): Coordinates[] => {
-    const moves: Coordinates[] = [];
-    const { row, col } = piece.piece;
-
-    if (piece.piece.position === Position.Up) {
-      if (row + 1 < 8) {
-        if (col - 1 >= 0) moves.push({ row: row + 1, col: col - 1 });
-        if (col + 1 < 8) moves.push({ row: row + 1, col: col + 1 });
-      }
-    } else {
-      if (row - 1 >= 0) {
-        if (col - 1 >= 0) moves.push({ row: row - 1, col: col - 1 });
-        if (col + 1 < 8) moves.push({ row: row - 1, col: col + 1 });
-      }
-    }
-
-    return moves;
+  const isCellOccupied = (row: number, col: number): boolean => {
+    return [...upPieces, ...downPieces].some(piece => piece.piece.row === row && piece.piece.col === col);
   };
 
+  const calculateValidMoves = (piece: PieceUI): Coordinates[] => {
+    const regularMoves: Coordinates[] = [];
+    const captureMoves = calculateCaptureMoves(piece);
+  
+    if (captureMoves.length > 0) {
+      return captureMoves;
+    }
+  
+    const { row, col } = piece.piece;
+    const direction = piece.piece.position === Position.Up ? 1 : -1;
+  
+    if (row + direction >= 0 && row + direction < 8) {
+      if (col - 1 >= 0 && !isCellOccupied(row + direction, col - 1)) {
+        regularMoves.push({ row: row + direction, col: col - 1 });
+      }
+      if (col + 1 < 8 && !isCellOccupied(row + direction, col + 1)) {
+        regularMoves.push({ row: row + direction, col: col + 1 });
+      }
+    }
+  
+    return regularMoves;
+  };
+  
+  const calculateCaptureMoves = (piece: PieceUI): Coordinates[] => {
+    const captureMoves: Coordinates[] = [];
+    const { row, col } = piece.piece;
+    const direction = piece.piece.position === Position.Up ? 1 : -1;
+
+    if (row + 2 * direction >= 0 && row + 2 * direction < 8) {
+      if (col - 2 >= 0) {
+        const enemyRow = row + direction;
+        const enemyCol = col - 1;
+        const targetRow = row + 2 * direction;
+        const targetCol = col - 2;
+  
+        const isEnemyPiece = isCellOccupiedByEnemy(enemyRow, enemyCol, piece.piece.position);
+        const isTargetEmpty = !isCellOccupied(targetRow, targetCol);
+        if (isEnemyPiece && isTargetEmpty) {
+          captureMoves.push({ row: targetRow, col: targetCol });
+        }
+      }
+      if (col + 2 < 8) {
+        const enemyRow = row + direction;
+        const enemyCol = col + 1;
+        const targetRow = row + 2 * direction;
+        const targetCol = col + 2;
+  
+        const isEnemyPiece = isCellOccupiedByEnemy(enemyRow, enemyCol, piece.piece.position);
+        const isTargetEmpty = !isCellOccupied(targetRow, targetCol);
+        if (isEnemyPiece && isTargetEmpty) {
+          captureMoves.push({ row: targetRow, col: targetCol });
+        }
+      }
+    }
+  
+    return captureMoves;
+  };
+  
+  const isCellOccupiedByEnemy = (row: number, col: number, position: Position): boolean => {
+    const enemyPieces = position === Position.Up ? downPieces : upPieces;
+    return enemyPieces.some(piece => piece.piece.row === row && piece.piece.col === col);
+  };
+  
   const handlePieceClick = async (piece: PieceUI) => {
     const pieceId = piece.id;
-    
+  
     if (selectedPieceId === pieceId) {
       setSelectedPieceId(null);
       setValidMoves([]);
     } else {
       setSelectedPieceId(pieceId);
+  
       const moves = calculateValidMoves(piece);
       setValidMoves(moves);
     }
-
+  
     try {
       if (account) {
         const { row, col } = piece.piece;
-        const canChoosePiece = await (await setupWorld.actions).canChoosePiece(
-          account,
-          piece.piece.position,
-          { row, col }
-        );
-        console.log("canChoosePiece", canChoosePiece?.transaction_hash);
+        await (await setupWorld.actions).canChoosePiece(account, piece.piece.position, { row, col });
       }
     } catch (error) {
-      console.error("Error al mover la pieza:", error);
+      console.error("Error verificando la pieza seleccionada:", error);
     }
   };
+  
 
   const handleMoveClick = async (move: Coordinates) => {
     if (selectedPieceId !== null) {
@@ -90,6 +134,8 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
       );
   
       if (selectedPiece) {
+        console.log("Moviendo la pieza:", selectedPiece);
+
         const piecesToUpdate =
           selectedPiece.piece.position === Position.Up ? upPieces : downPieces;
   
@@ -116,7 +162,6 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
               selectedPiece.piece,
               move
             );
-            console.log("movedPiece", movedPiece?.transaction_hash);
           }
         } catch (error) {
           console.error("Error al mover la pieza:", error);
@@ -129,7 +174,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
   };
 
   const handleCapture = async (move: Coordinates, capturedPiece: PieceUI) => {
-    // Remover la pieza capturada del tablero
+
     const updatePieces = (pieces: PieceUI[]) =>
       pieces.filter((piece) => piece.id !== capturedPiece.id);
 
@@ -139,7 +184,6 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
       setDownPieces(updatePieces(downPieces));
     }
 
-    // Mover la pieza seleccionada a la posición de captura
     await handleMoveClick(move);
   };
 
@@ -192,7 +236,6 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           onClick={() => handleMoveClick(move)}
         />
       ))}
-      {/* Renderiza las posibles capturas con CaptureMoves */}
       <CaptureMoves
         selectedPiece={selectedPieceId !== null ? [...upPieces, ...downPieces].find(piece => piece.id === selectedPieceId) || null : null}
         upPieces={upPieces}
@@ -212,7 +255,6 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
         backgroundPosition: "center",
       }}
     >
-      {/* Sección superior derecha con CreateBurner y ControllerButton */}
       <div
         style={{
           position: 'absolute',
@@ -223,7 +265,6 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           zIndex: 2,
         }}
       >
-        {/* <ControllerButton /> */}
         <ControllerButton />
       </div>
       {isGameOver && <GameOver />}
