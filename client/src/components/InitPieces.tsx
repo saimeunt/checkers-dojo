@@ -1,12 +1,12 @@
 // InitPieces.ts
 import { Position } from "../bindings";
 
-export interface Coordinates {
-  capturedPiece: any;
-  isCapture: any;
+export type Coordinates = {
   row: number;
   col: number;
-}
+  capturedPiece?: { row: number; col: number };
+  isCapture?: boolean;
+};
 
 export interface Piece {
   player: string;

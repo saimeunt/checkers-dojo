@@ -71,9 +71,10 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
               !isCellOccupied(nextRow, nextCol)
             ) {
               moves.push({
-                row: nextRow, col: nextCol,
-                capturedPiece: undefined,
-                isCapture: undefined
+                row: nextRow,
+                col: nextCol,
+                capturedPiece: { row: currentRow, col: currentCol },
+                isCapture: true,
               });
             }
           }
@@ -281,7 +282,8 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
               zIndex: 2,
             }}
           >
-            <ControllerButton />
+          
+            {/* <ControllerButton /> */}
           </div>
       {isGameOver && <GameOver />}
       {isWinner && <Winner />}
