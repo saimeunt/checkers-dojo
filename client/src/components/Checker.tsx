@@ -162,6 +162,10 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
               selectedPiece.piece,
               move
             );
+            console.log(
+              movedPiece.transaction_hash,
+              "movePiece transaction_hash success"
+            );
           }
         } catch (error) {
           console.error("Error al mover la pieza:", error);

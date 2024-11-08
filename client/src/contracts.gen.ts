@@ -86,7 +86,7 @@ export function setupWorld(provider: DojoProvider) {
 						contractName: "actions",
 						entrypoint: "move_piece",
 					//TODO:refactor this
-						calldata: [currentPiece.row,currentPiece.col,currentPiece.player,currentPiece.position,currentPiece.is_king,currentPiece.is_alive, currentPiece.row,currentPiece.col],
+						calldata: [currentPiece.row,currentPiece.col,currentPiece.player,currentPiece.position,currentPiece.is_king,currentPiece.is_alive, newCoordinatesPosition.row,newCoordinatesPosition.col],
 					}, namespace
 				);
 			} catch (error) {
