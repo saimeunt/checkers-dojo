@@ -1,4 +1,3 @@
-// Checker.tsx
 import { useState } from "react";
 import { SDK, createDojoStore } from "@dojoengine/sdk";
 import { schema, Position } from "../bindings";
@@ -7,6 +6,7 @@ import GameOver from "../components/GameOver";
 import Winner from "../components/Winner";
 import { createInitialPieces, PieceUI, Coordinates } from "./InitPieces";
 import ControllerButton from '../connector/ControllerButton';
+import CaptureMoves from "./CaptureMove";
 
 import BackgroundCheckers from "../assets/BackgrounCheckers.png";
 import Board from "../assets/Board.png";
@@ -29,7 +29,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
   const [isWinner] = useState(false);
   const [selectedPieceId, setSelectedPieceId] = useState<number | null>(null);
   const [validMoves, setValidMoves] = useState<Coordinates[]>([]);
-
+  
   // Inicializar piezas usando la función de InitPieces
   const { initialBlackPieces, initialOrangePieces } = createInitialPieces(account.address);
   const [upPieces, setUpPieces] = useState<PieceUI[]>(initialBlackPieces);
@@ -70,11 +70,11 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
 
     try {
       if (account) {
-        let {row,col} = piece.piece
-        const canChoosePiece = await(await setupWorld.actions).canChoosePiece(
+        const { row, col } = piece.piece;
+        const canChoosePiece = await (await setupWorld.actions).canChoosePiece(
           account,
           piece.piece.position,
-          { row: row, col:col  }
+          { row, col }
         );
         console.log("canChoosePiece", canChoosePiece?.transaction_hash);
       }
@@ -127,7 +127,21 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
       }
     }
   };
-  
+
+  const handleCapture = async (move: Coordinates, capturedPiece: PieceUI) => {
+    // Remover la pieza capturada del tablero
+    const updatePieces = (pieces: PieceUI[]) =>
+      pieces.filter((piece) => piece.id !== capturedPiece.id);
+
+    if (capturedPiece.piece.position === Position.Up) {
+      setUpPieces(updatePieces(upPieces));
+    } else {
+      setDownPieces(updatePieces(downPieces));
+    }
+
+    // Mover la pieza seleccionada a la posición de captura
+    await handleMoveClick(move);
+  };
 
   const renderPieces = () => (
     <>
@@ -138,7 +152,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           className="absolute"
           style={{
             left: `${piece.piece.col * cellSize + 63}px`,
-            top: `${piece.piece.row * cellSize + 63}px`, // Usa el mismo ajuste para `top`
+            top: `${piece.piece.row * cellSize + 63}px`,
             cursor: "pointer",
             width: "60px",
             height: "60px",
@@ -153,8 +167,8 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           src={PieceOrange}
           className="absolute"
           style={{
-            left: `${piece.piece.col * cellSize + 63}px`,
-            top: `${piece.piece.row * cellSize + 63}px`, // Igual para `top`
+            left: `${piece.piece.col * cellSize + 64}px`,
+            top: `${piece.piece.row * cellSize + 55}px`,
             cursor: "pointer",
             width: "60px",
             height: "60px",
@@ -169,7 +183,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           className="absolute border border-green-500"
           style={{
             left: `${move.col * cellSize + 63}px`,
-            top: `${move.row * cellSize + 63}px`, // Ajuste de compensación uniforme
+            top: `${move.row * cellSize + 63}px`,
             width: "60px",
             height: "60px",
             cursor: "pointer",
@@ -178,9 +192,16 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           onClick={() => handleMoveClick(move)}
         />
       ))}
+      {/* Renderiza las posibles capturas con CaptureMoves */}
+      <CaptureMoves
+        selectedPiece={selectedPieceId !== null ? [...upPieces, ...downPieces].find(piece => piece.id === selectedPieceId) || null : null}
+        upPieces={upPieces}
+        downPieces={downPieces}
+        cellSize={cellSize}
+        onCapture={handleCapture}
+      />
     </>
   );
-  
 
   return (
     <div
@@ -191,8 +212,8 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
         backgroundPosition: "center",
       }}
     >
-       {/* Sección superior derecha con CreateBurner y ControllerButton */}
-       <div
+      {/* Sección superior derecha con CreateBurner y ControllerButton */}
+      <div
         style={{
           position: 'absolute',
           top: '20px',
@@ -203,7 +224,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
         }}
       >
         {/* <ControllerButton /> */}
-    
+        <ControllerButton />
       </div>
       {isGameOver && <GameOver />}
       {isWinner && <Winner />}
@@ -228,7 +249,6 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           />
           {arePiecesVisible && renderPieces()}
         </div>
-
         <button
           onClick={() => {
             window.location.href = '/initgame';
