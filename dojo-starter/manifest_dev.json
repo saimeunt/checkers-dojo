@@ -1121,8 +1121,8 @@
   },
   "contracts": [
     {
-      "address": "0x576cc30f71264c113bc15056bff8af4a6c9bd3c9ccf159cf91d21a65d095699",
-      "class_hash": "0x39f1bc6ce24086e200beac3605336cf700e6f248aa63396fce791ced2cdd4e5",
+      "address": "0x447553a1d209291136a31802ef0c1831e4e21c63ab366c67ce589d9e2589cd",
+      "class_hash": "0x65c4b918701f580a06423790b8adc5523691728feac6981d44373289f115622",
       "abi": [
         {
           "type": "impl",
@@ -1170,30 +1170,6 @@
           "interface_name": "dojo_starter::systems::actions::IActions"
         },
         {
-          "type": "struct",
-          "name": "dojo_starter::models::Coordinates",
-          "members": [
-            {
-              "name": "raw",
-              "type": "core::integer::u32"
-            },
-            {
-              "name": "col",
-              "type": "core::integer::u32"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<dojo_starter::models::Coordinates>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<dojo_starter::models::Coordinates>"
-            }
-          ]
-        },
-        {
           "type": "enum",
           "name": "dojo_starter::models::Position",
           "variants": [
@@ -1208,6 +1184,20 @@
             {
               "name": "Down",
               "type": "()"
+            }
+          ]
+        },
+        {
+          "type": "struct",
+          "name": "dojo_starter::models::Coordinates",
+          "members": [
+            {
+              "name": "row",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "col",
+              "type": "core::integer::u8"
             }
           ]
         },
@@ -1230,12 +1220,16 @@
           "name": "dojo_starter::models::Piece",
           "members": [
             {
-              "name": "player",
-              "type": "core::starknet::contract_address::ContractAddress"
+              "name": "row",
+              "type": "core::integer::u8"
             },
             {
-              "name": "coordinates",
-              "type": "dojo_starter::models::Coordinates"
+              "name": "col",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "player",
+              "type": "core::starknet::contract_address::ContractAddress"
             },
             {
               "name": "position",
@@ -1259,11 +1253,7 @@
               "type": "function",
               "name": "spawn",
               "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::array::Span::<dojo_starter::models::Coordinates>"
-                }
-              ],
+              "outputs": [],
               "state_mutability": "external"
             },
             {
@@ -1427,14 +1417,19 @@
   "models": [
     {
       "members": [],
-      "class_hash": "0x23fc4c57e4ffcce310644ef4f23b1551f35c39e6f7a7417dede075638ff5917",
+      "class_hash": "0x77e60bf2ae1a5ee026266745f1c364677e2b8a895b715a2003a166c868f3e73",
       "tag": "Piece"
     }
   ],
   "events": [
     {
       "members": [],
-      "class_hash": "0x7c17298acaae5d6bc4ccb210cedb5f7c6ff96e2b9c3482c6fb5ce84018d6305",
+      "class_hash": "0x339a0c56d82ec7b0615a2e94caae541e0fec6cfcf0cbb34574c7e443828dd87",
+      "tag": "Killed"
+    },
+    {
+      "members": [],
+      "class_hash": "0x462c4907563e559b25d4998677569e02db4553966719836b184027016696da2",
       "tag": "Moved"
     }
   ]

@@ -1,4 +1,3 @@
-// Checker.tsx
 import { useState } from "react";
 import { SDK, createDojoStore } from "@dojoengine/sdk";
 import { schema, Position } from "../bindings";
@@ -7,6 +6,7 @@ import GameOver from "../components/GameOver";
 import Winner from "../components/Winner";
 import { createInitialPieces, PieceUI, Coordinates } from "./InitPieces";
 import ControllerButton from '../connector/ControllerButton';
+import CaptureMoves from "./CaptureMove";
 
 import BackgroundCheckers from "../assets/BackgrounCheckers.png";
 import Board from "../assets/Board.png";
@@ -29,86 +29,132 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
   const [isWinner] = useState(false);
   const [selectedPieceId, setSelectedPieceId] = useState<number | null>(null);
   const [validMoves, setValidMoves] = useState<Coordinates[]>([]);
-
-  // Inicializar piezas usando la función de InitPieces
+  
   const { initialBlackPieces, initialOrangePieces } = createInitialPieces(account.address);
   const [upPieces, setUpPieces] = useState<PieceUI[]>(initialBlackPieces);
   const [downPieces, setDownPieces] = useState<PieceUI[]>(initialOrangePieces);
   
   const cellSize = 88;
 
-  const calculateValidMoves = (piece: PieceUI): Coordinates[] => {
-    const moves: Coordinates[] = [];
-    const { raw, col } = piece.piece.coordinates;
-
-    if (piece.piece.position === Position.Up) {
-      if (raw + 1 < 8) {
-        if (col - 1 >= 0) moves.push({ raw: raw + 1, col: col - 1 });
-        if (col + 1 < 8) moves.push({ raw: raw + 1, col: col + 1 });
-      }
-    } else {
-      if (raw - 1 >= 0) {
-        if (col - 1 >= 0) moves.push({ raw: raw - 1, col: col - 1 });
-        if (col + 1 < 8) moves.push({ raw: raw - 1, col: col + 1 });
-      }
-    }
-
-    return moves;
+  const isCellOccupied = (row: number, col: number): boolean => {
+    return [...upPieces, ...downPieces].some(piece => piece.piece.row === row && piece.piece.col === col);
   };
 
+  const calculateValidMoves = (piece: PieceUI): Coordinates[] => {
+    const regularMoves: Coordinates[] = [];
+    const captureMoves = calculateCaptureMoves(piece);
+  
+    if (captureMoves.length > 0) {
+      return captureMoves;
+    }
+  
+    const { row, col } = piece.piece;
+    const direction = piece.piece.position === Position.Up ? 1 : -1;
+  
+    if (row + direction >= 0 && row + direction < 8) {
+      if (col - 1 >= 0 && !isCellOccupied(row + direction, col - 1)) {
+        regularMoves.push({ row: row + direction, col: col - 1 });
+      }
+      if (col + 1 < 8 && !isCellOccupied(row + direction, col + 1)) {
+        regularMoves.push({ row: row + direction, col: col + 1 });
+      }
+    }
+  
+    return regularMoves;
+  };
+  
+  const calculateCaptureMoves = (piece: PieceUI): Coordinates[] => {
+    const captureMoves: Coordinates[] = [];
+    const { row, col } = piece.piece;
+    const direction = piece.piece.position === Position.Up ? 1 : -1;
+
+    if (row + 2 * direction >= 0 && row + 2 * direction < 8) {
+      if (col - 2 >= 0) {
+        const enemyRow = row + direction;
+        const enemyCol = col - 1;
+        const targetRow = row + 2 * direction;
+        const targetCol = col - 2;
+  
+        const isEnemyPiece = isCellOccupiedByEnemy(enemyRow, enemyCol, piece.piece.position);
+        const isTargetEmpty = !isCellOccupied(targetRow, targetCol);
+        if (isEnemyPiece && isTargetEmpty) {
+          captureMoves.push({ row: targetRow, col: targetCol });
+        }
+      }
+      if (col + 2 < 8) {
+        const enemyRow = row + direction;
+        const enemyCol = col + 1;
+        const targetRow = row + 2 * direction;
+        const targetCol = col + 2;
+  
+        const isEnemyPiece = isCellOccupiedByEnemy(enemyRow, enemyCol, piece.piece.position);
+        const isTargetEmpty = !isCellOccupied(targetRow, targetCol);
+        if (isEnemyPiece && isTargetEmpty) {
+          captureMoves.push({ row: targetRow, col: targetCol });
+        }
+      }
+    }
+  
+    return captureMoves;
+  };
+  
+  const isCellOccupiedByEnemy = (row: number, col: number, position: Position): boolean => {
+    const enemyPieces = position === Position.Up ? downPieces : upPieces;
+    return enemyPieces.some(piece => piece.piece.row === row && piece.piece.col === col);
+  };
+  
   const handlePieceClick = async (piece: PieceUI) => {
     const pieceId = piece.id;
-    
+  
     if (selectedPieceId === pieceId) {
       setSelectedPieceId(null);
       setValidMoves([]);
     } else {
       setSelectedPieceId(pieceId);
+  
       const moves = calculateValidMoves(piece);
       setValidMoves(moves);
     }
-
+  
     try {
       if (account) {
-        let {raw,col} = piece.piece.coordinates
-        const canChoosePiece = await(await setupWorld.actions).canChoosePiece(
-          account,
-          piece.piece.position,
-          { row: raw, col:col  }
-        );
-        console.log("canChoosePiece", canChoosePiece?.transaction_hash);
+        const { row, col } = piece.piece;
+        await (await setupWorld.actions).canChoosePiece(account, piece.piece.position, { row, col });
       }
     } catch (error) {
-      console.error("Error al mover la pieza:", error);
+      console.error("Error verificando la pieza seleccionada:", error);
     }
   };
+  
 
   const handleMoveClick = async (move: Coordinates) => {
     if (selectedPieceId !== null) {
       const selectedPiece = [...upPieces, ...downPieces].find(
         (piece) => piece.id === selectedPieceId
       );
-
+  
       if (selectedPiece) {
+        console.log("Moviendo la pieza:", selectedPiece);
+
         const piecesToUpdate =
           selectedPiece.piece.position === Position.Up ? upPieces : downPieces;
-
-        const updatedPieces = piecesToUpdate.map((piece) => {
+  
+        const updatedPieces = piecesToUpdate.map((piece: PieceUI) => {
           if (piece.id === selectedPieceId) {
             return {
               ...piece,
-              piece: { ...piece.piece, coordinates: move },
+              piece: { ...piece.piece, row: move.row, col: move.col },
             };
           }
           return piece;
         });
-
+  
         if (selectedPiece.piece.position === Position.Down) {
           setDownPieces(updatedPieces);
         } else {
           setUpPieces(updatedPieces);
         }
-
+  
         try {
           if (account) {
             const movedPiece = await (await setupWorld.actions).movePiece(
@@ -116,16 +162,29 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
               selectedPiece.piece,
               move
             );
-            console.log("movedPiece", movedPiece?.transaction_hash);
           }
         } catch (error) {
           console.error("Error al mover la pieza:", error);
         }
-
+  
         setSelectedPieceId(null);
         setValidMoves([]);
       }
     }
+  };
+
+  const handleCapture = async (move: Coordinates, capturedPiece: PieceUI) => {
+
+    const updatePieces = (pieces: PieceUI[]) =>
+      pieces.filter((piece) => piece.id !== capturedPiece.id);
+
+    if (capturedPiece.piece.position === Position.Up) {
+      setUpPieces(updatePieces(upPieces));
+    } else {
+      setDownPieces(updatePieces(downPieces));
+    }
+
+    await handleMoveClick(move);
   };
 
   const renderPieces = () => (
@@ -136,8 +195,8 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           src={PieceBlack}
           className="absolute"
           style={{
-            left: `${piece.piece.coordinates.col * cellSize + 63}px`,
-            top: `${piece.piece.coordinates.raw * cellSize + 65}px`,
+            left: `${piece.piece.col * cellSize + 63}px`,
+            top: `${piece.piece.row * cellSize + 63}px`,
             cursor: "pointer",
             width: "60px",
             height: "60px",
@@ -152,8 +211,8 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           src={PieceOrange}
           className="absolute"
           style={{
-            left: `${piece.piece.coordinates.col * cellSize + 63}px`,
-            top: `${piece.piece.coordinates.raw * cellSize + 55}px`,
+            left: `${piece.piece.col * cellSize + 64}px`,
+            top: `${piece.piece.row * cellSize + 55}px`,
             cursor: "pointer",
             width: "60px",
             height: "60px",
@@ -168,7 +227,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           className="absolute border border-green-500"
           style={{
             left: `${move.col * cellSize + 63}px`,
-            top: `${move.raw * cellSize + 58}px`,
+            top: `${move.row * cellSize + 63}px`,
             width: "60px",
             height: "60px",
             cursor: "pointer",
@@ -177,6 +236,13 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           onClick={() => handleMoveClick(move)}
         />
       ))}
+      <CaptureMoves
+        selectedPiece={selectedPieceId !== null ? [...upPieces, ...downPieces].find(piece => piece.id === selectedPieceId) || null : null}
+        upPieces={upPieces}
+        downPieces={downPieces}
+        cellSize={cellSize}
+        onCapture={handleCapture}
+      />
     </>
   );
 
@@ -189,8 +255,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
         backgroundPosition: "center",
       }}
     >
-       {/* Sección superior derecha con CreateBurner y ControllerButton */}
-       <div
+      <div
         style={{
           position: 'absolute',
           top: '20px',
@@ -200,8 +265,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           zIndex: 2,
         }}
       >
-        {/* <ControllerButton /> */}
-    
+        <ControllerButton />
       </div>
       {isGameOver && <GameOver />}
       {isWinner && <Winner />}
@@ -226,7 +290,6 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           />
           {arePiecesVisible && renderPieces()}
         </div>
-
         <button
           onClick={() => {
             window.location.href = '/initgame';
