@@ -88,27 +88,27 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
       const selectedPiece = [...upPieces, ...downPieces].find(
         (piece) => piece.id === selectedPieceId
       );
-
+  
       if (selectedPiece) {
         const piecesToUpdate =
           selectedPiece.piece.position === Position.Up ? upPieces : downPieces;
-
-        const updatedPieces = piecesToUpdate.map((piece:PieceUI) => {
+  
+        const updatedPieces = piecesToUpdate.map((piece: PieceUI) => {
           if (piece.id === selectedPieceId) {
             return {
               ...piece,
-              piece: { ...piece.piece, coordinates: move },
+              piece: { ...piece.piece, row: move.row, col: move.col },
             };
           }
           return piece;
         });
-
+  
         if (selectedPiece.piece.position === Position.Down) {
           setDownPieces(updatedPieces);
         } else {
           setUpPieces(updatedPieces);
         }
-
+  
         try {
           if (account) {
             const movedPiece = await (await setupWorld.actions).movePiece(
@@ -121,12 +121,13 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
         } catch (error) {
           console.error("Error al mover la pieza:", error);
         }
-
+  
         setSelectedPieceId(null);
         setValidMoves([]);
       }
     }
   };
+  
 
   const renderPieces = () => (
     <>
@@ -137,7 +138,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           className="absolute"
           style={{
             left: `${piece.piece.col * cellSize + 63}px`,
-            top: `${piece.piece.row * cellSize + 65}px`,
+            top: `${piece.piece.row * cellSize + 63}px`, // Usa el mismo ajuste para `top`
             cursor: "pointer",
             width: "60px",
             height: "60px",
@@ -153,7 +154,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           className="absolute"
           style={{
             left: `${piece.piece.col * cellSize + 63}px`,
-            top: `${piece.piece.row * cellSize + 55}px`,
+            top: `${piece.piece.row * cellSize + 63}px`, // Igual para `top`
             cursor: "pointer",
             width: "60px",
             height: "60px",
@@ -168,7 +169,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           className="absolute border border-green-500"
           style={{
             left: `${move.col * cellSize + 63}px`,
-            top: `${move.row * cellSize + 58}px`,
+            top: `${move.row * cellSize + 63}px`, // Ajuste de compensación uniforme
             width: "60px",
             height: "60px",
             cursor: "pointer",
@@ -179,6 +180,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
       ))}
     </>
   );
+  
 
   return (
     <div
