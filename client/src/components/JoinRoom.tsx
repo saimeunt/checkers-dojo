@@ -1,48 +1,35 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CreateBurner from "../connector/CreateBurner";
+import CreateBurner from "../connector/CreateBurner.tsx";
 import { SDK } from "@dojoengine/sdk";
 import { schema } from "../bindings.ts";
-import ControllerButton from '../connector/ControllerButton';
-import { useSystemCalls } from "../hooks/useSystemCalls";
-import { useDojo } from "../hooks/useDojo";
+import ControllerButton from '../connector/ControllerButton.tsx';
+import { useSystemCalls } from "../hooks/useSystemCalls.ts";
+import { useDojo } from "../hooks/useDojo.tsx";
 
-import LoadingCreate from "../assets/LoadingCreate.png";
-import ChoicePlayer from "../assets/ChoicePlayer.png";
-import ButtonCreate from "../assets/ButtonCreate.png";
-
+import LoadingRoom from "../assets/LoadingCreate.png";
 import InitGameBackground from "../assets/InitGameBackground.png";
 import Return from "../assets/Return.png";
-import Player1 from "../assets/Player1_0.png";
-import Player2 from "../assets/Player2_0.png";
-import Player3 from "../assets/Player3_0.png";
-import Player4 from "../assets/Player4_0.png";
+import JoinGameRectangule from "../assets/JoinGameRectangule.png";
+import ConfirmJoin from "../assets/ConfirmJoin.png";
 
-function CreateGame({ }: { sdk: SDK<typeof schema> }) {
+function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
   const { account } = useDojo();
-  const { spawn } = useSystemCalls();
+  const { spawn } = useSystemCalls();  // Cambiar a create_session
   const navigate = useNavigate();
-  const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
 
   const handleCreateRoom = async () => {
     try {
       if (account) {
-        await spawn();
-        console.log("Juego creado con éxito.");
-        navigate('/checkers');
+        await spawn();  // Llama a create_session
+        console.log("Sesión creada con éxito.");
+        navigate('/creategame');
       } else {
         console.warn("Cuenta no conectada");
       }
     } catch (error) {
-      console.error("Error al crear el juego:", error);
+      console.error("Error al crear la sesión:", error);
     }
   };
-
-  const handlePlayerSelect = (playerIndex: number) => {
-    setSelectedPlayer(playerIndex);
-  };
-
-  const playerImages = [Player1, Player2, Player3, Player4];
 
   return (
     <div
@@ -71,7 +58,7 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
       {/* Botón de "Return" */}
       <button
         onClick={() => {
-          window.location.href = '/joinroom'; 
+          window.location.href = '/initgame'; 
         }}
         style={{
           position: 'absolute',
@@ -137,7 +124,7 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
         }}
       >
         <img
-          src={LoadingCreate}
+          src={LoadingRoom}
           alt="Cargando"
           style={{
             width: '100%',
@@ -146,91 +133,69 @@ function CreateGame({ }: { sdk: SDK<typeof schema> }) {
         />
       </div>
 
-      {/* ChoicePlayer */}
+      {/* Texto "Room ID" sobre el rectángulo de la sesión */}
       <div
         style={{
           position: 'absolute',
-          top: '390px',
-          left: '46%',
+          bottom: '590px',
+          left: '31%',
           transform: 'translateX(-50%)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
+          color: 'white',
+          fontSize: '24px',
+          fontWeight: 'bold',
           zIndex: 5,
         }}
       >
-        <span
-          style={{
-            color: 'white',
-            fontSize: '24px',
-            fontWeight: 'bold',
-            marginBottom: '-40px',
-          }}
-        >
-          CHOICE AVATAR
-        </span>
-        <img
-          src={ChoicePlayer}
-          alt="Choice Player"
-          style={{
-            width: '300px',
-            height: '40px',
-          }}
-        />
+        Room ID
       </div>
 
-      {/* Selección de jugadores */}
+      {/* Rectángulo que muestra la sesión */}
       <div
         style={{
           position: 'absolute',
-          top: '450px',
+          bottom: '450px',
           left: '50%',
           transform: 'translateX(-50%)',
+          width: '840px',
+          height: '132px',
+          backgroundImage: `url(${JoinGameRectangule})`,
+          backgroundSize: 'cover',
           display: 'flex',
-          gap: '20px',
-          zIndex: 2,
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          fontSize: '24px',
+          fontWeight: 'bold',
+          zIndex: 5,
         }}
       >
-        {playerImages.map((playerImage, index) => (
-          <div
-            key={index}
-            onClick={() => handlePlayerSelect(index)}
-            style={{
-              width: '100px',
-              height: '100px',
-              borderRadius: '10px',
-              border: `3px solid ${selectedPlayer === index ? '#EE7921' : '#520066'
-                }`,
-              backgroundImage: `url(${playerImage})`,
-              backgroundSize: 'cover',
-              cursor: 'pointer',
-            }}
-          />
-        ))}
+        0
       </div>
 
-      {/* Botón de "Create Game" */}
+      {/* Botón de "Confirmar" */}
       <button
-        onClick={handleCreateRoom}
+        onClick={handleCreateRoom}  // Actualizado a handleCreateRoom con create_session
         style={{
           position: 'absolute',
-          bottom: '200px',
+          bottom: '180px',
           left: '50%',
           transform: 'translateX(-50%)',
-          backgroundImage: `url(${ButtonCreate})`,
+          backgroundImage: `url(${ConfirmJoin})`,
           backgroundSize: 'cover',
+          width: '700px',
+          height: '96px',
           color: 'white',
-          padding: '46px 279px',
-          borderRadius: '5px',
+          fontSize: '24px',
           fontWeight: 'bold',
           cursor: 'pointer',
           border: 'none',
-          zIndex: 2,
+          zIndex: 5,
         }}
       >
+        Confirmar
       </button>
     </div>
   );
 }
 
-export default CreateGame;
+export default JoinRoom;

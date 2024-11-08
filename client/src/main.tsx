@@ -9,6 +9,7 @@ import { DojoContextProvider } from "./DojoContext.tsx";
 import { setupBurnerManager } from "@dojoengine/create-burner";
 import Home from "./components/Home.tsx";
 import Checker from "./components/Checker.tsx";
+import JoinRoom from "./components/JoinRoom.tsx";
 import InitGame from "./components/InitGame.tsx";
 import CreateGame from "./components/CreateGame.tsx";
 
@@ -39,8 +40,9 @@ async function main() {
                 >
                     <Routes>
                         <Route path="/" element={<Home />} />
-                        <Route path="/creategame" element={<CreateGame sdk={sdk} />} />
                         <Route path="/initgame" element={<InitGame sdk={sdk} />} />
+                        <Route path="/joinroom" element={<JoinRoom sdk={sdk} />} />
+                        <Route path="/creategame" element={<CreateGame sdk={sdk} />} />
                         <Route path="/checkers" element={<Checker sdk={sdk} />} />
                     </Routes>
                 </DojoContextProvider>

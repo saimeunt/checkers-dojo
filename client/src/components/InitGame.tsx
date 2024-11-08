@@ -30,7 +30,7 @@ function InitGame({ }: { sdk: SDK<typeof schema> }) {
       if (account) {
         await spawn();
         console.log("Juego creado con éxito.");
-        navigate('/creategame');
+        navigate('/joinroom');
       } else {
         console.warn("Cuenta no conectada");
       }
