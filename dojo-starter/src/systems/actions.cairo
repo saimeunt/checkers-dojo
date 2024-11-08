@@ -5,7 +5,9 @@ use dojo_starter::models::Position;
 // define the interface
 #[starknet::interface]
 trait IActions<T> {
-    fn spawn(ref self: T); //  ->  Span<Coordinates>
+    fn create_lobby(ref self: T) -> felt252;
+    fn join_lobby(ref self: T, session_id: felt252);
+    fn spawn(ref self: T, session_id: felt252); //  ->  Span<Coordinates>
     fn can_choose_piece(ref self: T, position: Position, coordinates_position: Coordinates) -> bool;
     fn move_piece(ref self: T, current_piece: Piece, new_coordinates_position: Coordinates);
 }
@@ -15,7 +17,7 @@ trait IActions<T> {
 pub mod actions {
     use super::IActions;
     use starknet::{ContractAddress, get_caller_address};
-    use dojo_starter::models::{Piece, Coordinates, Position};
+    use dojo_starter::models::{Piece, Coordinates, Position, Session};
 
     use dojo::model::{ModelStorage, ModelValueStorage};
     use dojo::event::EventStorage;
@@ -37,14 +39,44 @@ pub mod actions {
 
     #[abi(embed_v0)]
     impl ActionsImpl of IActions<ContractState> {
-        fn spawn(ref self: ContractState) {
+
+        fn create_lobby(ref self: ContractState) -> felt252 {
+            // TODO: Make a way to store the session_id properly so that it is always unique
+            let mut world = self.world_default();
+            let player = get_caller_address();
+            let session = Session {
+                session_id: 0,
+                player_1: player,
+                player_2: starknet::contract_address_const::<0x0>(),
+                turn: 1,
+            };
+            // TODO: return fetched session_id
+            world.write_model(@session);
+
+            self.spawn(Position::Up);
+
+            0
+        }
+
+        fn join_lobby(ref self: ContractState, session_id: felt252) {
+            let mut world = self.world_default();
+            let player = get_caller_address();
+            let mut session: Session = world.read_model((session_id));
+            session.player_2 = player;
+            world.write_model(@session);
+            self.spawn(Position::Down);
+        }
+
+        fn spawn(ref self: ContractState, position: Position) {
             // Get the address of the current caller, possibly the player's address.
             let player = get_caller_address();
 
-            //player 1 
-            self.initialize_player_pieces(player, 0, 2, Position::Up);
-            //player 2
-            self.initialize_player_pieces(player, 5, 7, Position::Down);
+            if position == Position::Up {
+                self.initialize_player_pieces(player, 0, 2, Position::Up, session_id);
+            } else if position == Position::Down {
+                self.initialize_player_pieces(player, 5, 7, Position::Down, session_id);
+            }
+
         // Update the world state with the new data.
 
         // [
@@ -170,7 +202,8 @@ pub mod actions {
             player: ContractAddress,
             start_row: u8,
             end_row: u8,
-            position: Position
+            position: Position,
+            session_id: felt252,
         ) {
             let mut world = self.world_default();
             let mut row = start_row;
@@ -179,7 +212,7 @@ pub mod actions {
                 let mut col = start_col;
                 while col < 8 {
                     let piece = Piece {
-                        row, col, player, position, is_king: false, is_alive: true,
+                        session_id, row, col, player, position, is_king: false, is_alive: true,
                     };
                     world.write_model(@piece);
                     col += 2;

@@ -4,6 +4,8 @@ use starknet::ContractAddress;
 #[dojo::model]
 pub struct Piece {
     #[key]
+    pub session_id: felt252,
+    #[key]
     pub row: u8,
     #[key]
     pub col: u8,
@@ -11,6 +13,26 @@ pub struct Piece {
     pub position: Position,
     pub is_king: bool,
     pub is_alive: bool,
+}
+
+#[derive(Copy, Drop, Serde, Debug)]
+#[dojo::model]
+pub struct Session { 
+    #[key]
+    pub session_id: felt252,
+    pub player_1: ContractAddress,
+    pub player_2: ContractAddress,
+    pub turn: u8, // 1 for Up (Player 1) and 2 for Down (Player 2)
+    pub winner: ContractAddress,
+    pub state: u8, // 0 for open, 1 for ongoing, 2 for finished
+}
+
+#[derive(Copy, Drop, Serde, Debug)]
+#[dojo::model]
+pub struct Counter {
+    #[key]
+    pub next_id: felt252,
+    pub game_id: felt252,
 }
 
 #[derive(Serde, Copy, Drop, Introspect, PartialEq, Debug)]
