@@ -70,7 +70,7 @@ export function setupWorld(provider: DojoProvider) {
 					{
 						contractName: "actions",
 						entrypoint: "can_choose_piece",
-						calldata: [position, coordinatesPosition],
+						calldata: [position, coordinatesPosition.row,coordinatesPosition.col],
 					}, namespace
 				);
 			} catch (error) {
