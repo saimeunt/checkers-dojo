@@ -139,6 +139,32 @@ pub mod actions {
             self.world(@"dojo_starter")
         }
 
+        fn check_diagonal_path(self: @ContractState, start_row: u8, start_col: u8, row_step: u8, col_step: u8) -> bool {
+            let mut row = start_row;
+            let mut col = start_col;
+            let world = self.world_default();
+            let mut good_move = false;
+
+            loop {
+                row += row_step;
+                col += col_step;
+
+                let valid = self.check_is_valid_position(Coordinates { row, col });
+
+                if valid {
+                    let target_square: Piece = world.read_model((row, col));
+
+                    if target_square.is_alive {
+                        break;
+                    }
+                    good_move = true;
+                }; 
+                break;
+            };
+            good_move
+        }
+
+
         fn initialize_player_pieces(
             ref self: ContractState,
             player: ContractAddress,
@@ -168,10 +194,17 @@ pub mod actions {
             let mut world = self.world_default();
             let mut square: Piece = world.read_model((new_coordinates_position));
 
+            // Check if the piece can be promoted to a king
+            if current_piece.position == Position::Up && new_coordinates_position.row == 7 {
+                current_piece.is_king = true;
+            } else if current_piece.position == Position::Down && new_coordinates_position.row == 0 {
+                current_piece.is_king = true;
+            }
             // Update the piece attributes based on the new coordinates.
             square.is_alive = true;
             square.player = current_piece.player;
             square.position = current_piece.position;
+            square.is_king = current_piece.is_king;
 
             world.write_model(@square);
 
@@ -179,6 +212,7 @@ pub mod actions {
             current_piece.is_alive = false;
             current_piece.player = starknet::contract_address_const::<0x0>();
             current_piece.position = Position::None;
+            current_piece.is_king = false;
             // Write the new coordinates to the world.
             world.write_model(@current_piece);
             let coordinates = Coordinates { row: square.row, col: square.col };
@@ -190,10 +224,36 @@ pub mod actions {
             let world = self.world_default();
             let piece_row = piece.row;
             let piece_col = piece.col;
-
             // Only handling non-king pieces for now
-            if piece.is_king {
-                return false;
+            if piece.is_king == true {
+                // For kings, check all four directions using only unsigned integers
+                // Moving up (subtract) is only possible if we're not at row 0
+                let can_move_up = piece_row > 0;
+                let can_move_left = piece_col > 0;
+                
+                let mut has_valid_move = false;
+
+                // Down-right (both increment)
+                if piece_row != 7 {
+                    has_valid_move = has_valid_move || self.check_diagonal_path(piece_row, piece_col, 1, 1);
+                }
+                
+                // Down-left (row increment, col decrement but only if col > 0)
+                if can_move_left {
+                    has_valid_move = has_valid_move || self.check_diagonal_path(piece_row, piece_col, 1, 0);
+                }
+                
+                // Up-right (row decrement but only if row > 0, col increment)
+                if can_move_up {
+                    has_valid_move = has_valid_move || self.check_diagonal_path(piece_row - 1, piece_col, 0, 1);
+                }
+                
+                // Up-left (both decrement but only if both > 0)
+                if can_move_up && can_move_left {
+                    has_valid_move = has_valid_move || self.check_diagonal_path(piece_row - 1, piece_col - 1, 0, 0);
+                }
+
+                return has_valid_move;
             }
 
             match piece.position {
@@ -349,7 +409,7 @@ pub mod actions {
         // Todo: Improve this function to check if the new coordinates is valid.
         fn update_piece_position(ref self: ContractState, mut piece: Piece, square: Piece) {
             // Check if there is a piece in the square
-            if square.is_alive {
+            if square.is_alive && piece.position != square.position {
                 self.update_alive_position(piece, square);
             } else {
                 // Get the coordinates of the square and do the swap
