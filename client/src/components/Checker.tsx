@@ -39,17 +39,17 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
 
   const calculateValidMoves = (piece: PieceUI): Coordinates[] => {
     const moves: Coordinates[] = [];
-    const { raw, col } = piece.piece.coordinates;
+    const { row, col } = piece.piece;
 
     if (piece.piece.position === Position.Up) {
-      if (raw + 1 < 8) {
-        if (col - 1 >= 0) moves.push({ raw: raw + 1, col: col - 1 });
-        if (col + 1 < 8) moves.push({ raw: raw + 1, col: col + 1 });
+      if (row + 1 < 8) {
+        if (col - 1 >= 0) moves.push({ row: row + 1, col: col - 1 });
+        if (col + 1 < 8) moves.push({ row: row + 1, col: col + 1 });
       }
     } else {
-      if (raw - 1 >= 0) {
-        if (col - 1 >= 0) moves.push({ raw: raw - 1, col: col - 1 });
-        if (col + 1 < 8) moves.push({ raw: raw - 1, col: col + 1 });
+      if (row - 1 >= 0) {
+        if (col - 1 >= 0) moves.push({ row: row - 1, col: col - 1 });
+        if (col + 1 < 8) moves.push({ row: row - 1, col: col + 1 });
       }
     }
 
@@ -70,11 +70,11 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
 
     try {
       if (account) {
-        let {raw,col} = piece.piece.coordinates
+        let {row,col} = piece.piece
         const canChoosePiece = await(await setupWorld.actions).canChoosePiece(
           account,
           piece.piece.position,
-          { row: raw, col:col  }
+          { row: row, col:col  }
         );
         console.log("canChoosePiece", canChoosePiece?.transaction_hash);
       }
@@ -93,7 +93,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
         const piecesToUpdate =
           selectedPiece.piece.position === Position.Up ? upPieces : downPieces;
 
-        const updatedPieces = piecesToUpdate.map((piece) => {
+        const updatedPieces = piecesToUpdate.map((piece:PieceUI) => {
           if (piece.id === selectedPieceId) {
             return {
               ...piece,
@@ -136,8 +136,8 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           src={PieceBlack}
           className="absolute"
           style={{
-            left: `${piece.piece.coordinates.col * cellSize + 63}px`,
-            top: `${piece.piece.coordinates.raw * cellSize + 65}px`,
+            left: `${piece.piece.col * cellSize + 63}px`,
+            top: `${piece.piece.row * cellSize + 65}px`,
             cursor: "pointer",
             width: "60px",
             height: "60px",
@@ -152,8 +152,8 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           src={PieceOrange}
           className="absolute"
           style={{
-            left: `${piece.piece.coordinates.col * cellSize + 63}px`,
-            top: `${piece.piece.coordinates.raw * cellSize + 55}px`,
+            left: `${piece.piece.col * cellSize + 63}px`,
+            top: `${piece.piece.row * cellSize + 55}px`,
             cursor: "pointer",
             width: "60px",
             height: "60px",
@@ -168,7 +168,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
           className="absolute border border-green-500"
           style={{
             left: `${move.col * cellSize + 63}px`,
-            top: `${move.raw * cellSize + 58}px`,
+            top: `${move.row * cellSize + 58}px`,
             width: "60px",
             height: "60px",
             cursor: "pointer",

@@ -2,15 +2,18 @@
 import { Position } from "../bindings";
 
 export interface Coordinates {
-  raw: number;
+  row: number;
   col: number;
 }
 
 export interface Piece {
   player: string;
   position: Position;
-  coordinates: Coordinates;
-  
+
+  row: number;
+  col: number;
+  // coordinates: Coordinates;
+
   is_king: boolean;
   is_alive: boolean;
 }
@@ -23,18 +26,18 @@ export interface PieceUI {
 export const createInitialPieces = (playerAddress: string) => {
 
   const initialOrangePieces: PieceUI[] = [
-    { id: 1, piece: { player: playerAddress, position: Position.Down, coordinates: {raw: 7, col: 1}, is_king: false, is_alive: true}},
-    { id: 2, piece: { player: playerAddress, position: Position.Down, coordinates: {raw: 7, col: 3}, is_king: false, is_alive: true}},
-    { id: 3, piece: { player: playerAddress, position: Position.Down, coordinates: {raw: 7, col: 5}, is_king: false, is_alive: true}},
-    { id: 4, piece: { player: playerAddress, position: Position.Down, coordinates: {raw: 7, col: 7}, is_king: false, is_alive: true}},
-    { id: 5, piece: { player: playerAddress, position: Position.Down, coordinates: {raw: 6, col: 0}, is_king: false, is_alive: true}},
-    { id: 6, piece: { player: playerAddress, position: Position.Down, coordinates: {raw: 6, col: 2}, is_king: false, is_alive: true}},
-    { id: 7, piece: { player: playerAddress, position: Position.Down, coordinates: {raw: 6, col: 4}, is_king: false, is_alive: true}},
-    { id: 8, piece: { player: playerAddress, position: Position.Down, coordinates: {raw: 6, col: 6}, is_king: false, is_alive: true}},
-    { id: 9, piece: { player: playerAddress, position: Position.Down, coordinates: {raw: 5, col: 1}, is_king: false, is_alive: true}},
-    { id: 10, piece: { player: playerAddress, position: Position.Down, coordinates: {raw: 5, col: 3}, is_king: false, is_alive: true}},
-    { id: 11, piece: { player: playerAddress, position: Position.Down, coordinates: {raw: 5, col: 5}, is_king: false, is_alive: true}},
-    { id: 15, piece: { player: playerAddress, position: Position.Down, coordinates: {raw: 5, col: 7}, is_king: false, is_alive: true}},
+    { id: 1, piece: { player: playerAddress, position: Position.Down, row: 7, col: 0, is_king: false, is_alive: true}},
+    { id: 2, piece: { player: playerAddress, position: Position.Down, row: 7, col: 2, is_king: false, is_alive: true}},
+    { id: 3, piece: { player: playerAddress, position: Position.Down, row: 7, col: 4, is_king: false, is_alive: true}},
+    { id: 4, piece: { player: playerAddress, position: Position.Down, row: 7, col: 6, is_king: false, is_alive: true}},
+    { id: 5, piece: { player: playerAddress, position: Position.Down, row: 6, col: 1, is_king: false, is_alive: true}},
+    { id: 6, piece: { player: playerAddress, position: Position.Down, row: 6, col: 3, is_king: false, is_alive: true}},
+    { id: 7, piece: { player: playerAddress, position: Position.Down, row: 6, col: 5, is_king: false, is_alive: true}},
+    { id: 8, piece: { player: playerAddress, position: Position.Down, row: 6, col: 7, is_king: false, is_alive: true}},
+    { id: 9, piece: { player: playerAddress, position: Position.Down, row: 5, col: 0, is_king: false, is_alive: true}},
+    { id: 10, piece: { player: playerAddress, position: Position.Down, row: 5, col: 2, is_king: false, is_alive: true}},
+    { id: 11, piece: { player: playerAddress, position: Position.Down, row: 5, col: 4, is_king: false, is_alive: true}},
+    { id: 15, piece: { player: playerAddress, position: Position.Down, row: 5, col: 6, is_king: false, is_alive: true}},
   ];
 
   const initialBlackPieces: PieceUI[] = [
@@ -43,7 +46,7 @@ export const createInitialPieces = (playerAddress: string) => {
       piece: {
         player: playerAddress,
         position: Position.Up,
-        coordinates: { raw: 2, col: 0 },
+        row: 2, col: 1 ,
         is_king: false,
         is_alive: true,
       },
@@ -53,7 +56,7 @@ export const createInitialPieces = (playerAddress: string) => {
       piece: {
         player: playerAddress,
         position: Position.Up,
-        coordinates: { raw: 2, col: 2 },
+        row: 2, col: 3 ,
         is_king: false,
         is_alive: true,
       },
@@ -63,7 +66,7 @@ export const createInitialPieces = (playerAddress: string) => {
       piece: {
         player: playerAddress,
         position: Position.Up,
-        coordinates: { raw: 2, col: 4 },
+        row: 2, col: 5 ,
         is_king: false,
         is_alive: true,
       },
@@ -73,7 +76,7 @@ export const createInitialPieces = (playerAddress: string) => {
       piece: {
         player: playerAddress,
         position: Position.Up,
-        coordinates: { raw: 2, col: 6 },
+        row: 2, col: 7 ,
         is_king: false,
         is_alive: true,
       },
@@ -83,7 +86,7 @@ export const createInitialPieces = (playerAddress: string) => {
       piece: {
         player: playerAddress,
         position: Position.Up,
-        coordinates: { raw: 1, col: 1 },
+        row: 1, col: 0 ,
         is_king: false,
         is_alive: true,
       },
@@ -93,7 +96,7 @@ export const createInitialPieces = (playerAddress: string) => {
       piece: {
         player: playerAddress,
         position: Position.Up,
-        coordinates: { raw: 1, col: 3 },
+        row: 1, col: 2 ,
         is_king: false,
         is_alive: true,
       },
@@ -103,7 +106,7 @@ export const createInitialPieces = (playerAddress: string) => {
       piece: {
         player: playerAddress,
         position: Position.Up,
-        coordinates: { raw: 1, col: 5 },
+        row: 1, col: 4 ,
         is_king: false,
         is_alive: true,
       },
@@ -113,7 +116,7 @@ export const createInitialPieces = (playerAddress: string) => {
       piece: {
         player: playerAddress,
         position: Position.Up,
-        coordinates: { raw: 1, col: 7 },
+        row: 1, col: 6 ,
         is_king: false,
         is_alive: true,
       },
@@ -123,7 +126,7 @@ export const createInitialPieces = (playerAddress: string) => {
       piece: {
         player: playerAddress,
         position: Position.Up,
-        coordinates: { raw: 0, col: 0 },
+        row: 0, col: 1 ,
         is_king: false,
         is_alive: true,
       },
@@ -133,7 +136,7 @@ export const createInitialPieces = (playerAddress: string) => {
       piece: {
         player: playerAddress,
         position: Position.Up,
-        coordinates: { raw: 0, col: 2 },
+        row: 0, col: 3 ,
         is_king: false,
         is_alive: true,
       },
@@ -143,7 +146,7 @@ export const createInitialPieces = (playerAddress: string) => {
       piece: {
         player: playerAddress,
         position: Position.Up,
-        coordinates: { raw: 0, col: 4 },
+        row: 0, col: 5 ,
         is_king: false,
         is_alive: true,
       },
@@ -153,7 +156,7 @@ export const createInitialPieces = (playerAddress: string) => {
       piece: {
         player: playerAddress,
         position: Position.Up,
-        coordinates: { raw: 0, col: 6 },
+        row: 0, col: 7 ,
         is_king: false,
         is_alive: true,
       },

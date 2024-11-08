@@ -81,12 +81,12 @@ export function setupWorld(provider: DojoProvider) {
 		const movePiece = async (account: Account, currentPiece: Piece, newCoordinatesPosition: Coordinates) => {
 			try {
 				return await provider.execute(
-
 					account,
 					{
 						contractName: "actions",
 						entrypoint: "move_piece",
-						calldata: [currentPiece, newCoordinatesPosition],
+					//TODO:refactor this
+						calldata: [currentPiece.row,currentPiece.col,currentPiece.player,currentPiece.position,currentPiece.is_king,currentPiece.is_alive, currentPiece.row,currentPiece.col],
 					}, namespace
 				);
 			} catch (error) {
