@@ -6,12 +6,12 @@ import GameOver from "../components/GameOver";
 import Winner from "../components/Winner";
 import { createInitialPieces, PieceUI, Coordinates } from "./InitPieces";
 import ControllerButton from '../connector/ControllerButton';
-import CaptureMoves from "./CaptureMove";
-
 import BackgroundCheckers from "../assets/BackgrounCheckers.png";
 import Board from "../assets/Board.png";
 import PieceBlack from "../assets/PieceBlack.svg";
 import PieceOrange from "../assets/PieceOrange.svg";
+import QueenBlack from "../assets/QueenBlack.png";  
+import QueenOrange from "../assets/QueenOrange.png";  
 import Player1 from "../assets/Player1.png";
 import Player2 from "../assets/Player2.png";
 import Return from "../assets/Return.png";
@@ -29,6 +29,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
   const [isWinner] = useState(false);
   const [selectedPieceId, setSelectedPieceId] = useState<number | null>(null);
   const [validMoves, setValidMoves] = useState<Coordinates[]>([]);
+  const [mustCapture, setMustCapture] = useState(false);
   
   const { initialBlackPieces, initialOrangePieces } = createInitialPieces(account.address);
   const [upPieces, setUpPieces] = useState<PieceUI[]>(initialBlackPieces);
@@ -40,215 +41,227 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
     return [...upPieces, ...downPieces].some(piece => piece.piece.row === row && piece.piece.col === col);
   };
 
-  const calculateValidMoves = (piece: PieceUI): Coordinates[] => {
-    const regularMoves: Coordinates[] = [];
-    const captureMoves = calculateCaptureMoves(piece);
-  
-    if (captureMoves.length > 0) {
-      return captureMoves;
-    }
-  
-    const { row, col } = piece.piece;
-    const direction = piece.piece.position === Position.Up ? 1 : -1;
-  
-    if (row + direction >= 0 && row + direction < 8) {
-      if (col - 1 >= 0 && !isCellOccupied(row + direction, col - 1)) {
-        regularMoves.push({ row: row + direction, col: col - 1 });
+  const calculateQueenMoves = (piece: PieceUI): Coordinates[] => {
+    const moves: Coordinates[] = [];
+    const directions = [
+      [-1, -1], [-1, 1], // Diagonal arriba
+      [1, -1], [1, 1]    // Diagonal abajo
+    ];
+
+    for (const [deltaRow, deltaCol] of directions) {
+      let currentRow = piece.piece.row + deltaRow;
+      let currentCol = piece.piece.col + deltaCol;
+      
+      while (currentRow >= 0 && currentRow < 8 && currentCol >= 0 && currentCol < 8) {
+        if (!isCellOccupied(currentRow, currentCol)) {
+          moves.push({
+            row: currentRow, col: currentCol,
+            capturedPiece: undefined,
+            isCapture: undefined
+          });
+        } else {
+          // Si encuentra una pieza, verifica si puede capturar
+          const isEnemy = isCellOccupiedByEnemy(currentRow, currentCol, piece.piece.position);
+          if (isEnemy) {
+            const nextRow = currentRow + deltaRow;
+            const nextCol = currentCol + deltaCol;
+            if (
+              nextRow >= 0 && nextRow < 8 && 
+              nextCol >= 0 && nextCol < 8 && 
+              !isCellOccupied(nextRow, nextCol)
+            ) {
+              moves.push({
+                row: nextRow, col: nextCol,
+                capturedPiece: undefined,
+                isCapture: undefined
+              });
+            }
+          }
+          break;
+        }
+        currentRow += deltaRow;
+        currentCol += deltaCol;
       }
-      if (col + 1 < 8 && !isCellOccupied(row + direction, col + 1)) {
-        regularMoves.push({ row: row + direction, col: col + 1 });
-      }
     }
-  
-    return regularMoves;
+    return moves;
   };
-  
+
   const calculateCaptureMoves = (piece: PieceUI): Coordinates[] => {
+    if (piece.piece.is_king) {
+      return calculateQueenMoves(piece).filter(move => move.isCapture);
+    }
+
     const captureMoves: Coordinates[] = [];
+    const { row, col } = piece.piece;
+    const directions = piece.piece.is_king ? [1, -1] : [piece.piece.position === Position.Up ? 1 : -1];
+    
+    for (const dir of directions) {
+      [-2, 2].forEach(deltaCol => {
+        const targetRow = row + (2 * dir);
+        const targetCol = col + deltaCol;
+        const middleRow = row + dir;
+        const middleCol = col + (deltaCol / 2);
+
+        if (
+          targetRow >= 0 && targetRow < 8 && 
+          targetCol >= 0 && targetCol < 8 && 
+          !isCellOccupied(targetRow, targetCol)
+        ) {
+          const isEnemyPiece = isCellOccupiedByEnemy(middleRow, middleCol, piece.piece.position);
+          if (isEnemyPiece) {
+            captureMoves.push({ 
+              row: targetRow, 
+              col: targetCol,
+              isCapture: true,
+              capturedPiece: { row: middleRow, col: middleCol }
+            });
+          }
+        }
+      });
+    }
+    
+    return captureMoves;
+  };
+
+  const calculateValidMoves = (piece: PieceUI): Coordinates[] => {
+    // Primero verifica si hay capturas disponibles para cualquier pieza
+    const allPieces = piece.piece.position === Position.Up ? upPieces : downPieces;
+    const hasAnyCaptures = allPieces.some(p => calculateCaptureMoves(p).length > 0);
+    
+    if (hasAnyCaptures) {
+      setMustCapture(true);
+      return calculateCaptureMoves(piece);
+    }
+    
+    setMustCapture(false);
+    
+    if (piece.piece.is_king) {
+      return calculateQueenMoves(piece);
+    }
+
+    const regularMoves: Coordinates[] = [];
     const { row, col } = piece.piece;
     const direction = piece.piece.position === Position.Up ? 1 : -1;
 
-    if (row + 2 * direction >= 0 && row + 2 * direction < 8) {
-      if (col - 2 >= 0) {
-        const enemyRow = row + direction;
-        const enemyCol = col - 1;
-        const targetRow = row + 2 * direction;
-        const targetCol = col - 2;
-  
-        const isEnemyPiece = isCellOccupiedByEnemy(enemyRow, enemyCol, piece.piece.position);
-        const isTargetEmpty = !isCellOccupied(targetRow, targetCol);
-        if (isEnemyPiece && isTargetEmpty) {
-          captureMoves.push({ row: targetRow, col: targetCol });
-        }
+    [-1, 1].forEach(deltaCol => {
+      const newRow = row + direction;
+      const newCol = col + deltaCol;
+      
+      if (
+        newRow >= 0 && newRow < 8 && 
+        newCol >= 0 && newCol < 8 && 
+        !isCellOccupied(newRow, newCol)
+      ) {
+        regularMoves.push({
+          row: newRow, col: newCol,
+          capturedPiece: undefined,
+          isCapture: undefined
+        });
       }
-      if (col + 2 < 8) {
-        const enemyRow = row + direction;
-        const enemyCol = col + 1;
-        const targetRow = row + 2 * direction;
-        const targetCol = col + 2;
-  
-        const isEnemyPiece = isCellOccupiedByEnemy(enemyRow, enemyCol, piece.piece.position);
-        const isTargetEmpty = !isCellOccupied(targetRow, targetCol);
-        if (isEnemyPiece && isTargetEmpty) {
-          captureMoves.push({ row: targetRow, col: targetCol });
-        }
-      }
-    }
-  
-    return captureMoves;
+    });
+
+    return regularMoves;
   };
-  
+
   const isCellOccupiedByEnemy = (row: number, col: number, position: Position): boolean => {
     const enemyPieces = position === Position.Up ? downPieces : upPieces;
     return enemyPieces.some(piece => piece.piece.row === row && piece.piece.col === col);
   };
-  
+
   const handlePieceClick = async (piece: PieceUI) => {
-    const pieceId = piece.id;
-  
-    if (selectedPieceId === pieceId) {
+    if (selectedPieceId === piece.id) {
       setSelectedPieceId(null);
       setValidMoves([]);
-    } else {
-      setSelectedPieceId(pieceId);
-  
-      const moves = calculateValidMoves(piece);
-      setValidMoves(moves);
+      return;
     }
-  
+
+    const moves = calculateValidMoves(piece);
+    
+    // Si hay capturas obligatorias y esta pieza no tiene capturas, no permitir selección
+    if (mustCapture && !moves.some(move => move.isCapture)) {
+      return;
+    }
+
+    setSelectedPieceId(piece.id);
+    setValidMoves(moves);
+
     try {
       if (account) {
-        const { row, col } = piece.piece;
-        await (await setupWorld.actions).canChoosePiece(account, piece.piece.position, { row, col });
+        await (await setupWorld.actions).canChoosePiece(account, piece.piece.position, { row: piece.piece.row, col: piece.piece.col });
       }
     } catch (error) {
       console.error("Error verificando la pieza seleccionada:", error);
     }
   };
-  
 
   const handleMoveClick = async (move: Coordinates) => {
-    if (selectedPieceId !== null) {
-      const selectedPiece = [...upPieces, ...downPieces].find(
-        (piece) => piece.id === selectedPieceId
-      );
-  
-      if (selectedPiece) {
-        console.log("Moviendo la pieza:", selectedPiece);
+    if (!selectedPieceId) return;
 
-        const piecesToUpdate =
-          selectedPiece.piece.position === Position.Up ? upPieces : downPieces;
-  
-        const updatedPieces = piecesToUpdate.map((piece: PieceUI) => {
-          if (piece.id === selectedPieceId) {
-            return {
-              ...piece,
-              piece: { ...piece.piece, row: move.row, col: move.col },
-            };
-          }
-          return piece;
-        });
-  
-        if (selectedPiece.piece.position === Position.Down) {
-          setDownPieces(updatedPieces);
-        } else {
-          setUpPieces(updatedPieces);
-        }
-  
-        try {
-          if (account) {
-            const movedPiece = await (await setupWorld.actions).movePiece(
-              account,
-              selectedPiece.piece,
-              move
-            );
-            console.log(
-              movedPiece.transaction_hash,
-              "movePiece transaction_hash success"
-            );
-          }
-        } catch (error) {
-          console.error("Error al mover la pieza:", error);
-        }
-  
-        setSelectedPieceId(null);
-        setValidMoves([]);
+    const selectedPiece = [...upPieces, ...downPieces].find(piece => piece.id === selectedPieceId);
+    if (!selectedPiece) return;
+    console.log("Moviendo la pieza:", selectedPiece);
+
+    const piecesToUpdate = selectedPiece.piece.position === Position.Up ? upPieces : downPieces;
+    const enemyPieces = selectedPiece.piece.position === Position.Up ? downPieces : upPieces;
+
+    // Manejar captura
+    if (move.isCapture && move.capturedPiece) {
+      const updatedEnemyPieces = enemyPieces.filter(
+        piece => !(piece.piece.row === move.capturedPiece.row && piece.piece.col === move.capturedPiece.col)
+      );
+      
+      if (selectedPiece.piece.position === Position.Up) {
+        setDownPieces(updatedEnemyPieces);
+      } else {
+        setUpPieces(updatedEnemyPieces);
       }
     }
-  };
 
-  const handleCapture = async (move: Coordinates, capturedPiece: PieceUI) => {
+    // Actualizar posición de la pieza movida
+    const shouldPromoteToQueen = 
+      (selectedPiece.piece.position === Position.Up && move.row === 7) ||
+      (selectedPiece.piece.position === Position.Down && move.row === 0);
 
-    const updatePieces = (pieces: PieceUI[]) =>
-      pieces.filter((piece) => piece.id !== capturedPiece.id);
+    const updatedPieces = piecesToUpdate.map((piece: PieceUI) => {
+      if (piece.id === selectedPieceId) {
+        return {
+          ...piece,
+          piece: {
+            ...piece.piece,
+            row: move.row,
+            col: move.col,
+            is_king: shouldPromoteToQueen || piece.piece.is_king
+          }
+        };
+      }
+      return piece;
+    });
 
-    if (capturedPiece.piece.position === Position.Up) {
-      setUpPieces(updatePieces(upPieces));
+    if (selectedPiece.piece.position === Position.Up) {
+      setUpPieces(updatedPieces);
     } else {
-      setDownPieces(updatePieces(downPieces));
+      setDownPieces(updatedPieces);
     }
 
-    await handleMoveClick(move);
-  };
+    try {
+      if (account) {
+        const movedPiece = await (await setupWorld.actions).movePiece(
+          account,
+          selectedPiece.piece,
+          move
+        );
+        console.log(
+          movedPiece.transaction_hash,
+          "movePiece transaction_hash success"
+        );
+      }
+    } catch (error) {
+      console.error("Error al mover la pieza:", error);
+    }
 
-  const renderPieces = () => (
-    <>
-      {upPieces.map((piece) => (
-        <img
-          key={piece.id}
-          src={PieceBlack}
-          className="absolute"
-          style={{
-            left: `${piece.piece.col * cellSize + 63}px`,
-            top: `${piece.piece.row * cellSize + 63}px`,
-            cursor: "pointer",
-            width: "60px",
-            height: "60px",
-            border: selectedPieceId === piece.id ? "2px solid yellow" : "none",
-          }}
-          onClick={async () => await handlePieceClick(piece)}
-        />
-      ))}
-      {downPieces.map((piece) => (
-        <img
-          key={piece.id}
-          src={PieceOrange}
-          className="absolute"
-          style={{
-            left: `${piece.piece.col * cellSize + 64}px`,
-            top: `${piece.piece.row * cellSize + 55}px`,
-            cursor: "pointer",
-            width: "60px",
-            height: "60px",
-            border: selectedPieceId === piece.id ? "2px solid yellow" : "none",
-          }}
-          onClick={() => handlePieceClick(piece)}
-        />
-      ))}
-      {validMoves.map((move, index) => (
-        <div
-          key={index}
-          className="absolute border border-green-500"
-          style={{
-            left: `${move.col * cellSize + 63}px`,
-            top: `${move.row * cellSize + 63}px`,
-            width: "60px",
-            height: "60px",
-            cursor: "pointer",
-            backgroundColor: "rgba(0, 255, 0, 0.5)",
-          }}
-          onClick={() => handleMoveClick(move)}
-        />
-      ))}
-      <CaptureMoves
-        selectedPiece={selectedPieceId !== null ? [...upPieces, ...downPieces].find(piece => piece.id === selectedPieceId) || null : null}
-        upPieces={upPieces}
-        downPieces={downPieces}
-        cellSize={cellSize}
-        onCapture={handleCapture}
-      />
-    </>
-  );
+    setSelectedPieceId(null);
+    setValidMoves([]);
+  };
 
   return (
     <div
@@ -256,21 +269,20 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
       style={{
         backgroundImage: `url(${BackgroundCheckers})`,
         backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <div
-        style={{
-          position: 'absolute',
-          top: '20px',
-          right: '20px',
-          display: 'flex',
-          gap: '20px',
-          zIndex: 2,
-        }}
-      >
-        <ControllerButton />
-      </div>
+        backgroundPosition: "center",      }}
+        >
+          <div
+            style={{
+              position: 'absolute',
+              top: '20px',
+              right: '20px',
+              display: 'flex',
+              gap: '20px',
+              zIndex: 2,
+            }}
+          >
+            <ControllerButton />
+          </div>
       {isGameOver && <GameOver />}
       {isWinner && <Winner />}
       <img
@@ -292,7 +304,58 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
             alt="Board"
             className="w-[800px] h-[800px] object-contain"
           />
-          {arePiecesVisible && renderPieces()}
+          {arePiecesVisible && (
+            <>
+              {upPieces.map((piece) => (
+                <img
+                  key={piece.id}
+                  src={piece.piece.is_king ? QueenBlack : PieceBlack}
+                  className="absolute"
+                  style={{
+                    left: `${piece.piece.col * cellSize + 63}px`,
+                    top: `${piece.piece.row * cellSize + 63}px`,
+                    cursor: "pointer",
+                    width: "60px",
+                    height: "60px",
+                    border: selectedPieceId === piece.id ? "2px solid yellow" : "none",
+                  }}
+                  onClick={() => handlePieceClick(piece)}
+                />
+              ))}
+              {downPieces.map((piece) => (
+                <img
+                  key={piece.id}
+                  src={piece.piece.is_king ? QueenOrange : PieceOrange}
+                  className="absolute"
+                  style={{
+                    left: `${piece.piece.col * cellSize + 64}px`,
+                    top: `${piece.piece.row * cellSize + 55}px`,
+                    cursor: "pointer",
+                    width: "60px",
+                    height: "60px",
+                    border: selectedPieceId === piece.id ? "2px solid yellow" : "none",
+                  }}
+                  onClick={() => handlePieceClick(piece)}
+                />
+              ))}
+              {validMoves.map((move, index) => (
+                <div
+                  key={`move-${index}`}
+                  className="absolute"
+                  style={{
+                    left: `${move.col * cellSize + 63}px`,
+                    top: `${move.row * cellSize + 63}px`,
+                    width: "60px",
+                    height: "60px",
+                    backgroundColor: move.isCapture ? "rgba(255, 0, 0, 0.3)" : "rgba(0, 255, 0, 0.3)",
+                    borderRadius: "50%",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => handleMoveClick(move)}
+                />
+              ))}
+            </>
+          )}
         </div>
         <button
           onClick={() => {
