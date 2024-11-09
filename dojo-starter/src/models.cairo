@@ -35,6 +35,7 @@ pub struct Player {
     pub remaining_pieces: u8,
 }
 
+// Future model to handle lobbies dynamically
 #[derive(Copy, Drop, Serde, Debug)]
 #[dojo::model]
 pub struct Counter {

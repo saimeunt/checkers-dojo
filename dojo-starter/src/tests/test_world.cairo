@@ -840,4 +840,101 @@ mod tests {
         assert!(new_piece.is_king == true, "piece is king");
         assert!(new_piece.position == Position::Up, "piece is not right team");
     }    
+
+    #[test]
+    fn test_session_creation() {
+        let ndef = namespace_def();
+        let mut world = spawn_test_world([ndef].span());
+
+        let player1 = starknet::contract_address_const::<0x0>();
+        let (contract_address, _) = world.dns(@"actions").unwrap();
+        let actions_system = IActionsDispatcher { contract_address };
+        let session_id = actions_system.create_lobby();
+        let session: Session = world.read_model((session_id));
+        assert!(session.state == 0, "wrong session state");
+        // Cheat call the second player
+        let player2 = starknet::contract_address_const::<0x1>();
+        starknet::testing::set_contract_address(player2);
+        actions_system.join_lobby(session_id);
+        // Re read the model once the second player joins
+        let session: Session = world.read_model((session_id));
+
+        assert!(session.player_1 == player1, "wrong player");
+        assert!(session.player_2 == player2, "wrong player");
+        assert!(session.turn == 0, "wrong turn");
+        assert!(session.state == 1, "wrong session state");
+    }
+
+    #[test]
+    fn test_turn_switch() {
+        let ndef = namespace_def();
+        let mut world = spawn_test_world([ndef].span());
+
+        let player1 = starknet::contract_address_const::<0x0>();
+        let (contract_address, _) = world.dns(@"actions").unwrap();
+        let actions_system = IActionsDispatcher { contract_address };
+        let session_id = actions_system.create_lobby();
+        // Cheat call the second player
+        let player2 = starknet::contract_address_const::<0x1>();
+        starknet::testing::set_contract_address(player2);
+        actions_system.join_lobby(session_id);
+        // Read session model
+        let session: Session = world.read_model((session_id));
+
+        assert!(session.player_1 == player1, "wrong player");
+        assert!(session.player_2 == player2, "wrong player");
+        assert!(session.turn == 0, "wrong turn");
+        assert!(session.state == 1, "wrong session state");
+
+        let valid_piece_position = Coordinates { row: 2, col: 1 };
+        let initial_piece_position: Piece = world.read_model((session_id, valid_piece_position));
+
+        assert(
+            initial_piece_position.row == 2
+                && initial_piece_position.col == 1,
+            'wrong initial piece'
+        );
+        assert(initial_piece_position.session_id == 0, 'wrong session');
+        assert(initial_piece_position.is_king == false, 'wrong initial piece');
+        assert(initial_piece_position.is_alive == true, 'wrong initial piece');
+
+        let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position, session_id);
+        assert(can_choose_piece, 'can_choose_piece failed');
+        let current_piece: Piece = world.read_model((session_id, valid_piece_position));
+        let new_coordinates_position = Coordinates { row: 3, col: 2 };
+        actions_system.move_piece(current_piece, new_coordinates_position);
+
+        // Check if turn changed for player 2
+        let session: Session = world.read_model((session_id));
+        assert!(session.turn == 1, "wrong turn");
+
+        let new_position: Piece = world.read_model((session_id, new_coordinates_position));
+
+        assert!(new_position.session_id == 0, "wrong session");
+        assert!(new_position.row == 3, "piece x is wrong");
+        assert!(new_position.col == 2, "piece y is wrong");
+        assert!(new_position.is_alive == true, "piece is not alive");
+        assert!(new_position.is_king == false, "piece is king");
+
+        let valid_piece_position56 = Coordinates { row: 5, col: 6 };
+        let can_choose_piece = actions_system
+            .can_choose_piece(Position::Down, valid_piece_position56, session_id);
+        assert(can_choose_piece, 'can_choose_piece failed');
+        let current_piece: Piece = world.read_model((session_id, valid_piece_position56));
+        let new_coordinates_position = Coordinates { row: 4, col: 5 };
+        actions_system.move_piece(current_piece, new_coordinates_position);
+
+        // Check if turn changed back to player 1
+        let session: Session = world.read_model((session_id));
+        assert!(session.turn == 0, "wrong turn");
+
+        let new_position: Piece = world.read_model((session_id, new_coordinates_position));
+
+        assert!(new_position.session_id == 0, "wrong session");
+        assert!(new_position.row == 4, "piece x is wrong");
+        assert!(new_position.col == 5, "piece y is wrong");
+        assert!(new_position.is_alive == true, "piece is not alive");
+        assert!(new_position.is_king == false, "piece is king");
+        
+    }
 }
