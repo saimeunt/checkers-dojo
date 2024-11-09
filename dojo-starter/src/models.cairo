@@ -17,7 +17,7 @@ pub struct Piece {
 
 #[derive(Copy, Drop, Serde, Debug)]
 #[dojo::model]
-pub struct Session { 
+pub struct Session {
     #[key]
     pub session_id: u64,
     pub player_1: ContractAddress,
@@ -44,10 +44,13 @@ pub struct Counter {
     pub nonce: u64
 }
 
+
 #[generate_trait]
 impl CounterImpl of CounterTrait {
     fn uuid(ref self: Counter) -> u64 {
+
         let id = self.nonce;
+
         self.nonce += 1;
         id
     }

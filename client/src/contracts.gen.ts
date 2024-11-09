@@ -125,15 +125,31 @@ export function setupWorld(provider: DojoProvider) {
 			}
 		};
 
+			const getSessionId = async (account: Account) => {
+				console.log(account,'account')
+				console.log(provider,'provider')
+				//TODO:FIX THIS CALL
+        try {
+          return await provider.call(account, {
+            contractName: "actions",
+            entrypoint: "get_session_id",
+            calldata: [],
+          },namespace);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
 		return {
-			worldDispatcher,
-			dojoName,
-			createLobby,
-			joinLobby,
-			spawn,
-			canChoosePiece,
-			movePiece,
-		};
+      worldDispatcher,
+      dojoName,
+      createLobby,
+      joinLobby,
+      spawn,
+      canChoosePiece,
+      movePiece,
+      getSessionId,
+    };
 	}
 
 	return {

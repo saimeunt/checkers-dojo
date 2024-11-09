@@ -5,7 +5,9 @@ mod tests {
     use dojo_cairo_test::{spawn_test_world, NamespaceDef, TestResource, ContractDefTrait};
 
     use dojo_starter::systems::actions::{actions, IActionsDispatcher, IActionsDispatcherTrait};
-    use dojo_starter::models::{Piece, m_Piece, Coordinates, Position, Session, m_Session, Player, m_Player};
+    use dojo_starter::models::{
+        Piece, m_Piece, Coordinates, Position, Session, m_Session, Player, m_Player
+    };
 
     fn namespace_def() -> NamespaceDef {
         let ndef = NamespaceDef {
@@ -56,7 +58,8 @@ mod tests {
 
         let piece: Piece = world.read_model((session_id, row, col));
         assert(
-            piece.position == Position::Down && piece.is_king == true && piece.session_id == 0, 'write_value_from_id failed'
+            piece.position == Position::Down && piece.is_king == true && piece.session_id == 0,
+            'write_value_from_id failed'
         );
         assert(piece.is_alive == true, 'write_value_from_id failed');
         // Test model deletion
@@ -355,7 +358,8 @@ mod tests {
 
         let valid_piece_position = Coordinates { row: 2, col: 1 };
 
-        let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position, session_id);
+        let can_choose_piece = actions_system
+            .can_choose_piece(Position::Up, valid_piece_position, session_id);
         assert(can_choose_piece, 'can_choose_piece failed');
 
         let current_piece = world.read_model((session_id, valid_piece_position));
@@ -373,10 +377,11 @@ mod tests {
         let actions_system = IActionsDispatcher { contract_address };
         let session_id = actions_system.create_lobby();
         actions_system.join_lobby(session_id);
-        
+
         let valid_piece_position = Coordinates { row: 2, col: 7 };
 
-        let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position, session_id);
+        let can_choose_piece = actions_system
+            .can_choose_piece(Position::Up, valid_piece_position, session_id);
         assert(can_choose_piece, 'can_choose_piece failed');
 
         let current_piece = world.read_model((session_id, valid_piece_position));
@@ -398,15 +403,15 @@ mod tests {
         let initial_piece_position: Piece = world.read_model((session_id, valid_piece_position));
 
         assert(
-            initial_piece_position.row == 2
-                && initial_piece_position.col == 1,
+            initial_piece_position.row == 2 && initial_piece_position.col == 1,
             'wrong initial piece'
         );
         assert(initial_piece_position.session_id == 0, 'wrong session');
         assert(initial_piece_position.is_king == false, 'wrong initial piece');
         assert(initial_piece_position.is_alive == true, 'wrong initial piece');
 
-        let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position, session_id);
+        let can_choose_piece = actions_system
+            .can_choose_piece(Position::Up, valid_piece_position, session_id);
         assert(can_choose_piece, 'can_choose_piece failed');
         let current_piece: Piece = world.read_model((session_id, valid_piece_position));
         let new_coordinates_position = Coordinates { row: 3, col: 0 };
@@ -434,15 +439,15 @@ mod tests {
         let valid_piece_position = Coordinates { row: 2, col: 3 };
         let initial_piece_position: Piece = world.read_model((session_id, valid_piece_position));
         assert(
-            initial_piece_position.row == 2
-                && initial_piece_position.col == 3,
+            initial_piece_position.row == 2 && initial_piece_position.col == 3,
             'wrong initial piece cords'
         );
         assert(initial_piece_position.session_id == 0, 'wrong session');
         assert(initial_piece_position.is_king == false, 'wrong initial piece king');
         assert(initial_piece_position.is_alive == true, 'wrong initial piece alive');
 
-        let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position, session_id);
+        let can_choose_piece = actions_system
+            .can_choose_piece(Position::Up, valid_piece_position, session_id);
         assert(can_choose_piece, 'can_choose_piece failed');
         let current_piece: Piece = world.read_model((session_id, valid_piece_position));
         let new_coordinates_position = Coordinates { row: 3, col: 2 };
@@ -471,15 +476,15 @@ mod tests {
         let initial_piece_position: Piece = world.read_model((session_id, valid_piece_position));
 
         assert(
-            initial_piece_position.row == 2
-                && initial_piece_position.col == 5,
+            initial_piece_position.row == 2 && initial_piece_position.col == 5,
             'wrong initial piece'
         );
         assert(initial_piece_position.session_id == 0, 'wrong session');
         assert(initial_piece_position.is_king == false, 'wrong initial piece');
         assert(initial_piece_position.is_alive == true, 'wrong initial piece');
 
-        let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position, session_id);
+        let can_choose_piece = actions_system
+            .can_choose_piece(Position::Up, valid_piece_position, session_id);
         assert(can_choose_piece, 'can_choose_piece failed');
         let current_piece: Piece = world.read_model((session_id, valid_piece_position));
         let new_coordinates_position = Coordinates { row: 3, col: 4 };
@@ -508,15 +513,15 @@ mod tests {
         let initial_piece_position: Piece = world.read_model((session_id, valid_piece_position));
 
         assert(
-            initial_piece_position.row == 2
-                && initial_piece_position.col == 7,
+            initial_piece_position.row == 2 && initial_piece_position.col == 7,
             'wrong initial piece'
         );
         assert(initial_piece_position.session_id == 0, 'wrong session');
         assert(initial_piece_position.is_king == false, 'wrong initial piece');
         assert(initial_piece_position.is_alive == true, 'wrong initial piece');
 
-        let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position, session_id);
+        let can_choose_piece = actions_system
+            .can_choose_piece(Position::Up, valid_piece_position, session_id);
         assert(can_choose_piece, 'can_choose_piece failed');
         let current_piece: Piece = world.read_model((session_id, valid_piece_position));
         let new_coordinates_position = Coordinates { row: 3, col: 6 };
@@ -545,15 +550,15 @@ mod tests {
         let initial_piece_position: Piece = world.read_model((session_id, valid_piece_position));
 
         assert(
-            initial_piece_position.row == 2
-                && initial_piece_position.col == 1,
+            initial_piece_position.row == 2 && initial_piece_position.col == 1,
             'wrong initial piece'
         );
         assert(initial_piece_position.session_id == 0, 'wrong session');
         assert(initial_piece_position.is_king == false, 'wrong initial piece');
         assert(initial_piece_position.is_alive == true, 'wrong initial piece');
 
-        let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position, session_id);
+        let can_choose_piece = actions_system
+            .can_choose_piece(Position::Up, valid_piece_position, session_id);
         assert(can_choose_piece, 'can_choose_piece failed');
         let current_piece: Piece = world.read_model((session_id, valid_piece_position));
         let new_coordinates_position = Coordinates { row: 3, col: 2 };
@@ -582,15 +587,15 @@ mod tests {
         let initial_piece_position: Piece = world.read_model((session_id, valid_piece_position));
 
         assert(
-            initial_piece_position.row == 2
-                && initial_piece_position.col == 1,
+            initial_piece_position.row == 2 && initial_piece_position.col == 1,
             'wrong initial piece'
         );
         assert(initial_piece_position.session_id == 0, 'wrong session');
         assert(initial_piece_position.is_king == false, 'wrong initial piece');
         assert(initial_piece_position.is_alive == true, 'wrong initial piece');
 
-        let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position, session_id);
+        let can_choose_piece = actions_system
+            .can_choose_piece(Position::Up, valid_piece_position, session_id);
         assert(can_choose_piece, 'can_choose_piece failed');
         let current_piece: Piece = world.read_model((session_id, valid_piece_position));
         let new_coordinates_position = Coordinates { row: 3, col: 2 };
@@ -643,15 +648,15 @@ mod tests {
         let initial_piece_position: Piece = world.read_model((session_id, valid_piece_position));
 
         assert(
-            initial_piece_position.row == 2
-                && initial_piece_position.col == 1,
+            initial_piece_position.row == 2 && initial_piece_position.col == 1,
             'wrong initial piece'
         );
         assert(initial_piece_position.session_id == 0, 'wrong session');
         assert(initial_piece_position.is_king == false, 'wrong initial piece');
         assert(initial_piece_position.is_alive == true, 'wrong initial piece');
 
-        let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position, session_id);
+        let can_choose_piece = actions_system
+            .can_choose_piece(Position::Up, valid_piece_position, session_id);
         assert(can_choose_piece, 'can_choose_piece failed');
         let current_piece: Piece = world.read_model((session_id, valid_piece_position));
         let new_coordinates_position = Coordinates { row: 3, col: 2 };
@@ -680,8 +685,8 @@ mod tests {
         assert!(new_position.is_alive == true, "piece is not alive");
         assert!(new_position.is_king == false, "piece is king");
 
-        let eat_position = Coordinates { row: 4, col: 3};
-        let killing_position = Coordinates { row: 3, col: 2};
+        let eat_position = Coordinates { row: 4, col: 3 };
+        let killing_position = Coordinates { row: 3, col: 2 };
         let killing_piece: Piece = world.read_model((session_id, killing_position));
         actions_system.move_piece(killing_piece, eat_position);
 
@@ -695,14 +700,14 @@ mod tests {
         let player_model: Player = world.read_model(player2);
         assert!(player_model.remaining_pieces == 11, "wrong remaining pieces");
 
-        let jump_position = Coordinates { row: 5, col: 4};
+        let jump_position = Coordinates { row: 5, col: 4 };
         let moved_piece: Piece = world.read_model((session_id, jump_position));
         assert!(moved_piece.row == 5, "piece x is wrong");
         assert!(moved_piece.col == 4, "piece y is wrong");
         assert!(moved_piece.is_alive == true, "piece is not alive");
         assert!(moved_piece.position == Position::Up, "piece is not right team");
         assert!(moved_piece.is_king == false, "piece is king");
-    }    
+    }
 
     #[test]
     fn test_move_king_piece() {
@@ -720,20 +725,20 @@ mod tests {
         let session: Session = world.read_model((session_id));
         assert(session.player_2 == player2, 'wrong player');
         // Reset player to default operation
-        starknet::testing::set_contract_address(starknet::contract_address_const::<0x0>());        
+        starknet::testing::set_contract_address(starknet::contract_address_const::<0x0>());
 
         let valid_piece_position = Coordinates { row: 2, col: 5 };
         let initial_piece_position: Piece = world.read_model((session_id, valid_piece_position));
 
         assert(
-            initial_piece_position.row == 2
-                && initial_piece_position.col == 5,
+            initial_piece_position.row == 2 && initial_piece_position.col == 5,
             'wrong initial piece'
         );
         assert(initial_piece_position.session_id == 0, 'wrong session');
         assert(initial_piece_position.is_king == false, 'wrong initial piece');
         assert(initial_piece_position.is_alive == true, 'wrong initial piece');
-        let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position, session_id);
+        let can_choose_piece = actions_system
+            .can_choose_piece(Position::Up, valid_piece_position, session_id);
         assert(can_choose_piece, 'can_choose_piece failed');
         let current_piece: Piece = world.read_model((session_id, valid_piece_position));
         let new_coordinates_position = Coordinates { row: 3, col: 4 };
@@ -761,7 +766,7 @@ mod tests {
 
         // Cheat pieces to make way for the king
         let cheat_cords = Coordinates { row: 3, col: 0 };
-        let moving_cords = Coordinates { row: 5, col: 2};
+        let moving_cords = Coordinates { row: 5, col: 2 };
         let moving_piece: Piece = world.read_model((session_id, moving_cords));
         actions_system.move_piece(moving_piece, cheat_cords);
 
@@ -772,8 +777,8 @@ mod tests {
         assert!(cheat_piece.is_king == false, "piece is king");
         assert!(cheat_piece.position == Position::Down, "piece is not right team");
 
-        let cheat_cords = Coordinates { row: 4, col: 1};
-        let moving_cords = Coordinates { row: 6, col: 1};
+        let cheat_cords = Coordinates { row: 4, col: 1 };
+        let moving_cords = Coordinates { row: 6, col: 1 };
         let moving_piece: Piece = world.read_model((session_id, moving_cords));
         actions_system.move_piece(moving_piece, cheat_cords);
 
@@ -786,8 +791,8 @@ mod tests {
         assert!(cheat_piece.position == Position::Down, "piece is not right team");
 
         // Move actual piece
-        let moving_cords = Coordinates { row: 6, col: 1};
-        let actual_cords = Coordinates { row: 7, col: 0};
+        let moving_cords = Coordinates { row: 6, col: 1 };
+        let actual_cords = Coordinates { row: 7, col: 0 };
         let moving_piece: Piece = world.read_model((session_id, actual_cords));
         actions_system.move_piece(moving_piece, moving_cords);
         let actual_piece: Piece = world.read_model((session_id, moving_cords));
@@ -800,7 +805,7 @@ mod tests {
         assert!(actual_piece.position == Position::Down, "piece is not right team");
 
         // Move enemy piece to become king
-        let new_coordinates_position = Coordinates { row: 5, col: 2};
+        let new_coordinates_position = Coordinates { row: 5, col: 2 };
         let current_cords = Coordinates { row: 4, col: 3 };
         let current_piece: Piece = world.read_model((session_id, current_cords));
         actions_system.move_piece(current_piece, new_coordinates_position);
@@ -813,11 +818,11 @@ mod tests {
         assert!(new_piece.is_king == false, "piece is king");
         assert!(new_piece.position == Position::Up, "piece is not right team");
 
-        let actual_cords = Coordinates { row: 5, col: 2};
-        let moving_cords = Coordinates { row: 6, col: 1};
+        let actual_cords = Coordinates { row: 5, col: 2 };
+        let moving_cords = Coordinates { row: 6, col: 1 };
         let moving_piece: Piece = world.read_model((session_id, actual_cords));
         actions_system.move_piece(moving_piece, moving_cords);
-        let new_cords = Coordinates { row: 7, col: 0};
+        let new_cords = Coordinates { row: 7, col: 0 };
         let actual_piece: Piece = world.read_model((session_id, new_cords));
 
         assert!(actual_piece.session_id == 0, "wrong session");
@@ -827,7 +832,7 @@ mod tests {
         assert!(actual_piece.is_king == true, "piece is king");
         assert!(actual_piece.position == Position::Up, "piece is not right team");
 
-        let new_coordinates_position = Coordinates { row: 3, col: 4};
+        let new_coordinates_position = Coordinates { row: 3, col: 4 };
         let current_cords = Coordinates { row: 7, col: 0 };
         let current_piece: Piece = world.read_model((session_id, current_cords));
         actions_system.move_piece(current_piece, new_coordinates_position);
@@ -839,7 +844,7 @@ mod tests {
         assert!(new_piece.is_alive == true, "piece is not alive");
         assert!(new_piece.is_king == true, "piece is king");
         assert!(new_piece.position == Position::Up, "piece is not right team");
-    }    
+    }
 
     #[test]
     fn test_session_creation() {
@@ -890,15 +895,15 @@ mod tests {
         let initial_piece_position: Piece = world.read_model((session_id, valid_piece_position));
 
         assert(
-            initial_piece_position.row == 2
-                && initial_piece_position.col == 1,
+            initial_piece_position.row == 2 && initial_piece_position.col == 1,
             'wrong initial piece'
         );
         assert(initial_piece_position.session_id == 0, 'wrong session');
         assert(initial_piece_position.is_king == false, 'wrong initial piece');
         assert(initial_piece_position.is_alive == true, 'wrong initial piece');
 
-        let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position, session_id);
+        let can_choose_piece = actions_system
+            .can_choose_piece(Position::Up, valid_piece_position, session_id);
         assert(can_choose_piece, 'can_choose_piece failed');
         let current_piece: Piece = world.read_model((session_id, valid_piece_position));
         let new_coordinates_position = Coordinates { row: 3, col: 2 };
@@ -935,6 +940,5 @@ mod tests {
         assert!(new_position.col == 5, "piece y is wrong");
         assert!(new_position.is_alive == true, "piece is not alive");
         assert!(new_position.is_king == false, "piece is king");
-        
     }
 }

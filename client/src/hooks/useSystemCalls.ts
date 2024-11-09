@@ -20,7 +20,18 @@ export const useSystemCalls = () => {
         } 
     }
 
+    const getSessionId= async()=>{
+      try{
+        const id= await (await setupWorld.actions).getSessionId(account);
+        console.log(id,'id')
+        return id
+      } catch(err){
+        throw new Error(`getSessionId failed: ${err}`);
+      }
+    }
+
     return {
       createLobby,
+      getSessionId,
     };
 };
