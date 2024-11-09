@@ -9,7 +9,7 @@ mod tests {
 
     fn namespace_def() -> NamespaceDef {
         let ndef = NamespaceDef {
-            namespace: "dojo_starter", resources: [
+            namespace: "checkers_marq", resources: [
                 TestResource::Model(m_Piece::TEST_CLASS_HASH.try_into().unwrap()),
                 TestResource::Model(m_Session::TEST_CLASS_HASH.try_into().unwrap()),
                 TestResource::Model(m_Player::TEST_CLASS_HASH.try_into().unwrap()),
@@ -18,7 +18,7 @@ mod tests {
                 TestResource::Event(actions::e_Winner::TEST_CLASS_HASH.try_into().unwrap()),
                 TestResource::Contract(
                     ContractDefTrait::new(actions::TEST_CLASS_HASH, "actions")
-                        .with_writer_of([dojo::utils::bytearray_hash(@"dojo_starter")].span())
+                        .with_writer_of([dojo::utils::bytearray_hash(@"checkers_marq")].span())
                 )
             ].span()
         };
