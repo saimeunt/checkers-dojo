@@ -1122,7 +1122,7 @@
   "contracts": [
     {
       "address": "0x44b8cd097c84503c21a597e0370fd371b47e6f30de07db42e0bedd3fadf2420",
-      "class_hash": "0x1587c430b3a9f955c78dae05f43846e7b6e6967a7bfc7732dc574f69a54a8b2",
+      "class_hash": "0x1ff5493b391477941194f780160486d432c6576699ca3df03041e647c51b327",
       "abi": [
         {
           "type": "impl",
@@ -1461,7 +1461,7 @@
   "models": [
     {
       "members": [],
-      "class_hash": "0x673f92982a42d5fc01e564b0c0f9944177c73750353286373297bcf2d81b731",
+      "class_hash": "0x83a0991024f0bab017992d2f7240960a3e59d03855405a03025eaef5411f5b",
       "tag": "Counter"
     },
     {
@@ -1483,12 +1483,12 @@
   "events": [
     {
       "members": [],
-      "class_hash": "0x6d879daa78ff80410b1e38508b86d4c32ee11c7a0ede51c57325f6dfa0e0bef",
+      "class_hash": "0x3981e460c033e610cfe91eee56515a0e3ca0b7193906930db6df39035704741",
       "tag": "Killed"
     },
     {
       "members": [],
-      "class_hash": "0x657c0c0618b2faf05305ee06baeaee40c2811315467d11d4f30a678394d3a0b",
+      "class_hash": "0x7de94b7f929bfb65d57ade949a336cd1123bb308e9125ae40da70cac6d7d18b",
       "tag": "Moved"
     },
     {

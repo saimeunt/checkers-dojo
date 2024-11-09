@@ -73,7 +73,7 @@ impl PositionIntoFelt252 of Into<Position, felt252> {
     }
 }
 
-#[derive(Copy, Drop, Serde, IntrospectPacked, Debug)]
+#[derive(Copy, Drop, Serde, Introspect, Debug)]
 pub struct Coordinates {
     pub row: u8,
     pub col: u8

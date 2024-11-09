@@ -64,7 +64,6 @@ pub mod actions {
     #[abi(embed_v0)]
     impl ActionsImpl of IActions<ContractState> {
         fn create_lobby(ref self: ContractState) -> u64 {
-            // TODO: Make a way to store the session_id properly so that it is always unique
             let mut world = self.world_default();
             let player = get_caller_address();
             let mut counter: Counter = world.read_model(0);
@@ -73,7 +72,6 @@ pub mod actions {
             world.write_model(@counter);
 
             let session = Session {
-                // TODO: Refactor hardcoded session_id
                 session_id: id,
                 player_1: player,
                 player_2: starknet::contract_address_const::<0x0>(),
@@ -81,7 +79,6 @@ pub mod actions {
                 winner: starknet::contract_address_const::<0x0>(),
                 state: 0,
             };
-            // TODO: return fetched session_id
             world.write_model(@session);
             // Initialize the pieces for the session
             self.initialize_pieces_session_id(session.session_id);
