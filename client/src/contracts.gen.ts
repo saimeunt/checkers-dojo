@@ -41,14 +41,13 @@ export function setupWorld(provider: DojoProvider) {
 			}
 		};
 
-		const spawn = async (account: Account) => {
+		const createLobby = async (account: Account) => {
 			try {
 				return await provider.execute(
-
 					account,
 					{
 						contractName: "actions",
-						entrypoint: "spawn",
+						entrypoint: "create_lobby",
 						calldata: [],
 					}, namespace
 				);
@@ -57,20 +56,14 @@ export function setupWorld(provider: DojoProvider) {
 			}
 		};
 
-
-			interface Coordinates {
-        row: number;
-        col: number;
-      }
-
-		const canChoosePiece = async (account: Account, position: Position, coordinatesPosition: Coordinates) => {
+		const joinLobby = async (account: Account, sessionId: number) => {
 			try {
 				return await provider.execute(
 					account,
 					{
 						contractName: "actions",
-						entrypoint: "can_choose_piece",
-						calldata: [position, coordinatesPosition],
+						entrypoint: "join_lobby",
+						calldata: [sessionId],
 					}, namespace
 				);
 			} catch (error) {
@@ -78,15 +71,53 @@ export function setupWorld(provider: DojoProvider) {
 			}
 		};
 
-		const movePiece = async (account: Account, currentPiece: Piece, newCoordinatesPosition: Coordinates) => {
+
+		const spawn = async (account: Account, player: string, position: Position, sessionId: number) => {
+			try {
+				return await provider.execute(
+
+					account,
+					{
+						contractName: "actions",
+						entrypoint: "spawn",
+						calldata: [player, position, sessionId],
+					}, namespace
+				);
+			} catch (error) {
+				console.error(error);
+			}
+		};
+
+
+		interface Coordinates {
+			row: number;
+			col: number;
+		}
+
+		const canChoosePiece = async (account: Account, position: Position,  coordinatesPosition: Coordinates, sessionId: number) => {
+			try {
+				return await provider.execute(
+					account,
+					{
+						contractName: "actions",
+						entrypoint: "can_choose_piece",
+						calldata: [position, coordinatesPosition, sessionId],
+					}, namespace
+				);
+			} catch (error) {
+				console.error(error);
+			}
+		};
+
+		const movePiece = async (account: Account, currentPiece: Piece) => {
 			try {
 				return await provider.execute(
 					account,
 					{
 						contractName: "actions",
 						entrypoint: "move_piece",
-					//TODO:refactor this
-						calldata: [currentPiece.row,currentPiece.col,currentPiece.player,currentPiece.position,currentPiece.is_king,currentPiece.is_alive, currentPiece.row,currentPiece.col],
+						//TODO:refactor this
+						calldata: [currentPiece.row, currentPiece.col, currentPiece.player, currentPiece.position, currentPiece.is_king, currentPiece.is_alive, currentPiece.row, currentPiece.col],
 					}, namespace
 				);
 			} catch (error) {
@@ -97,6 +128,8 @@ export function setupWorld(provider: DojoProvider) {
 		return {
 			worldDispatcher,
 			dojoName,
+			createLobby,
+			joinLobby,
 			spawn,
 			canChoosePiece,
 			movePiece,
@@ -104,6 +137,6 @@ export function setupWorld(provider: DojoProvider) {
 	}
 
 	return {
-    actions: actions(),
-  };
+		actions: actions(),
+	};
 }
