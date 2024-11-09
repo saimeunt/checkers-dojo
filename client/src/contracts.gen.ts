@@ -130,7 +130,7 @@ export function setupWorld(provider: DojoProvider) {
 				console.log(provider,'provider')
 				//TODO:FIX THIS CALL
         try {
-          return await provider.call(account, {
+          return await provider.execute(account, {
             contractName: "actions",
             entrypoint: "get_session_id",
             calldata: [],
