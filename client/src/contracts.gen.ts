@@ -7,7 +7,7 @@ export function setupWorld(provider: DojoProvider) {
 
 
 	async function actions() {
-		const namespace = "dojo_starter";
+		const namespace = "checkers_marq";
 
 		const worldDispatcher = async (account: Account) => {
 			try {
@@ -52,7 +52,7 @@ export function setupWorld(provider: DojoProvider) {
 					}, namespace
 				);
 			} catch (error) {
-				console.error(error);
+				console.error(error,'Error in create lobby');
 			}
 		};
 
@@ -116,8 +116,8 @@ export function setupWorld(provider: DojoProvider) {
 					{
 						contractName: "actions",
 						entrypoint: "move_piece",
-						//TODO:refactor this
-						calldata: [currentPiece.row, currentPiece.col, currentPiece.player, currentPiece.position, currentPiece.is_king, currentPiece.is_alive, currentPiece.row, currentPiece.col],
+							//sessionId=>0										//TODO:refactor this
+						calldata: [0,currentPiece.row, currentPiece.col, currentPiece.player, currentPiece.position, currentPiece.is_king, currentPiece.is_alive, currentPiece.row, currentPiece.col],
 					}, namespace
 				);
 			} catch (error) {

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import CreateBurner from "../connector/CreateBurner.tsx";
 import { SDK } from "@dojoengine/sdk";
 import { schema } from "../bindings.ts";
-import ControllerButton from '../connector/ControllerButton.tsx';
+// import ControllerButton from '../connector/ControllerButton.tsx';
 import { useSystemCalls } from "../hooks/useSystemCalls.ts";
 import { useDojo } from "../hooks/useDojo.tsx";
 
@@ -13,16 +13,18 @@ import JoinGameRectangule from "../assets/JoinGameRectangule.png";
 import ConfirmJoin from "../assets/ConfirmJoin.png";
 
 function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
-  const { account } = useDojo();
-  const { spawn } = useSystemCalls();  // Cambiar a create_session
+    const {
+      account: { account },
+      setup: { setupWorld },
+    } = useDojo();
   const navigate = useNavigate();
 
-  const handleCreateRoom = async () => {
+  const joinRoom = async () => {
     try {
       if (account) {
-        await spawn();  // Llama a create_session
-        console.log("Sesión creada con éxito.");
-        navigate('/creategame');
+        //TODO:sacar todas las funciones spawn del front
+        await(await setupWorld.actions).joinLobby(account, 0);
+        navigate("/creategame");
       } else {
         console.warn("Cuenta no conectada");
       }
@@ -91,7 +93,7 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
           zIndex: 2,
         }}
       >
-        <ControllerButton />
+        {/* <ControllerButton /> */}
         <CreateBurner />
       </div>
 
@@ -174,7 +176,7 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
 
       {/* Botón de "Confirmar" */}
       <button
-        onClick={handleCreateRoom}  // Actualizado a handleCreateRoom con create_session
+        onClick={joinRoom}  // Actualizado a handleCreateRoom con create_session
         style={{
           position: 'absolute',
           bottom: '180px',

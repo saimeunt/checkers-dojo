@@ -19,7 +19,7 @@ export const useDojoStore = createDojoStore<typeof schema>();
 
 function InitGame({ }: { sdk: SDK<typeof schema> }) {
   const { account } = useDojo();
-  const { spawn } = useSystemCalls();
+  const { createLobby } = useSystemCalls();
   const navigate = useNavigate();
 
   const [isHoveredCreate, setIsHoveredCreate] = useState(false);
@@ -28,9 +28,8 @@ function InitGame({ }: { sdk: SDK<typeof schema> }) {
   const handleCreateGame = async () => {
     try {
       if (account) {
-        await spawn();
-        console.log("Juego creado con éxito.");
-        navigate('/joinroom');
+       await createLobby().then(c=>navigate('/joinroom') );
+        
       } else {
         console.warn("Cuenta no conectada");
       }

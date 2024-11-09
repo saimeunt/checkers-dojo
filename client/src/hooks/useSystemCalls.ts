@@ -1,28 +1,26 @@
 import { useDojoStore } from "../components/Checker";
 import { useDojo } from "./useDojo";
-import { v4 as uuidv4 } from "uuid";
 
 export const useSystemCalls = () => {
-    const state = useDojoStore((state) => state);
 
     const {
         setup: { setupWorld },
         account: { account },
     } = useDojo();
 
-    const spawn = async () => {
-        const transactionId = uuidv4();
-        
+
+    const createLobby = async () =>{
         try {
-            await (await setupWorld.actions).spawn(account);
+          const createLobby = await(await setupWorld.actions).createLobby(
+            account
+          );
+          return createLobby;
         } catch (error) {
-            throw new Error(`Spawn failed: ${error}`);
-        } finally {
-            state.confirmTransaction(transactionId);
-        }
-    };
+          throw new Error(`createLobby failed: ${error}`);
+        } 
+    }
 
     return {
-        spawn,
+      createLobby,
     };
 };

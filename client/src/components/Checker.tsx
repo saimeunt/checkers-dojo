@@ -119,7 +119,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
     try {
       if (account) {
         const { row, col } = piece.piece;
-        await (await setupWorld.actions).canChoosePiece(account, piece.piece.position, { row, col });
+        await (await setupWorld.actions).canChoosePiece(account, piece.piece.position, { row, col },0);
       }
     } catch (error) {
       console.error("Error verificando la pieza seleccionada:", error);
@@ -160,8 +160,9 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
             const movedPiece = await (await setupWorld.actions).movePiece(
               account,
               selectedPiece.piece,
-              move
+              move,
             );
+            console.log(movedPiece,'movedPiece transacition')
           }
         } catch (error) {
           console.error("Error al mover la pieza:", error);

@@ -1,6 +1,6 @@
 import type { SchemaType } from "@dojoengine/sdk";
 
-// Type definition for `dojo_starter::models::PieceValue` struct
+// Type definition for `checkers_marq::models::PieceValue` struct
 export interface PieceValue {
 	fieldOrder: string[];
 	position: Position;
@@ -8,14 +8,14 @@ export interface PieceValue {
 	is_alive: boolean;
 }
 
-// Type definition for `dojo_starter::models::Coordinates` struct
+// Type definition for `checkers_marq::models::Coordinates` struct
 export interface Coordinates {
 	//fieldOrder: string[];
 	raw: number;
 	col: number;
 }
 
-// Type definition for `dojo_starter::models::Piece` struct
+// Type definition for `checkers_marq::models::Piece` struct
 export interface Piece {
 	//fieldOrder: string[];
 	player: string;
@@ -25,7 +25,7 @@ export interface Piece {
 	is_alive: boolean;
 }
 
-// Type definition for `dojo_starter::models::Position` enum
+// Type definition for `checkers_marq::models::Position` enum
 export enum Position {
 	None,
 	Up,
@@ -33,7 +33,7 @@ export enum Position {
 }
 
 export interface DojoStarterSchemaType extends SchemaType {
-	dojo_starter: {
+	checkers_marq: {
 		PieceValue: PieceValue,
 		Coordinates: Coordinates,
 		Piece: Piece,
@@ -43,7 +43,7 @@ export interface DojoStarterSchemaType extends SchemaType {
 	},
 }
 export const schema: DojoStarterSchemaType = {
-	dojo_starter: {
+	checkers_marq: {
 		PieceValue: {
 			fieldOrder: ['position', 'is_king', 'is_alive'],
 			position: Position.None,

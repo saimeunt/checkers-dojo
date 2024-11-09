@@ -26,7 +26,7 @@ function useDojoConnect({ sdk }: { sdk: SDK<typeof schema> }) {
       try {
         const subscription = await sdk.subscribeEntityQuery(
           {
-            dojo_starter: {
+            checkers_marq: {
               Piece: {
                 $: {
                   where: {
@@ -67,7 +67,7 @@ function useDojoConnect({ sdk }: { sdk: SDK<typeof schema> }) {
       try {
         await sdk.getEntities(
           {
-            dojo_starter: {
+            checkers_marq: {
               Piece: {
                 $: {
                   where: { player: { $eq: addAddressPadding(account.account.address) } },

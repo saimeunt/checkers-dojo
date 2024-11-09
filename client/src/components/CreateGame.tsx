@@ -17,18 +17,18 @@ import Player1 from "../assets/Player1_0.png";
 import Player2 from "../assets/Player2_0.png";
 import Player3 from "../assets/Player3_0.png";
 import Player4 from "../assets/Player4_0.png";
+//TODO:VER DE QUE HACER CON ESTA PAG
 
 function CreateGame({ }: { sdk: SDK<typeof schema> }) {
   const { account } = useDojo();
-  const { spawn } = useSystemCalls();
+  // const { createLobby } = useSystemCalls();
   const navigate = useNavigate();
   const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
 
   const handleCreateRoom = async () => {
     try {
       if (account) {
-        await spawn();
-        console.log("Juego creado con éxito.");
+       
         navigate('/checkers');
       } else {
         console.warn("Cuenta no conectada");

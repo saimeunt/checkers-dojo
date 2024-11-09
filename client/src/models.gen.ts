@@ -1,19 +1,19 @@
 import type { SchemaType } from "@dojoengine/sdk";
 
-// Type definition for `dojo_starter::models::Counter` struct
+// Type definition for `checkers_marq::models::Counter` struct
 export interface Counter {
 	fieldOrder: string[];
 	next_id: number;
 	game_id: number;
 }
 
-// Type definition for `dojo_starter::models::CounterValue` struct
+// Type definition for `checkers_marq::models::CounterValue` struct
 export interface CounterValue {
 	fieldOrder: string[];
 	game_id: number;
 }
 
-// Type definition for `dojo_starter::models::Piece` struct
+// Type definition for `checkers_marq::models::Piece` struct
 export interface Piece {
 	fieldOrder: string[];
 	session_id: number;
@@ -25,7 +25,7 @@ export interface Piece {
 	is_alive: boolean;
 }
 
-// Type definition for `dojo_starter::models::PieceValue` struct
+// Type definition for `checkers_marq::models::PieceValue` struct
 export interface PieceValue {
 	fieldOrder: string[];
 	player: string;
@@ -34,20 +34,20 @@ export interface PieceValue {
 	is_alive: boolean;
 }
 
-// Type definition for `dojo_starter::models::PlayerValue` struct
+// Type definition for `checkers_marq::models::PlayerValue` struct
 export interface PlayerValue {
 	fieldOrder: string[];
 	remaining_pieces: number;
 }
 
-// Type definition for `dojo_starter::models::Player` struct
+// Type definition for `checkers_marq::models::Player` struct
 export interface Player {
 	fieldOrder: string[];
 	player: string;
 	remaining_pieces: number;
 }
 
-// Type definition for `dojo_starter::models::Session` struct
+// Type definition for `checkers_marq::models::Session` struct
 export interface Session {
 	fieldOrder: string[];
 	session_id: number;
@@ -58,7 +58,7 @@ export interface Session {
 	state: number;
 }
 
-// Type definition for `dojo_starter::models::SessionValue` struct
+// Type definition for `checkers_marq::models::SessionValue` struct
 export interface SessionValue {
 	fieldOrder: string[];
 	player_1: string;
@@ -68,7 +68,7 @@ export interface SessionValue {
 	state: number;
 }
 
-// Type definition for `dojo_starter::models::Position` enum
+// Type definition for `checkers_marq::models::Position` enum
 export enum Position {
 	None,
 	Up,
@@ -76,7 +76,7 @@ export enum Position {
 }
 
 export interface DojoStarterSchemaType extends SchemaType {
-	dojo_starter: {
+	checkers_marq: {
 		Counter: Counter,
 		CounterValue: CounterValue,
 		Piece: Piece,
@@ -91,7 +91,7 @@ export interface DojoStarterSchemaType extends SchemaType {
 	},
 }
 export const schema: DojoStarterSchemaType = {
-	dojo_starter: {
+	checkers_marq: {
 		Counter: {
 			fieldOrder: ['next_id', 'game_id'],
 			next_id: 0,
