@@ -1,8 +1,8 @@
 {
   "world": {
     "class_hash": "0x139239a99d627697b19b9856beaef7896fc75375caf3d750dd76982a7afeb78",
-    "address": "0x6171ed98331e849d6084bf2b3e3186a7ddf35574dd68cab4691053ee8ab69d7",
-    "seed": "dojo_starter",
+    "address": "0x7e0aa9c93c6b71781b605aeeeb85ee7d097b592c85db0383515c7a17f262af3",
+    "seed": "checkers_marq",
     "name": "Dojo starter",
     "abi": [
       {
@@ -1121,8 +1121,8 @@
   },
   "contracts": [
     {
-      "address": "0x970018226ae14b5b7e53afc16947491d6b25debadf3ff00531337d7bb2ff5a",
-      "class_hash": "0x2adb9d1cd336e055a2e08961068e2888f9c5f44468076b42876829114984d14",
+      "address": "0x75e36e5d18899384b4d057b8b3d1d729c689998d47ddf9a1efa5a86f642ba0e",
+      "class_hash": "0x6971e9189218c5ba596a74d095290ed7cc2301930268c6c123c41267905915",
       "abi": [
         {
           "type": "impl",
@@ -1335,6 +1335,17 @@
               ],
               "outputs": [],
               "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "get_session_id",
+              "inputs": [],
+              "outputs": [
+                {
+                  "type": "core::integer::u64"
+                }
+              ],
+              "state_mutability": "view"
             }
           ]
         },
@@ -1454,14 +1465,14 @@
         }
       ],
       "init_calldata": [],
-      "tag": "dojo_starter-actions",
+      "tag": "checkers_marq-actions",
       "systems": []
     }
   ],
   "models": [
     {
       "members": [],
-      "class_hash": "0x673f92982a42d5fc01e564b0c0f9944177c73750353286373297bcf2d81b731",
+      "class_hash": "0x83a0991024f0bab017992d2f7240960a3e59d03855405a03025eaef5411f5b",
       "tag": "Counter"
     },
     {
@@ -1483,12 +1494,12 @@
   "events": [
     {
       "members": [],
-      "class_hash": "0x6d879daa78ff80410b1e38508b86d4c32ee11c7a0ede51c57325f6dfa0e0bef",
+      "class_hash": "0x3981e460c033e610cfe91eee56515a0e3ca0b7193906930db6df39035704741",
       "tag": "Killed"
     },
     {
       "members": [],
-      "class_hash": "0x657c0c0618b2faf05305ee06baeaee40c2811315467d11d4f30a678394d3a0b",
+      "class_hash": "0x7de94b7f929bfb65d57ade949a336cd1123bb308e9125ae40da70cac6d7d18b",
       "tag": "Moved"
     },
     {

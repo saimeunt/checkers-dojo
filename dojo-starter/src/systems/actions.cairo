@@ -68,11 +68,11 @@ pub mod actions {
             let player = get_caller_address();
             let mut counter: Counter = world.read_model(0);
 
-            let id = counter.uuid();
+            let _id = counter.uuid();
             world.write_model(@counter);
-
+            // TODO: Refactor the session_id for production
             let session = Session {
-                session_id: id,
+                session_id: 0,
                 player_1: player,
                 player_2: starknet::contract_address_const::<0x0>(),
                 turn: 0,
@@ -85,7 +85,7 @@ pub mod actions {
             // Spawn the pieces for the player
             self.spawn(player, Position::Up, session.session_id);
 
-            id
+            0
         }
 
 
@@ -128,9 +128,9 @@ pub mod actions {
 
             // Check if it is the player's turn
             if position == Position::Up && turn == 1 {
-                return false;
+                panic!("Not your turn");
             } else if position == Position::Down && turn == 0 {
-                return false;
+                panic!("Not your turn");
             }
 
             // Check is current coordinates is valid
