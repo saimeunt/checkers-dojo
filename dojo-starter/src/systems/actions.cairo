@@ -58,9 +58,14 @@ pub mod actions {
             // TODO: Make a way to store the session_id properly so that it is always unique
             let mut world = self.world_default();
             let player = get_caller_address();
+            let mut counter: Counter = world.read_model(0);
+
+            let id = counter.uuid();
+            world.write_model(@counter);
+
             let session = Session {
                 // TODO: Refactor hardcoded session_id
-                session_id: 0,
+                session_id: id,
                 player_1: player,
                 player_2: starknet::contract_address_const::<0x0>(),
                 turn: 0,
