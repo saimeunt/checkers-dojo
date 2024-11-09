@@ -207,7 +207,7 @@ pub mod actions {
         // We could have a self.world with an other function to init from hash, that can be
         // constant.
         fn world_default(self: @ContractState) -> dojo::world::WorldStorage {
-            self.world(@"dojo_starter")
+            self.world(@"checkers_marq")
         }
 
         fn check_diagonal_path(self: @ContractState, start_row: u8, start_col: u8, row_step: u8, col_step: u8, session_id: u64) -> bool {
