@@ -89,6 +89,7 @@ pub mod actions {
         }
 
         fn spawn(ref self: ContractState, player: ContractAddress, position: Position, session_id: u64) {
+            let mut world = self.world_default();
             if position == Position::Up {
                 self.initialize_player_pieces(player, 0, 2, Position::Up, session_id);
             } else if position == Position::Down {
