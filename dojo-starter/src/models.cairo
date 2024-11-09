@@ -40,8 +40,17 @@ pub struct Player {
 #[dojo::model]
 pub struct Counter {
     #[key]
-    pub next_id: felt252,
-    pub game_id: felt252,
+    pub global_key: felt252,
+    pub nonce: u64
+}
+
+#[generate_trait]
+impl CounterImpl of CounterTrait {
+    fn uuid(ref self: Counter) -> u64 {
+        let id = self.nonce;
+        self.nonce += 1;
+        id
+    }
 }
 
 #[derive(Serde, Copy, Drop, Introspect, PartialEq, Debug)]
