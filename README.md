@@ -1,4 +1,4 @@
-# Checkers 
+# Checkers
 
 ![Checkers Game](client/src/assets/Checkers.png)
 
@@ -48,18 +48,6 @@ cd client
 pnpm i
 pnpm dev
 ```
-
-### Terminal 4: Start Full UI
-
-In a quarter terminal, navigate to the the-marquis folder and run:
-
-```bash
-cd the-marquis
-yarn install
-yarn start
-```
-
----
 
 ## Play
 
