@@ -5,15 +5,15 @@ import { useDojo } from "../hooks/useDojo";
 import GameOver from "../components/GameOver";
 import Winner from "../components/Winner";
 import { createInitialPieces, PieceUI, Coordinates } from "./InitPieces";
-// import ControllerButton from '../connector/ControllerButton';
+import ControllerButton from '../connector/ControllerButton';
 import BackgroundCheckers from "../assets/BackgrounCheckers.png";
 import Board from "../assets/Board.png";
 import PieceBlack from "../assets/PieceBlack.svg";
 import PieceOrange from "../assets/PieceOrange.svg";
 import QueenBlack from "../assets/QueenBlack.png";  
 import QueenOrange from "../assets/QueenOrange.png";  
-import Player1 from "../assets/Player1.png";
-import Player2 from "../assets/Player2.png";
+import Player1 from "../assets/Player1_0.png";
+import Player2 from "../assets/Player2_0.png";
 import Return from "../assets/Return.png";
 
 export const useDojoStore = createDojoStore<typeof schema>();
@@ -25,7 +25,7 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
   } = useDojo();
 
   const [arePiecesVisible] = useState(true);
-  const [isGameOver, setIsGameOver] = useState(false);
+  const [isGameOver] = useState(false);
   const [isWinner, setIsWinner] = useState(false);
   const [selectedPieceId, setSelectedPieceId] = useState<number | null>(null);
   const [validMoves, setValidMoves] = useState<Coordinates[]>([]);
@@ -42,10 +42,8 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
   // Check for a winner when scores change
 useEffect(() => {
   if (orangeScore === 0) {
-    setIsGameOver(true);
     setIsWinner(false); 
   } else if (blackScore === 0) {
-    setIsGameOver(true);
     setIsWinner(true); 
   }
 }, [orangeScore, blackScore]);
@@ -57,8 +55,8 @@ useEffect(() => {
   const calculateQueenMoves = (piece: PieceUI): Coordinates[] => {
     const moves: Coordinates[] = [];
     const directions = [
-      [-1, -1], [-1, 1], // Diagonal arriba
-      [1, -1], [1, 1]    // Diagonal abajo
+      [-1, -1], [-1, 1], 
+      [1, -1], [1, 1]    
     ];
 
     for (const [deltaRow, deltaCol] of directions) {
@@ -147,24 +145,31 @@ useEffect(() => {
     totalBlackPieces: number;
   }) => {
     return (
-      <div className="fixed top-4 left-1/2 -translate-x-1/2 flex gap-8">
-        <div className="p-4 bg-orange-100 rounded-lg shadow-lg">
-          <div className="text-center">
-             <p className="text-sm text-orange-600">Piezas capturadas</p>
-             <p className="text-2xl font-bold text-orange-800">{blackScore}</p>
-             <h3 className="font-bold text-orange-600">Naranja</h3>
-          </div>
-        </div>
-        <div className="p-4 bg-gray-100 rounded-lg shadow-lg">
-          <div className="text-center">
-          <p className="text-sm text-gray-600">Piezas capturadas</p>
-          <p className="text-2xl font-bold text-gray-800">{orangeScore}</p>
-            <h3 className="font-bold text-gray-600">Negro</h3>
-          </div>
-        </div>
+      
+<div className="fixed flex gap-8" >
+  {/* Cuadrado Naranja */}
+  <div className="relative rounded-xl" style={{ top: '788px', left: '1640px', border: "4px solid orange" }}>
+    <div className="p-4 bg-orange-100 rounded-lg shadow-lg">
+      <div className="text-center">
+        <p className="text-2xl font-bold text-orange-800">{blackScore}</p>
+        <h3 className="font-bold text-orange-600">Naranja</h3>
       </div>
-    );
-  };
+    </div>
+  </div>
+
+  {/* Cuadrado Negro */}
+  <div className="relative rounded-xl" style={{ top: '110px', left: '140px', border: "4px solid black" }}>
+    <div className="p-4 bg-gray-100 rounded-lg shadow-lg">
+      <div className="text-center">
+        <p className="text-2xl font-bold text-gray-800">{orangeScore}</p>
+        <h3 className="font-bold text-gray-600">Negro</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+    );}
+
   
 
   const calculateValidMoves = (piece: PieceUI): Coordinates[] => {
@@ -338,14 +343,14 @@ useEffect(() => {
       <img
         src={Player1}
         alt="Player 1"
-        className="fixed"
-        style={{ top: "100px", left: "80px", width: "400px" }}
+        className="fixed rounded-lg"
+        style={{  top: "110px", left: "140px", width: "90px", border: "2px solid black"}}
       />
       <img
         src={Player2}
         alt="Player 2"
-        className="fixed"
-        style={{ top: "770px", right: "80px", width: "400px" }}
+        className="fixed rounded-lg"
+        style={{ top: "790px", right: "320px", width: "90px", border: "2px solid orange"}}
       />
       <div className="flex items-center justify-center h-full">
         <div className="relative">
