@@ -20,7 +20,7 @@ const ControllerButton: React.FC = () => {
   // Recortar la dirección de la cuenta para una visualización más clara
   const slicedAddress = userAccountController
     ? `${userAccountController.slice(0, 6)}...${userAccountController.slice(-4)}`
-    : "Conectar";
+    : "Connect";
 
   return (
     <div className="relative">
@@ -53,7 +53,7 @@ const ControllerButton: React.FC = () => {
             fontWeight: "bold",
           }}
         >
-          {isConnected ? userName || "Conectado" : "Conectar"}
+          {isConnected ? userName || "Connected" : "Connect"}
         </span>
         <span
           className={`transform transition-transform duration-300 ${

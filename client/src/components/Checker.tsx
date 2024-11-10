@@ -150,16 +150,16 @@ useEffect(() => {
       <div className="fixed top-4 left-1/2 -translate-x-1/2 flex gap-8">
         <div className="p-4 bg-orange-100 rounded-lg shadow-lg">
           <div className="text-center">
-             <p className="text-sm text-orange-600">Piezas capturadas</p>
+             <p className="text-sm text-orange-600">Remaining pieces</p>
              <p className="text-2xl font-bold text-orange-800">{blackScore}</p>
-             <h3 className="font-bold text-orange-600">Naranja</h3>
+             <h3 className="font-bold text-orange-600">Orange</h3>
           </div>
         </div>
         <div className="p-4 bg-gray-100 rounded-lg shadow-lg">
           <div className="text-center">
-          <p className="text-sm text-gray-600">Piezas capturadas</p>
+          <p className="text-sm text-gray-600">Remaining pieces</p>
           <p className="text-2xl font-bold text-gray-800">{orangeScore}</p>
-            <h3 className="font-bold text-gray-600">Negro</h3>
+            <h3 className="font-bold text-gray-600">Black</h3>
           </div>
         </div>
       </div>

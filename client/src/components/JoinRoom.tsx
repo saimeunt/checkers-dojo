@@ -194,7 +194,7 @@ function JoinRoom({ }: { sdk: SDK<typeof schema> }) {
           zIndex: 5,
         }}
       >
-        Confirmar
+        Confirm
       </button>
     </div>
   );
