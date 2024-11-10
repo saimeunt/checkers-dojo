@@ -109,7 +109,7 @@ export function setupWorld(provider: DojoProvider) {
 			}
 		};
 
-		const movePiece = async (account: Account, currentPiece: Piece) => {
+		const movePiece = async (account: Account, currentPiece: Piece, move: Coordinates) => {
 			try {
 				return await provider.execute(
 					account,
@@ -117,7 +117,7 @@ export function setupWorld(provider: DojoProvider) {
 						contractName: "actions",
 						entrypoint: "move_piece",
 							//sessionId=>0										//TODO:refactor this
-						calldata: [0,currentPiece.row, currentPiece.col, currentPiece.player, currentPiece.position, currentPiece.is_king, currentPiece.is_alive, currentPiece.row, currentPiece.col],
+						calldata: [0,currentPiece.row, currentPiece.col, currentPiece.player, currentPiece.position, currentPiece.is_king, currentPiece.is_alive, move.row, move.col],
 					}, namespace
 				);
 			} catch (error) {

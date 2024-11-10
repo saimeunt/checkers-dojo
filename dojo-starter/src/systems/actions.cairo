@@ -312,7 +312,9 @@ pub mod actions {
             // Write the new coordinates to the world.
             world.write_model(@current_piece);
             // Emit an event about the move
-            world.emit_event(@Moved { session_id, player: square.player, row:square.row, col:square.col });
+            let row = new_coordinates_position.row;
+            let col = new_coordinates_position.col;
+            world.emit_event(@Moved { session_id, player: square.player, row, col });
         }
 
         fn check_has_valid_moves(self: @ContractState, piece: Piece) -> bool {
@@ -467,7 +469,6 @@ pub mod actions {
 
                 world.write_model(@square);
 
-                // TODO: Update the player model saying -1 piece
                 let player = piece.player;
                 world.emit_event(@Killed { session_id, player, row: square.row, col: square.col });
 
