@@ -1,220 +1,314 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SDK, createDojoStore } from "@dojoengine/sdk";
+import { schema, Position } from "../bindings";
+import { useDojo } from "../hooks/useDojo";
+import GameOver from "../components/GameOver";
+import Winner from "../components/Winner";
+import { createInitialPieces, PieceUI, Coordinates } from "./InitPieces";
+// import ControllerButton from '../connector/ControllerButton';
 import BackgroundCheckers from "../assets/BackgrounCheckers.png";
 import Board from "../assets/Board.png";
 import PieceBlack from "../assets/PieceBlack.svg";
 import PieceOrange from "../assets/PieceOrange.svg";
+import QueenBlack from "../assets/QueenBlack.png";  
+import QueenOrange from "../assets/QueenOrange.png";  
 import Player1 from "../assets/Player1.png";
-import Player2 from "../assets/Player1.png";
-import GameOver from "../components/GameOver";
-import Winner from "../components/Winner";
-//import useDojoConnect from "../hooks/useDojoConnect";
-import { schema, Position, Coordinates, Piece } from "../bindings.ts";
-import { useDojo } from "../hooks/useDojo.tsx";
+import Player2 from "../assets/Player2.png";
+import Return from "../assets/Return.png";
 
-// Crea el store de Dojo
 export const useDojoStore = createDojoStore<typeof schema>();
 
-function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
+function Checker({ }: { sdk: SDK<typeof schema> }) {
+  const {
+    account: { account },
+    setup: { setupWorld },
+  } = useDojo();
+
   const [arePiecesVisible] = useState(true);
-  const [isGameOver] = useState(false);
-  const [isWinner] = useState(false);
+  const [isGameOver, setIsGameOver] = useState(false);
+  const [isWinner, setIsWinner] = useState(false);
   const [selectedPieceId, setSelectedPieceId] = useState<number | null>(null);
   const [validMoves, setValidMoves] = useState<Coordinates[]>([]);
-
-  const {
-	account: { account },
-	setup: { setupWorld },
-} = useDojo();
-
-  // Todo: Fix this type, use export
-  interface PieceUI {
-    id: number;
-    piece: Piece;
-  }
-
-  const initialBlackPieces: PieceUI[] = [
-    { id: 1, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 0, col: 1}, is_king: false, is_alive: true}},
-    { id: 2, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 0, col: 3}, is_king: false, is_alive: true}},
-    { id: 3, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 0, col: 5}, is_king: false, is_alive: true}},
-    { id: 4, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 0, col: 7}, is_king: false, is_alive: true}},
-    { id: 5, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 1, col: 0}, is_king: false, is_alive: true}},
-    { id: 6, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 1, col: 2}, is_king: false, is_alive: true}},
-    { id: 7, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 1, col: 4}, is_king: false, is_alive: true}},
-    { id: 8, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 1, col: 6}, is_king: false, is_alive: true}},
-    { id: 9, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 2, col: 1}, is_king: false, is_alive: true}},
-    { id: 10, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 2, col: 3}, is_king: false, is_alive: true}},
-    { id: 11, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 2, col: 5}, is_king: false, is_alive: true}},
-    { id: 12, piece: { player: account.address,  position: Position.Up, coordinates: {raw: 2, col: 7}, is_king: false, is_alive: true}},
-  ];
-
-  const initialOrangePieces: PieceUI[] = [
-    { id: 13, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 5, col: 0}, is_king: false, is_alive: true}},
-    { id: 14, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 5, col: 2}, is_king: false, is_alive: true}},
-    { id: 15, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 5, col: 4}, is_king: false, is_alive: true}},
-    { id: 16, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 5, col: 6}, is_king: false, is_alive: true}},
-    { id: 17, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 6, col: 1}, is_king: false, is_alive: true}},
-    { id: 18, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 6, col: 3}, is_king: false, is_alive: true}},
-    { id: 19, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 6, col: 5}, is_king: false, is_alive: true}},
-    { id: 20, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 6, col: 7}, is_king: false, is_alive: true}},
-    { id: 21, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 7, col: 0}, is_king: false, is_alive: true}},
-    { id: 22, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 7, col: 2}, is_king: false, is_alive: true}},
-    { id: 23, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 7, col: 4}, is_king: false, is_alive: true}},
-    { id: 24, piece: { player: account.address,  position: Position.Down, coordinates: {raw: 7, col: 6}, is_king: false, is_alive: true}},
-  ];
-
+  const [mustCapture, setMustCapture] = useState(false);
+  const [orangeScore, setOrangeScore] = useState(12);
+  const [blackScore, setBlackScore] = useState(12);
+  
+  const { initialBlackPieces, initialOrangePieces } = createInitialPieces(account.address);
   const [upPieces, setUpPieces] = useState<PieceUI[]>(initialBlackPieces);
   const [downPieces, setDownPieces] = useState<PieceUI[]>(initialOrangePieces);
   
   const cellSize = 88;
 
-  const handlePieceClick = async (piece: PieceUI) => {
-    const pieceId = piece.id;
-    console.log("Selected piece ID:", pieceId);
+  // Check for a winner when scores change
+useEffect(() => {
+  if (orangeScore === 0) {
+    setIsGameOver(true);
+    setIsWinner(false); 
+  } else if (blackScore === 0) {
+    setIsGameOver(true);
+    setIsWinner(true); 
+  }
+}, [orangeScore, blackScore]);
 
-    if (selectedPieceId === pieceId) {
-      setSelectedPieceId(null);
-      setValidMoves([]);
-    } else {
-      setSelectedPieceId(pieceId);
-      const moves = calculateValidMoves(piece);
-      console.log("Valid moves for piece", pieceId, ":", moves);
-      setValidMoves(moves); 
-    };
-
-	try {
-		if (account) {
-			const position = piece.piece.position;
-			const coordinates = piece.piece.coordinates;
-			const canChoosePiece = await setupWorld.actions.canChoosePiece(account, position,coordinates);
-			console.log("canChoosePiece", canChoosePiece?.transaction_hash);
-		} else {
-			console.warn("Cuenta no conectada");
-		}
-	} catch (error) {
-		console.error("Error al mover la pieza:", error);
-	};
+  const isCellOccupied = (row: number, col: number): boolean => {
+    return [...upPieces, ...downPieces].some(piece => piece.piece.row === row && piece.piece.col === col);
   };
 
-  const calculateValidMoves = (piece: PieceUI): Coordinates[] => {
+  const calculateQueenMoves = (piece: PieceUI): Coordinates[] => {
     const moves: Coordinates[] = [];
-    const { raw, col } = piece.piece.coordinates;
+    const directions = [
+      [-1, -1], [-1, 1], // Diagonal arriba
+      [1, -1], [1, 1]    // Diagonal abajo
+    ];
 
-    if (piece.piece.position === Position.Up) {
-      if (raw + 1 < 8) {
-        if (col - 1 >= 0) moves.push({ raw: raw + 1, col: col - 1 });
-        if (col + 1 < 8) moves.push({ raw: raw + 1, col: col + 1 });
-      }
-    } else {
-      if (raw - 1 >= 0) {
-        if (col - 1 >= 0) moves.push({ raw: raw - 1, col: col - 1 });
-        if (col + 1 < 8) moves.push({ raw: raw - 1, col: col + 1 });
+    for (const [deltaRow, deltaCol] of directions) {
+      let currentRow = piece.piece.row + deltaRow;
+      let currentCol = piece.piece.col + deltaCol;
+      
+      while (currentRow >= 0 && currentRow < 8 && currentCol >= 0 && currentCol < 8) {
+        if (!isCellOccupied(currentRow, currentCol)) {
+          moves.push({
+            row: currentRow, 
+            col: currentCol,
+            capturedPiece: undefined,
+            isCapture: undefined
+          });
+        } else {
+          const isEnemy = isCellOccupiedByEnemy(currentRow, currentCol, piece.piece.position);
+          if (isEnemy) {
+            const nextRow = currentRow + deltaRow;
+            const nextCol = currentCol + deltaCol;
+            if (
+              nextRow >= 0 && nextRow < 8 && 
+              nextCol >= 0 && nextCol < 8 && 
+              !isCellOccupied(nextRow, nextCol)
+            ) {
+              moves.push({
+                row: nextRow,
+                col: nextCol,
+                capturedPiece: { row: currentRow, col: currentCol },
+                isCapture: true,
+              });
+            }
+          }
+          break;
+        }
+        currentRow += deltaRow;
+        currentCol += deltaCol;
       }
     }
-
     return moves;
   };
 
-  const handleMoveClick = async (move: Coordinates) => {
-    if (selectedPieceId !== null) {
-      const selectedPiece = [...upPieces, ...downPieces].find(piece => piece.id === selectedPieceId);
-   console.log("selectedPiece", selectedPiece?.piece.coordinates);
-      if (selectedPiece) {
-        let piecesToUpdate;
-        if (selectedPiece.piece.position === Position.Up) {
-          piecesToUpdate = upPieces;
-        } else if (selectedPiece.piece.position === Position.Down) {
-          piecesToUpdate = downPieces;
-        } else {
-          console.warn('Piece has invalid position: Position.None');
-          return;
-        }
+  const calculateCaptureMoves = (piece: PieceUI): Coordinates[] => {
+    if (piece.piece.is_king) {
+      return calculateQueenMoves(piece).filter(move => move.isCapture);
+    }
 
-        const updatedPieces = piecesToUpdate.map(piece => {
-          if (piece.id === selectedPieceId) {
-            return { ...piece, piece: { ...piece.piece, coordinates: move }}; 
+    const captureMoves: Coordinates[] = [];
+    const { row, col } = piece.piece;
+    const directions = piece.piece.is_king ? [1, -1] : [piece.piece.position === Position.Up ? 1 : -1];
+    
+    for (const dir of directions) {
+      [-2, 2].forEach(deltaCol => {
+        const targetRow = row + (2 * dir);
+        const targetCol = col + deltaCol;
+        const middleRow = row + dir;
+        const middleCol = col + (deltaCol / 2);
+
+        if (
+          targetRow >= 0 && targetRow < 8 && 
+          targetCol >= 0 && targetCol < 8 && 
+          !isCellOccupied(targetRow, targetCol)
+        ) {
+          const isEnemyPiece = isCellOccupiedByEnemy(middleRow, middleCol, piece.piece.position);
+          if (isEnemyPiece) {
+            captureMoves.push({ 
+              row: targetRow, 
+              col: targetCol,
+              isCapture: true,
+              capturedPiece: { row: middleRow, col: middleCol }
+            });
           }
-          return piece;
+        }
+      });
+    }
+    
+    return captureMoves;
+  };
+
+  const ScoreCounter = ({
+    orangeScore, 
+    blackScore, 
+  }: {
+    orangeScore: number;
+    blackScore: number;
+    totalOrangePieces: number;
+    totalBlackPieces: number;
+  }) => {
+    return (
+      <div className="fixed top-4 left-1/2 -translate-x-1/2 flex gap-8">
+        <div className="p-4 bg-orange-100 rounded-lg shadow-lg">
+          <div className="text-center">
+             <p className="text-sm text-orange-600">Remaining pieces</p>
+             <p className="text-2xl font-bold text-orange-800">{blackScore}</p>
+             <h3 className="font-bold text-orange-600">Orange</h3>
+          </div>
+        </div>
+        <div className="p-4 bg-gray-100 rounded-lg shadow-lg">
+          <div className="text-center">
+          <p className="text-sm text-gray-600">Remaining pieces</p>
+          <p className="text-2xl font-bold text-gray-800">{orangeScore}</p>
+            <h3 className="font-bold text-gray-600">Black</h3>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
+
+  const calculateValidMoves = (piece: PieceUI): Coordinates[] => {
+    const allPieces = piece.piece.position === Position.Up ? upPieces : downPieces;
+    const hasAnyCaptures = allPieces.some(p => calculateCaptureMoves(p).length > 0);
+    
+    if (hasAnyCaptures) {
+      setMustCapture(true);
+      return calculateCaptureMoves(piece);
+    }
+    
+    setMustCapture(false);
+    
+    if (piece.piece.is_king) {
+      return calculateQueenMoves(piece);
+    }
+
+    const regularMoves: Coordinates[] = [];
+    const { row, col } = piece.piece;
+    const direction = piece.piece.position === Position.Up ? 1 : -1;
+
+    [-1, 1].forEach(deltaCol => {
+      const newRow = row + direction;
+      const newCol = col + deltaCol;
+      
+      if (
+        newRow >= 0 && newRow < 8 && 
+        newCol >= 0 && newCol < 8 && 
+        !isCellOccupied(newRow, newCol)
+      ) {
+        regularMoves.push({
+          row: newRow, 
+          col: newCol,
+          capturedPiece: undefined,
+          isCapture: undefined
         });
-        
-        // Set pieces based on position
-        if (selectedPiece.piece.position === Position.Down) {
-          setDownPieces(updatedPieces);
-        } else if (selectedPiece.piece.position === Position.Up) {
-          setUpPieces(updatedPieces);
-        } else {
-          console.warn('Piece has invalid position: Position.None');
-        }
-  
-        try {
-          if (account) {
-            const movedPiece = await setupWorld.actions.movePiece(account, selectedPiece.piece, move);
-            console.log("movedPiece", movedPiece?.transaction_hash);
-          } else {
-            console.warn("Cuenta no conectada");
-          }
-        } catch (error) {
-          console.error("Error al mover la pieza:", error);
-        }
-  
-        setSelectedPieceId(null);
-        setValidMoves([]);
       }
+    });
+
+    return regularMoves;
+  };
+
+  const isCellOccupiedByEnemy = (row: number, col: number, position: Position): boolean => {
+    const enemyPieces = position === Position.Up ? downPieces : upPieces;
+    return enemyPieces.some(piece => piece.piece.row === row && piece.piece.col === col);
+  };
+
+  const handlePieceClick = async (piece: PieceUI) => {
+    if (selectedPieceId === piece.id) {
+      setSelectedPieceId(null);
+      setValidMoves([]);
+      return;
+    }
+
+    const moves = calculateValidMoves(piece);
+    
+    if (mustCapture && !moves.some(move => move.isCapture)) {
+      return;
+    }
+
+    setSelectedPieceId(piece.id);
+    setValidMoves(moves);
+
+    try {
+      if (account) {
+        const { row, col } = piece.piece;
+        await (await setupWorld.actions).canChoosePiece(account, piece.piece.position, { row, col },0);
+      }
+    } catch (error) {
+      console.error("Error verificando la pieza seleccionada:", error);
     }
   };
-    const renderPieces = () => (
-    <>
-      {upPieces.map((piece) => (
-        <img
-          key={piece.id}
-          src={PieceBlack}
-          //alt={`${piece.color} piece`}
-          className="absolute"
-          style={{
-            left: `${piece.piece.coordinates.col * cellSize + 63}px`,
-            top: `${piece.piece.coordinates.raw * cellSize + 65}px`,
-            cursor: "pointer",
-            width: "60px",
-            height: "60px",
-            border: selectedPieceId === piece.id ? "2px solid yellow" : "none",
-          }}
-          onClick={() => handlePieceClick(piece)} 
-        />
-      ))}
-      {downPieces.map((piece) => (
-        <img
-          key={piece.id}
-          src={PieceOrange}
-          //alt={`${piece.color} piece`}
-          className="absolute"
-          style={{
-            left: `${piece.piece.coordinates.col * cellSize + 63}px`,
-            top: `${piece.piece.coordinates.raw * cellSize + 55}px`,
-            cursor: "pointer",
-            width: "60px",
-            height: "60px",
-            border: selectedPieceId === piece.id ? "2px solid yellow" : "none",
-          }}
-          onClick={() => handlePieceClick(piece)} 
-        />
-      ))}
-      {validMoves.map((move, index) => (
-        <div
-          key={index}
-          className="absolute border border-green-500"
-          style={{
-            left: `${move.col * cellSize + 63}px`,
-            top: `${move.raw * cellSize + 58}px`,
-            width: "60px",
-            height: "60px",
-            cursor: "pointer",
-            backgroundColor: "rgba(0, 255, 0, 0.5)", 
-          }}
-          onClick={() => handleMoveClick(move)} 
-        />
-      ))}
-    </>
-  );
+
+  const handleMoveClick = async (move: Coordinates) => {
+    if (!selectedPieceId) return;
+  
+    const selectedPiece = [...upPieces, ...downPieces].find(piece => piece.id === selectedPieceId);
+    if (!selectedPiece) return;
+    console.log("Moviendo la pieza:", selectedPiece);
+    const piecesToUpdate = selectedPiece.piece.position === Position.Up ? upPieces : downPieces;
+    const enemyPieces = selectedPiece.piece.position === Position.Up ? downPieces : upPieces;
+  
+    // Handle capturing and update the score
+    if (move.isCapture && move.capturedPiece) {
+      const updatedEnemyPieces = enemyPieces.filter(
+        piece => !(piece.piece.row === move.capturedPiece?.row && piece.piece.col === move.capturedPiece?.col)
+      );
+      
+      if (selectedPiece.piece.position === Position.Up) {
+        setDownPieces(updatedEnemyPieces);
+        setBlackScore(prev => prev - 1);
+      } else {
+        setUpPieces(updatedEnemyPieces);
+        setOrangeScore(prev => prev - 1);
+      }
+    }
+
+   // Update the piece position and check for promotion
+   const shouldPromoteToQueen = 
+   (selectedPiece.piece.position === Position.Up && move.row === 7) ||
+   (selectedPiece.piece.position === Position.Down && move.row === 0);
+
+ const updatedPieces = piecesToUpdate.map((piece: PieceUI) => {
+   if (piece.id === selectedPieceId) {
+     return {
+       ...piece,
+       piece: {
+         ...piece.piece,
+         row: move.row,
+         col: move.col,
+         is_king: shouldPromoteToQueen || piece.piece.is_king
+       }
+     };
+   }
+   return piece;
+ });
+
+ if (selectedPiece.piece.position === Position.Up) {
+   setUpPieces(updatedPieces);
+ } else {
+   setDownPieces(updatedPieces);
+ }
+
+ try {
+  if (account) {
+    const movedPiece = await (await setupWorld.actions).movePiece(
+      account,
+      selectedPiece.piece,
+      move
+    );
+    console.log(
+      movedPiece.transaction_hash,
+      "movePiece transaction_hash success"
+    );
+  }
+} catch (error) {
+  console.error("Error al mover la pieza:", error);
+}
+
+ 
+ // After handling the move, check if the game is over
+ setSelectedPieceId(null);
+ setValidMoves([]);
+};
 
   return (
     <div
@@ -225,15 +319,118 @@ function Checker({ sdk }: { sdk: SDK<typeof schema> }) {
         backgroundPosition: "center",
       }}
     >
+      <div
+        style={{
+          position: 'absolute',
+          top: '20px',
+          right: '20px',
+          display: 'flex',
+          gap: '20px',
+          zIndex: 2,
+        }}
+      >
+      </div>
+      
+      <ScoreCounter orangeScore={orangeScore} blackScore={blackScore} totalOrangePieces={upPieces.length} totalBlackPieces={downPieces.length} />
+    
       {isGameOver && <GameOver />}
       {isWinner && <Winner />}
-      <img src={Player1} alt="Player 1" className="fixed" style={{ top: "100px", left: "80px", width: "400px" }} />
-      <img src={Player2} alt="Player 2" className="fixed" style={{ top: "770px", right: "80px", width: "400px" }} />
+      
+      <img
+        src={Player1}
+        alt="Player 1"
+        className="fixed"
+        style={{ top: "100px", left: "80px", width: "400px" }}
+      />
+      <img
+        src={Player2}
+        alt="Player 2"
+        className="fixed"
+        style={{ top: "770px", right: "80px", width: "400px" }}
+      />
       <div className="flex items-center justify-center h-full">
         <div className="relative">
-          <img src={Board} alt="Board" className="w-[800px] h-[800px] object-contain" />
-          {arePiecesVisible && renderPieces()}
+          <img
+            src={Board}
+            alt="Board"
+            className="w-[800px] h-[800px] object-contain"
+          />
+          {arePiecesVisible && (
+            <>
+              {upPieces.map((piece) => (
+                <img
+                  key={piece.id}
+                  src={piece.piece.is_king ? QueenBlack : PieceBlack}
+                  className="absolute"
+                  style={{
+                    left: `${piece.piece.col * cellSize + 63}px`,
+                    top: `${piece.piece.row * cellSize + 63}px`,
+                    cursor: "pointer",
+                    width: "60px",
+                    height: "60px",
+                    border: selectedPieceId === piece.id ? "2px solid yellow" : "none",
+                  }}
+                  onClick={() => handlePieceClick(piece)}
+                />
+              ))}
+              {downPieces.map((piece) => (
+                <img
+                  key={piece.id}
+                  src={piece.piece.is_king ? QueenOrange : PieceOrange}
+                  className="absolute"
+                  style={{
+                    left: `${piece.piece.col * cellSize + 64}px`,
+                    top: `${piece.piece.row * cellSize + 55}px`,
+                    cursor: "pointer",
+                    width: "60px",
+                    height: "60px",
+                    border: selectedPieceId === piece.id ? "2px solid yellow" : "none",
+                  }}
+                  onClick={() => handlePieceClick(piece)}
+                />
+              ))}
+              {validMoves.map((move, index) => (
+                <div
+                  key={`move-${index}`}
+                  className="absolute"
+                  style={{
+                    left: `${move.col * cellSize + 63}px`,
+                    top: `${move.row * cellSize + 63}px`,
+                    width: "60px",
+                    height: "60px",
+                    backgroundColor: move.isCapture ? "rgba(255, 0, 0, 0.3)" : "rgba(0, 255, 0, 0.3)",
+                    borderRadius: "50%",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => handleMoveClick(move)}
+                />
+              ))}
+            </>
+          )}
         </div>
+        <button
+          onClick={() => {
+            window.location.href = '/initgame';
+          }}
+          style={{
+            position: 'absolute',
+            top: '20px',
+            left: '20px',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            zIndex: 2,
+          }}
+        >
+          <img
+            src={Return}
+            alt="Return"
+            style={{
+              width: '50px',
+              height: '50px',
+            }}
+          />
+        </button>
       </div>
     </div>
   );

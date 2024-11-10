@@ -1,8 +1,8 @@
 {
   "world": {
     "class_hash": "0x139239a99d627697b19b9856beaef7896fc75375caf3d750dd76982a7afeb78",
-    "address": "0x6171ed98331e849d6084bf2b3e3186a7ddf35574dd68cab4691053ee8ab69d7",
-    "seed": "dojo_starter",
+    "address": "0x7e0aa9c93c6b71781b605aeeeb85ee7d097b592c85db0383515c7a17f262af3",
+    "seed": "checkers_marq",
     "name": "Dojo starter",
     "abi": [
       {
@@ -1121,8 +1121,8 @@
   },
   "contracts": [
     {
-      "address": "0x576cc30f71264c113bc15056bff8af4a6c9bd3c9ccf159cf91d21a65d095699",
-      "class_hash": "0x39f1bc6ce24086e200beac3605336cf700e6f248aa63396fce791ced2cdd4e5",
+      "address": "0x2b04a8bb90ed5c3c4ad697f7fcbca902a275990503ed02c867ae1a8f09c05a1",
+      "class_hash": "0x273b76febaef1c46c30a4295de05de78317c67d940bc1732043f027e574421f",
       "abi": [
         {
           "type": "impl",
@@ -1170,30 +1170,6 @@
           "interface_name": "dojo_starter::systems::actions::IActions"
         },
         {
-          "type": "struct",
-          "name": "dojo_starter::models::Coordinates",
-          "members": [
-            {
-              "name": "raw",
-              "type": "core::integer::u32"
-            },
-            {
-              "name": "col",
-              "type": "core::integer::u32"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<dojo_starter::models::Coordinates>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<dojo_starter::models::Coordinates>"
-            }
-          ]
-        },
-        {
           "type": "enum",
           "name": "dojo_starter::models::Position",
           "variants": [
@@ -1208,6 +1184,20 @@
             {
               "name": "Down",
               "type": "()"
+            }
+          ]
+        },
+        {
+          "type": "struct",
+          "name": "dojo_starter::models::Coordinates",
+          "members": [
+            {
+              "name": "row",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "col",
+              "type": "core::integer::u8"
             }
           ]
         },
@@ -1230,12 +1220,20 @@
           "name": "dojo_starter::models::Piece",
           "members": [
             {
-              "name": "player",
-              "type": "core::starknet::contract_address::ContractAddress"
+              "name": "session_id",
+              "type": "core::integer::u64"
             },
             {
-              "name": "coordinates",
-              "type": "dojo_starter::models::Coordinates"
+              "name": "row",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "col",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "player",
+              "type": "core::starknet::contract_address::ContractAddress"
             },
             {
               "name": "position",
@@ -1257,13 +1255,45 @@
           "items": [
             {
               "type": "function",
-              "name": "spawn",
+              "name": "create_lobby",
               "inputs": [],
               "outputs": [
                 {
-                  "type": "core::array::Span::<dojo_starter::models::Coordinates>"
+                  "type": "core::integer::u64"
                 }
               ],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "join_lobby",
+              "inputs": [
+                {
+                  "name": "session_id",
+                  "type": "core::integer::u64"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "spawn",
+              "inputs": [
+                {
+                  "name": "player",
+                  "type": "core::starknet::contract_address::ContractAddress"
+                },
+                {
+                  "name": "position",
+                  "type": "dojo_starter::models::Position"
+                },
+                {
+                  "name": "session_id",
+                  "type": "core::integer::u64"
+                }
+              ],
+              "outputs": [],
               "state_mutability": "external"
             },
             {
@@ -1277,6 +1307,10 @@
                 {
                   "name": "coordinates_position",
                   "type": "dojo_starter::models::Coordinates"
+                },
+                {
+                  "name": "session_id",
+                  "type": "core::integer::u64"
                 }
               ],
               "outputs": [
@@ -1301,6 +1335,17 @@
               ],
               "outputs": [],
               "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "get_session_id",
+              "inputs": [],
+              "outputs": [
+                {
+                  "type": "core::integer::u64"
+                }
+              ],
+              "state_mutability": "view"
             }
           ]
         },
@@ -1420,22 +1465,47 @@
         }
       ],
       "init_calldata": [],
-      "tag": "dojo_starter-actions",
+      "tag": "checkers_marq-actions",
       "systems": []
     }
   ],
   "models": [
     {
       "members": [],
-      "class_hash": "0x23fc4c57e4ffcce310644ef4f23b1551f35c39e6f7a7417dede075638ff5917",
+      "class_hash": "0x83a0991024f0bab017992d2f7240960a3e59d03855405a03025eaef5411f5b",
+      "tag": "Counter"
+    },
+    {
+      "members": [],
+      "class_hash": "0x39e64af66a46f285ddd5b0a6c2ee5029f23af029d3aa9acd00ac4629d8ecdea",
       "tag": "Piece"
+    },
+    {
+      "members": [],
+      "class_hash": "0x74ae2d5e319438a1e5e0b1c9d4ffcf02ddd39a15c5603f32f85165be5c7daa9",
+      "tag": "Player"
+    },
+    {
+      "members": [],
+      "class_hash": "0x77689b7707d5c1496a87342c6814c0c29662fd83c19abd8c44603dc1dd58df0",
+      "tag": "Session"
     }
   ],
   "events": [
     {
       "members": [],
-      "class_hash": "0x7c17298acaae5d6bc4ccb210cedb5f7c6ff96e2b9c3482c6fb5ce84018d6305",
+      "class_hash": "0x3981e460c033e610cfe91eee56515a0e3ca0b7193906930db6df39035704741",
+      "tag": "Killed"
+    },
+    {
+      "members": [],
+      "class_hash": "0x7de94b7f929bfb65d57ade949a336cd1123bb308e9125ae40da70cac6d7d18b",
       "tag": "Moved"
+    },
+    {
+      "members": [],
+      "class_hash": "0x292f640f2b45670fe65b968b5a681ad92937c8158fda7f27e2d12807a5e14bf",
+      "tag": "Winner"
     }
   ]
 }

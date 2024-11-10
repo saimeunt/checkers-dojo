@@ -4,12 +4,56 @@ use starknet::ContractAddress;
 #[dojo::model]
 pub struct Piece {
     #[key]
-    pub player: ContractAddress,
+    pub session_id: u64,
     #[key]
-    pub coordinates: Coordinates,
+    pub row: u8,
+    #[key]
+    pub col: u8,
+    pub player: ContractAddress,
     pub position: Position,
     pub is_king: bool,
     pub is_alive: bool,
+}
+
+#[derive(Copy, Drop, Serde, Debug)]
+#[dojo::model]
+pub struct Session {
+    #[key]
+    pub session_id: u64,
+    pub player_1: ContractAddress,
+    pub player_2: ContractAddress,
+    pub turn: u8, // 0 for Up (Player 1) and 1 for Down (Player 2)
+    pub winner: ContractAddress,
+    pub state: u8, // 0 for open, 1 for ongoing, 2 for finished
+}
+
+#[derive(Copy, Drop, Serde, Debug)]
+#[dojo::model]
+pub struct Player {
+    #[key]
+    pub player: ContractAddress,
+    pub remaining_pieces: u8,
+}
+
+// Future model to handle lobbies dynamically
+#[derive(Copy, Drop, Serde, Debug)]
+#[dojo::model]
+pub struct Counter {
+    #[key]
+    pub global_key: felt252,
+    pub nonce: u64
+}
+
+
+#[generate_trait]
+impl CounterImpl of CounterTrait {
+    fn uuid(ref self: Counter) -> u64 {
+
+        let id = self.nonce;
+
+        self.nonce += 1;
+        id
+    }
 }
 
 #[derive(Serde, Copy, Drop, Introspect, PartialEq, Debug)]
@@ -29,23 +73,23 @@ impl PositionIntoFelt252 of Into<Position, felt252> {
     }
 }
 
-#[derive(Copy, Drop, Serde, IntrospectPacked, Debug)]
+#[derive(Copy, Drop, Serde, Introspect, Debug)]
 pub struct Coordinates {
-    pub raw: u32,
-    pub col: u32
+    pub row: u8,
+    pub col: u8
 }
 
 #[generate_trait]
 impl PositionImpl of PositionTrait {
     fn is_zero(self: Coordinates) -> bool {
-        if self.raw - self.col == 0 {
+        if self.row - self.col == 0 {
             return true;
         }
         false
     }
 
     fn is_equal(self: Coordinates, b: Coordinates) -> bool {
-        self.raw == b.raw && self.col == b.col
+        self.row == b.row && self.col == b.col
     }
 }
 // #[cfg(test)]
