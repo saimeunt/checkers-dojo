@@ -463,6 +463,42 @@ mod tests {
     }
 
     #[test]
+    fn test_move_piece23_down_left_choose() {
+        let ndef = namespace_def();
+        let mut world = spawn_test_world([ndef].span());
+
+        let (contract_address, _) = world.dns(@"actions").unwrap();
+        let actions_system = IActionsDispatcher { contract_address };
+
+        actions_system.spawn();
+        let valid_piece_position = Coordinates { row: 2, col: 3 };
+        let initial_piece_position: Piece = world.read_model((valid_piece_position));
+        assert(
+            initial_piece_position.row == 2
+                && initial_piece_position.col == 3,
+            'wrong initial piece cords'
+        );
+        assert(initial_piece_position.is_king == false, 'wrong initial piece king');
+        assert(initial_piece_position.is_alive == true, 'wrong initial piece alive');
+
+        let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position);
+        assert(can_choose_piece, 'can_choose_piece failed');
+        let current_piece: Piece = world.read_model((valid_piece_position));
+        let new_coordinates_position = Coordinates { row: 3, col: 2 };
+        actions_system.move_piece(current_piece, new_coordinates_position);
+
+        let new_position: Piece = world.read_model((new_coordinates_position));
+
+        assert!(new_position.row == 3, "piece x is wrong");
+        assert!(new_position.col == 2, "piece y is wrong");
+        assert!(new_position.is_alive == true, "piece is not alive");
+        assert!(new_position.is_king == false, "piece is king");
+
+        let can_choose_piece = actions_system.can_choose_piece(Position::Up, new_coordinates_position);
+        assert(can_choose_piece, 'can_choose_piece failed 32');
+    }    
+
+    #[test]
     fn test_move_piece25_down_left() {
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());

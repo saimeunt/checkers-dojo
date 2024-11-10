@@ -1,10 +1,12 @@
 // InitPieces.ts
 import { Position } from "../bindings";
 
-export interface Coordinates {
+export type Coordinates = {
   row: number;
   col: number;
-}
+  capturedPiece?: { row: number; col: number };
+  isCapture?: boolean;
+};
 
 export interface Piece {
   player: string;
@@ -21,7 +23,7 @@ export interface Piece {
 export interface PieceUI {
   id: number;
   piece: Piece;
-}
+};
 
 export const createInitialPieces = (playerAddress: string) => {
 
@@ -61,3 +63,5 @@ export const createInitialPieces = (playerAddress: string) => {
     initialOrangePieces
   };
 };
+
+export { Position };
