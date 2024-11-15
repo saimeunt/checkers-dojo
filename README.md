@@ -1,6 +1,6 @@
 # Checkers
 
-![Checkers Game](client/src/assets/Checkers.png)
+![Checkers Game](/checkers-dojo/the-marquis/packages/nextjs/public/landingpage/BannerChecker2.png)
 
 Checkers is a classic board game implemented in a web environment using the Dojo Engine. This project leverages Starknet’s Layer 2 to create a fully decentralized, on-chain checkers game. All game logic, including player moves, validations, and win conditions, is implemented with smart contracts on Starknet, ensuring transparency and fairness.
 
@@ -19,7 +19,17 @@ Before you begin, ensure you have the following installed on your machine:
 
 ## Quick Start Guide
 
-### Terminal 1: Start Katana
+### Terminal 1: The Marquis
+
+Open a terminal and run:
+
+```bash
+cd the-marquis
+yarn install 
+yarn start
+```
+
+### Terminal 2: Start Katana
 
 Open a terminal and run:
 
@@ -28,7 +38,7 @@ cd dojo-starter
 katana --disable-fee --allowed-origins "*"
 ```
 
-### Terminal 2: Build and Migrate the Project
+### Terminal 3: Build and Migrate the Project
 
 In a second terminal, execute:
 
@@ -36,10 +46,10 @@ In a second terminal, execute:
 cd dojo-starter
 sozo build
 sozo migrate
-torii --world 0x06171ed98331e849d6084bf2b3e3186a7ddf35574dd68cab4691053ee8ab69d7 --allowed-origins "*"
+torii --world 0x07e0aa9c93c6b71781b605aeeeb85ee7d097b592c85db0383515c7a17f262af3 --allowed-origins "*"
 ```
 
-### Terminal 3: Start the Client
+### Terminal 4: Start the Client
 
 In a third terminal, navigate to the client folder and run:
 
