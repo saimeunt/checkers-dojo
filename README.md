@@ -1,6 +1,6 @@
 # Checkers
 
-![Checkers Game](/checkers-dojo/the-marquis/packages/nextjs/public/landingpage/BannerChecker2.png)
+![Checkers Game](/the-marquis/packages/nextjs/public/landingpage/BannerChecker2.png)
 
 Checkers is a classic board game implemented in a web environment using the Dojo Engine. This project leverages Starknet’s Layer 2 to create a fully decentralized, on-chain checkers game. All game logic, including player moves, validations, and win conditions, is implemented with smart contracts on Starknet, ensuring transparency and fairness.
 
