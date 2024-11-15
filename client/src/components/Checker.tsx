@@ -10,11 +10,12 @@ import BackgroundCheckers from "../assets/BackgrounCheckers.png";
 import Board from "../assets/Board.png";
 import PieceBlack from "../assets/PieceBlack.svg";
 import PieceOrange from "../assets/PieceOrange.svg";
-import QueenBlack from "../assets/QueenBlack.png";  
-import QueenOrange from "../assets/QueenOrange.png";  
+import QueenBlack from "../assets/QueenBlack.png";
+import QueenOrange from "../assets/QueenOrange.png";
 import Player1 from "../assets/Player1_0.png";
 import Player2 from "../assets/Player2_0.png";
 import Return from "../assets/Return.png";
+import CreateBurner from "../connector/CreateBurner";
 
 export const useDojoStore = createDojoStore<typeof schema>();
 
@@ -32,21 +33,21 @@ function Checker({ }: { sdk: SDK<typeof schema> }) {
   const [mustCapture, setMustCapture] = useState(false);
   const [orangeScore, setOrangeScore] = useState(12);
   const [blackScore, setBlackScore] = useState(12);
-  
+
   const { initialBlackPieces, initialOrangePieces } = createInitialPieces(account.address);
   const [upPieces, setUpPieces] = useState<PieceUI[]>(initialBlackPieces);
   const [downPieces, setDownPieces] = useState<PieceUI[]>(initialOrangePieces);
-  
+
   const cellSize = 88;
 
   // Check for a winner when scores change
-useEffect(() => {
-  if (orangeScore === 0) {
-    setIsWinner(false); 
-  } else if (blackScore === 0) {
-    setIsWinner(true); 
-  }
-}, [orangeScore, blackScore]);
+  useEffect(() => {
+    if (orangeScore === 0) {
+      setIsWinner(false);
+    } else if (blackScore === 0) {
+      setIsWinner(true);
+    }
+  }, [orangeScore, blackScore]);
 
   const isCellOccupied = (row: number, col: number): boolean => {
     return [...upPieces, ...downPieces].some(piece => piece.piece.row === row && piece.piece.col === col);
@@ -55,18 +56,18 @@ useEffect(() => {
   const calculateQueenMoves = (piece: PieceUI): Coordinates[] => {
     const moves: Coordinates[] = [];
     const directions = [
-      [-1, -1], [-1, 1], 
-      [1, -1], [1, 1]    
+      [-1, -1], [-1, 1],
+      [1, -1], [1, 1]
     ];
 
     for (const [deltaRow, deltaCol] of directions) {
       let currentRow = piece.piece.row + deltaRow;
       let currentCol = piece.piece.col + deltaCol;
-      
+
       while (currentRow >= 0 && currentRow < 8 && currentCol >= 0 && currentCol < 8) {
         if (!isCellOccupied(currentRow, currentCol)) {
           moves.push({
-            row: currentRow, 
+            row: currentRow,
             col: currentCol,
             capturedPiece: undefined,
             isCapture: undefined
@@ -77,8 +78,8 @@ useEffect(() => {
             const nextRow = currentRow + deltaRow;
             const nextCol = currentCol + deltaCol;
             if (
-              nextRow >= 0 && nextRow < 8 && 
-              nextCol >= 0 && nextCol < 8 && 
+              nextRow >= 0 && nextRow < 8 &&
+              nextCol >= 0 && nextCol < 8 &&
               !isCellOccupied(nextRow, nextCol)
             ) {
               moves.push({
@@ -106,7 +107,7 @@ useEffect(() => {
     const captureMoves: Coordinates[] = [];
     const { row, col } = piece.piece;
     const directions = piece.piece.is_king ? [1, -1] : [piece.piece.position === Position.Up ? 1 : -1];
-    
+
     for (const dir of directions) {
       [-2, 2].forEach(deltaCol => {
         const targetRow = row + (2 * dir);
@@ -115,14 +116,14 @@ useEffect(() => {
         const middleCol = col + (deltaCol / 2);
 
         if (
-          targetRow >= 0 && targetRow < 8 && 
-          targetCol >= 0 && targetCol < 8 && 
+          targetRow >= 0 && targetRow < 8 &&
+          targetCol >= 0 && targetCol < 8 &&
           !isCellOccupied(targetRow, targetCol)
         ) {
           const isEnemyPiece = isCellOccupiedByEnemy(middleRow, middleCol, piece.piece.position);
           if (isEnemyPiece) {
-            captureMoves.push({ 
-              row: targetRow, 
+            captureMoves.push({
+              row: targetRow,
               col: targetCol,
               isCapture: true,
               capturedPiece: { row: middleRow, col: middleCol }
@@ -131,58 +132,57 @@ useEffect(() => {
         }
       });
     }
-    
+
     return captureMoves;
   };
 
   const ScoreCounter = ({
-    orangeScore, 
-    blackScore, 
+    orangeScore,
+    blackScore,
   }: {
     orangeScore: number;
     blackScore: number;
     totalOrangePieces: number;
     totalBlackPieces: number;
   }) => {
+
     return (
-      
-<div className="fixed flex gap-8" >
-  {/* Cuadrado Naranja */}
-  <div className="relative rounded-xl" style={{ top: '788px', left: '1640px', border: "4px solid orange" }}>
-    <div className="p-4 bg-orange-100 rounded-lg shadow-lg">
-      <div className="text-center">
-        <p className="text-2xl font-bold text-orange-800">{blackScore}</p>
-        <h3 className="font-bold text-orange-600">Naranja</h3>
+      <div className="fixed w-full h-screen">
+        {/* Orange Piece */}
+        <div
+          className="absolute p-4 bg-orange-100 rounded-lg shadow-lg border-2 border-black"
+          style={{ top: "110px", right: "1550px", width: "95px", height: "95px" }}
+        >
+          <div className="text-center">
+            <p className="text-2xl font-bold text-orange-800">{blackScore}</p>
+            <h3 className="font-bold text-orange-600">Orange</h3>
+          </div>
+        </div>
+        {/* Black Piece */}
+        <div
+          className="absolute p-4 bg-gray-100 rounded-lg shadow-lg border-2 border-black"
+          style={{ top: "790px", left: "1650px", width: "95px", height: "95px" }}
+        >
+          <div className="text-center">
+            <p className="text-2xl font-bold text-gray-800">{orangeScore}</p>
+            <h3 className="font-bold text-gray-600">Black</h3>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-
-  {/* Cuadrado Negro */}
-  <div className="relative rounded-xl" style={{ top: '110px', left: '140px', border: "4px solid black" }}>
-    <div className="p-4 bg-gray-100 rounded-lg shadow-lg">
-      <div className="text-center">
-        <p className="text-2xl font-bold text-gray-800">{orangeScore}</p>
-        <h3 className="font-bold text-gray-600">Negro</h3>
-      </div>
-    </div>
-  </div>
-</div>
-
-    );}
-
-  
+    );
+}    
 
   const calculateValidMoves = (piece: PieceUI): Coordinates[] => {
     const allPieces = piece.piece.position === Position.Up ? upPieces : downPieces;
     const hasAnyCaptures = allPieces.some(p => calculateCaptureMoves(p).length > 0);
-    
+
     if (hasAnyCaptures) {
       setMustCapture(true);
       return calculateCaptureMoves(piece);
     }
-    
+
     setMustCapture(false);
-    
+
     if (piece.piece.is_king) {
       return calculateQueenMoves(piece);
     }
@@ -194,14 +194,14 @@ useEffect(() => {
     [-1, 1].forEach(deltaCol => {
       const newRow = row + direction;
       const newCol = col + deltaCol;
-      
+
       if (
-        newRow >= 0 && newRow < 8 && 
-        newCol >= 0 && newCol < 8 && 
+        newRow >= 0 && newRow < 8 &&
+        newCol >= 0 && newCol < 8 &&
         !isCellOccupied(newRow, newCol)
       ) {
         regularMoves.push({
-          row: newRow, 
+          row: newRow,
           col: newCol,
           capturedPiece: undefined,
           isCapture: undefined
@@ -225,7 +225,7 @@ useEffect(() => {
     }
 
     const moves = calculateValidMoves(piece);
-    
+
     if (mustCapture && !moves.some(move => move.isCapture)) {
       return;
     }
@@ -235,7 +235,8 @@ useEffect(() => {
 
     try {
       if (account) {
-        await (await setupWorld.actions).canChoosePiece(account, piece.piece.position, { row: piece.piece.row, col: piece.piece.col });
+        const { row, col } = piece.piece;
+        await (await setupWorld.actions).canChoosePiece(account, piece.piece.position, { row, col }, 0);
       }
     } catch (error) {
       console.error("Error verificando la pieza seleccionada:", error);
@@ -244,19 +245,19 @@ useEffect(() => {
 
   const handleMoveClick = async (move: Coordinates) => {
     if (!selectedPieceId) return;
-  
+
     const selectedPiece = [...upPieces, ...downPieces].find(piece => piece.id === selectedPieceId);
     if (!selectedPiece) return;
     console.log("Moviendo la pieza:", selectedPiece);
     const piecesToUpdate = selectedPiece.piece.position === Position.Up ? upPieces : downPieces;
     const enemyPieces = selectedPiece.piece.position === Position.Up ? downPieces : upPieces;
-  
+
     // Handle capturing and update the score
     if (move.isCapture && move.capturedPiece) {
       const updatedEnemyPieces = enemyPieces.filter(
         piece => !(piece.piece.row === move.capturedPiece?.row && piece.piece.col === move.capturedPiece?.col)
       );
-      
+
       if (selectedPiece.piece.position === Position.Up) {
         setDownPieces(updatedEnemyPieces);
         setBlackScore(prev => prev - 1);
@@ -266,53 +267,53 @@ useEffect(() => {
       }
     }
 
-   // Update the piece position and check for promotion
-   const shouldPromoteToQueen = 
-   (selectedPiece.piece.position === Position.Up && move.row === 7) ||
-   (selectedPiece.piece.position === Position.Down && move.row === 0);
+    // Update the piece position and check for promotion
+    const shouldPromoteToQueen =
+      (selectedPiece.piece.position === Position.Up && move.row === 7) ||
+      (selectedPiece.piece.position === Position.Down && move.row === 0);
 
- const updatedPieces = piecesToUpdate.map((piece: PieceUI) => {
-   if (piece.id === selectedPieceId) {
-     return {
-       ...piece,
-       piece: {
-         ...piece.piece,
-         row: move.row,
-         col: move.col,
-         is_king: shouldPromoteToQueen || piece.piece.is_king
-       }
-     };
-   }
-   return piece;
- });
+    const updatedPieces = piecesToUpdate.map((piece: PieceUI) => {
+      if (piece.id === selectedPieceId) {
+        return {
+          ...piece,
+          piece: {
+            ...piece.piece,
+            row: move.row,
+            col: move.col,
+            is_king: shouldPromoteToQueen || piece.piece.is_king
+          }
+        };
+      }
+      return piece;
+    });
 
- if (selectedPiece.piece.position === Position.Up) {
-   setUpPieces(updatedPieces);
- } else {
-   setDownPieces(updatedPieces);
- }
+    if (selectedPiece.piece.position === Position.Up) {
+      setUpPieces(updatedPieces);
+    } else {
+      setDownPieces(updatedPieces);
+    }
 
- try {
-  if (account) {
-    const movedPiece = await (await setupWorld.actions).movePiece(
-      account,
-      selectedPiece.piece,
-      move
-    );
-    console.log(
-      movedPiece.transaction_hash,
-      "movePiece transaction_hash success"
-    );
-  }
-} catch (error) {
-  console.error("Error al mover la pieza:", error);
-}
+    try {
+      if (account) {
+        const movedPiece = await (await setupWorld.actions).movePiece(
+          account,
+          selectedPiece.piece,
+          move
+        );
+        console.log(
+          movedPiece.transaction_hash,
+          "movePiece transaction_hash success"
+        );
+      }
+    } catch (error) {
+      console.error("Error al mover la pieza:", error);
+    }
 
- 
- // After handling the move, check if the game is over
- setSelectedPieceId(null);
- setValidMoves([]);
-};
+
+    // After handling the move, check if the game is over
+    setSelectedPieceId(null);
+    setValidMoves([]);
+  };
 
   return (
     <div
@@ -334,23 +335,38 @@ useEffect(() => {
         }}
       >
       </div>
-      
+
       <ScoreCounter orangeScore={orangeScore} blackScore={blackScore} totalOrangePieces={upPieces.length} totalBlackPieces={downPieces.length} />
-    
+   
+    {/* CreateBurner & ControllerButton */}
+    <div
+        style={{
+          position: 'absolute',
+          top: '20px',
+          right: '20px',
+          display: 'flex',
+          gap: '20px',
+          zIndex: 2,
+        }}
+      >
+        <ControllerButton />
+        <CreateBurner />
+      </div>
+      
       {isGameOver && <GameOver />}
       {isWinner && <Winner />}
-      
+
       <img
         src={Player1}
         alt="Player 1"
         className="fixed rounded-lg"
-        style={{  top: "110px", left: "140px", width: "90px", border: "2px solid black"}}
+        style={{ top: "110px", left: "140px", width: "90px", border: "2px solid black" }}
       />
       <img
         src={Player2}
         alt="Player 2"
         className="fixed rounded-lg"
-        style={{ top: "790px", right: "320px", width: "90px", border: "2px solid orange"}}
+        style={{ top: "790px", right: "320px", width: "90px", border: "2px solid orange" }}
       />
       <div className="flex items-center justify-center h-full">
         <div className="relative">

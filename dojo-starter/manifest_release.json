@@ -1121,8 +1121,8 @@
   },
   "contracts": [
     {
-      "address": "0x2b04a8bb90ed5c3c4ad697f7fcbca902a275990503ed02c867ae1a8f09c05a1",
-      "class_hash": "0x273b76febaef1c46c30a4295de05de78317c67d940bc1732043f027e574421f",
+      "address": "0x44b8cd097c84503c21a597e0370fd371b47e6f30de07db42e0bedd3fadf2420",
+      "class_hash": "0x1ff5493b391477941194f780160486d432c6576699ca3df03041e647c51b327",
       "abi": [
         {
           "type": "impl",
@@ -1335,17 +1335,6 @@
               ],
               "outputs": [],
               "state_mutability": "external"
-            },
-            {
-              "type": "function",
-              "name": "get_session_id",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::integer::u64"
-                }
-              ],
-              "state_mutability": "view"
             }
           ]
         },

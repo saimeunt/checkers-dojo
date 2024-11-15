@@ -4,7 +4,7 @@ description = "The official Dojo Starter guide, the quickest and most streamline
 cover_uri = "file://assets/cover.png"
 icon_uri = "file://assets/icon.png"
 website = "https://github.com/dojoengine/dojo-starter"
-seed = "dojo_starter"
+seed = "checkers_marq"
 
 [world.socials]
 x = "https://x.com/ohayo_dojo"
@@ -13,7 +13,7 @@ github = "https://github.com/dojoengine/dojo-starter"
 telegram = "https://t.me/dojoengine"
 
 [namespace]
-default = "dojo_starter"
+default = "checkers_marq"
 
 [env]
 rpc_url = "http://localhost:5050/"
@@ -24,4 +24,4 @@ world_address = "0x06171ed98331e849d6084bf2b3e3186a7ddf35574dd68cab4691053ee8ab6
 
 
 [writers]
-"dojo_starter" = ["dojo_starter-actions"]
+"checkers_marq" = ["checkers_marq-actions"]
