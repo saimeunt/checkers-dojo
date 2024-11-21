@@ -2,7 +2,7 @@
 mod tests {
     use dojo::model::{ModelStorage, ModelValueStorage, ModelStorageTest};
     use dojo::world::WorldStorageTrait;
-    use dojo_cairo_test::{spawn_test_world, NamespaceDef, TestResource, ContractDefTrait};
+    use dojo_cairo_test::{spawn_test_world, NamespaceDef, TestResource, ContractDef, ContractDefTrait, WorldStorageTestTrait};
 
     use dojo_starter::systems::actions::{actions, IActionsDispatcher, IActionsDispatcherTrait};
     use dojo_starter::models::{
@@ -12,20 +12,24 @@ mod tests {
     fn namespace_def() -> NamespaceDef {
         let ndef = NamespaceDef {
             namespace: "checkers_marq", resources: [
-                TestResource::Model(m_Piece::TEST_CLASS_HASH.try_into().unwrap()),
-                TestResource::Model(m_Session::TEST_CLASS_HASH.try_into().unwrap()),
-                TestResource::Model(m_Player::TEST_CLASS_HASH.try_into().unwrap()),
-                TestResource::Event(actions::e_Moved::TEST_CLASS_HASH.try_into().unwrap()),
-                TestResource::Event(actions::e_Killed::TEST_CLASS_HASH.try_into().unwrap()),
-                TestResource::Event(actions::e_Winner::TEST_CLASS_HASH.try_into().unwrap()),
-                TestResource::Contract(
-                    ContractDefTrait::new(actions::TEST_CLASS_HASH, "actions")
-                        .with_writer_of([dojo::utils::bytearray_hash(@"checkers_marq")].span())
-                )
+                TestResource::Model(m_Piece::TEST_CLASS_HASH),
+                TestResource::Model(m_Session::TEST_CLASS_HASH),
+                TestResource::Model(m_Player::TEST_CLASS_HASH),
+                TestResource::Event(actions::e_Moved::TEST_CLASS_HASH),
+                TestResource::Event(actions::e_Killed::TEST_CLASS_HASH),
+                TestResource::Event(actions::e_Winner::TEST_CLASS_HASH),
+                TestResource::Contract(actions::TEST_CLASS_HASH)
             ].span()
         };
 
         ndef
+    }
+
+    fn contract_defs() -> Span<ContractDef> {
+        [
+            ContractDefTrait::new(@"checkers_marq", @"actions")
+                .with_writer_of([dojo::utils::bytearray_hash(@"checkers_marq")].span())
+        ].span()
     }
 
     #[test]
@@ -35,6 +39,7 @@ mod tests {
         let session_id = 0;
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
+        world.sync_perms_and_inits(contract_defs());
 
         // Test initial piece
         let piece_position_77 = Coordinates { row: 7, col: 7 };
