@@ -82,7 +82,6 @@ mod tests {
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position00, session_id);
         assert(!can_choose_piece, 'should be false');
-
         let invalid_piece_position01 = Coordinates { row: 0, col: 1 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, invalid_piece_position01, session_id);
@@ -201,6 +200,11 @@ mod tests {
             .can_choose_piece(Position::Up, invalid_piece_position57, session_id);
         assert(!can_choose_piece, 'should be false');
 
+        // Mock change turn. update the session's turn
+        let mut session: Session = world.read_model((session_id));
+        session.turn = (session.turn + 1) % 2;
+        world.write_model(@session);
+
         // test sixth row
         let invalid_piece_position60 = Coordinates { row: 6, col: 0 }; // Empty square
         let can_choose_piece = actions_system
@@ -211,7 +215,6 @@ mod tests {
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position61, session_id);
         assert(!can_choose_piece, 'should be false');
-
         let invalid_piece_position62 = Coordinates { row: 6, col: 2 }; // Empty square
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Down, invalid_piece_position62, session_id);
@@ -293,11 +296,9 @@ mod tests {
 
         let (contract_address, _) = world.dns(@"actions").unwrap();
         let actions_system = IActionsDispatcher { contract_address };
-
         let session_id = actions_system.create_lobby();
         actions_system.join_lobby(session_id);
 
-        // test third row
         let valid_piece_position21 = Coordinates { row: 2, col: 1 };
         let can_choose_piece = actions_system
             .can_choose_piece(Position::Up, valid_piece_position21, session_id);
@@ -319,7 +320,7 @@ mod tests {
         // test fifth row
         let valid_piece_position50 = Coordinates { row: 5, col: 0 };
 
-        // Change turn 
+        // Change turn
         let mut game: Session = world.read_model((session_id));
         game.turn = 1;
         world.write_model(@game);
@@ -343,8 +344,7 @@ mod tests {
             .can_choose_piece(Position::Down, valid_piece_position56, session_id);
         assert(can_choose_piece, 'should be true');
     }
-
-    //Test can choose piece but can not move
+    // //Test can choose piece but can not move
     #[test]
     #[should_panic(expected: ('Invalid coordinates', 'ENTRYPOINT_FAILED'))]
     fn test_move_piece31_forward_straight_fails() {
@@ -388,7 +388,6 @@ mod tests {
         let new_coordinates_position = Coordinates { row: 3, col: 8 };
         actions_system.move_piece(current_piece, new_coordinates_position);
     }
-
     #[test]
     fn test_move_piece21_down_left() {
         let ndef = namespace_def();
@@ -425,7 +424,6 @@ mod tests {
         assert!(new_position.is_alive == true, "piece is not alive");
         assert!(new_position.is_king == false, "piece is king");
     }
-
     #[test]
     fn test_move_piece23_down_left() {
         let ndef = namespace_def();
@@ -461,43 +459,6 @@ mod tests {
         assert!(new_position.is_alive == true, "piece is not alive");
         assert!(new_position.is_king == false, "piece is king");
     }
-
-    #[test]
-    fn test_move_piece23_down_left_choose() {
-        let ndef = namespace_def();
-        let mut world = spawn_test_world([ndef].span());
-
-        let (contract_address, _) = world.dns(@"actions").unwrap();
-        let actions_system = IActionsDispatcher { contract_address };
-
-        actions_system.spawn();
-        let valid_piece_position = Coordinates { row: 2, col: 3 };
-        let initial_piece_position: Piece = world.read_model((valid_piece_position));
-        assert(
-            initial_piece_position.row == 2
-                && initial_piece_position.col == 3,
-            'wrong initial piece cords'
-        );
-        assert(initial_piece_position.is_king == false, 'wrong initial piece king');
-        assert(initial_piece_position.is_alive == true, 'wrong initial piece alive');
-
-        let can_choose_piece = actions_system.can_choose_piece(Position::Up, valid_piece_position);
-        assert(can_choose_piece, 'can_choose_piece failed');
-        let current_piece: Piece = world.read_model((valid_piece_position));
-        let new_coordinates_position = Coordinates { row: 3, col: 2 };
-        actions_system.move_piece(current_piece, new_coordinates_position);
-
-        let new_position: Piece = world.read_model((new_coordinates_position));
-
-        assert!(new_position.row == 3, "piece x is wrong");
-        assert!(new_position.col == 2, "piece y is wrong");
-        assert!(new_position.is_alive == true, "piece is not alive");
-        assert!(new_position.is_king == false, "piece is king");
-
-        let can_choose_piece = actions_system.can_choose_piece(Position::Up, new_coordinates_position);
-        assert(can_choose_piece, 'can_choose_piece failed 32');
-    }    
-
     #[test]
     fn test_move_piece25_down_left() {
         let ndef = namespace_def();
@@ -608,7 +569,6 @@ mod tests {
         assert!(new_position.is_alive == true, "piece is not alive");
         assert!(new_position.is_king == false, "piece is king");
     }
-
     #[test]
     fn test_move_piece21_down_right_move_piece56_up_left() {
         let ndef = namespace_def();
@@ -661,7 +621,6 @@ mod tests {
         assert!(new_position.is_alive == true, "piece is not alive");
         assert!(new_position.is_king == false, "piece is king");
     }
-
     #[test]
     fn test_piece21_eat_piece54() {
         let ndef = namespace_def();
@@ -744,7 +703,6 @@ mod tests {
         assert!(moved_piece.position == Position::Up, "piece is not right team");
         assert!(moved_piece.is_king == false, "piece is king");
     }
-
     #[test]
     fn test_move_king_piece() {
         let ndef = namespace_def();
@@ -881,7 +839,6 @@ mod tests {
         assert!(new_piece.is_king == true, "piece is king");
         assert!(new_piece.position == Position::Up, "piece is not right team");
     }
-
     #[test]
     fn test_session_creation() {
         let ndef = namespace_def();

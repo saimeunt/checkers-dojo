@@ -66,10 +66,11 @@ pub mod actions {
         fn create_lobby(ref self: ContractState) -> u64 {
             let mut world = self.world_default();
             let player = get_caller_address();
-            let mut counter: Counter = world.read_model(0);
+            // let mut counter: Counter = world.read_model(0);
 
-            let _id = counter.uuid();
-            world.write_model(@counter);
+            // TODO: Fix counter for production
+            // let _id = counter.uuid();
+            // world.write_model(@counter);
             // TODO: Refactor the session_id for production
             let session = Session {
                 session_id: 0,
