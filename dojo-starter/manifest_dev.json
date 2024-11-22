@@ -1243,8 +1243,8 @@
   },
   "contracts": [
     {
-      "address": "0x541072474ae4d9c3a25d2cf601fe378dae27ac5757ceb9e01e4356600309ae4",
-      "class_hash": "0x2b4cb6cc5dd6ac22357792d20be181160fa58c5ef985cec216b969c0f7c23d4",
+      "address": "0x47444a1aa8a111edd84a3062e3da06397b8fc3dec0479e663b448382f2ed1b2",
+      "class_hash": "0x562d16b0dc9b82df9db6901e06a98722949368c73c60c65507eb5824462bfa6",
       "abi": [
         {
           "type": "impl",
@@ -1400,26 +1400,6 @@
               "type": "function",
               "name": "join_lobby",
               "inputs": [
-                {
-                  "name": "session_id",
-                  "type": "core::integer::u64"
-                }
-              ],
-              "outputs": [],
-              "state_mutability": "external"
-            },
-            {
-              "type": "function",
-              "name": "spawn",
-              "inputs": [
-                {
-                  "name": "player",
-                  "type": "core::starknet::contract_address::ContractAddress"
-                },
-                {
-                  "name": "position",
-                  "type": "dojo_starter::models::Position"
-                },
                 {
                   "name": "session_id",
                   "type": "core::integer::u64"
@@ -1602,7 +1582,6 @@
       "systems": [
         "create_lobby",
         "join_lobby",
-        "spawn",
         "can_choose_piece",
         "move_piece",
         "upgrade"

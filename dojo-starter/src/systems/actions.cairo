@@ -8,7 +8,6 @@ use starknet::ContractAddress;
 trait IActions<T> {
     fn create_lobby(ref self: T) -> u64;
     fn join_lobby(ref self: T, session_id: u64);
-    fn spawn(ref self: T, player: ContractAddress, position: Position, session_id: u64);
     fn can_choose_piece(
         ref self: T, position: Position, coordinates_position: Coordinates, session_id: u64
     ) -> bool;
@@ -89,7 +88,6 @@ pub mod actions {
             0
         }
 
-
         fn join_lobby(ref self: ContractState, session_id: u64) {
             let mut world = self.world_default();
             let player = get_caller_address();
@@ -99,20 +97,6 @@ pub mod actions {
             world.write_model(@session);
             // Spawn the pieces for the player
             self.spawn(player, Position::Down, session_id);
-        }
-
-        fn spawn(
-            ref self: ContractState, player: ContractAddress, position: Position, session_id: u64
-        ) {
-            let mut world = self.world_default();
-            if position == Position::Up {
-                self.initialize_player_pieces(player, 0, 2, Position::Up, session_id);
-            } else if position == Position::Down {
-                self.initialize_player_pieces(player, 5, 7, Position::Down, session_id);
-            }
-            // Assign remaining pieces to player
-            let player_model = Player { player: player, remaining_pieces: 12, };
-            world.write_model(@player_model);
         }
 
         fn can_choose_piece(
@@ -203,6 +187,20 @@ pub mod actions {
             self.world(@"checkers_marq")
         }
 
+        fn spawn(
+            ref self: ContractState, player: ContractAddress, position: Position, session_id: u64
+        ) {
+            let mut world = self.world_default();
+            if position == Position::Up {
+                self.initialize_player_pieces(player, 0, 2, Position::Up, session_id);
+            } else if position == Position::Down {
+                self.initialize_player_pieces(player, 5, 7, Position::Down, session_id);
+            }
+            // Assign remaining pieces to player
+            let player_model = Player { player: player, remaining_pieces: 12, };
+            world.write_model(@player_model);
+        }
+
         fn check_diagonal_path(
             self: @ContractState,
             start_row: u8,
@@ -234,7 +232,6 @@ pub mod actions {
             };
             good_move
         }
-
 
         fn initialize_player_pieces(
             ref self: ContractState,
