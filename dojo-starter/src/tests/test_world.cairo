@@ -77,6 +77,7 @@ mod tests {
     fn test_can_not_choose_piece() {
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
+        world.sync_perms_and_inits(contract_defs());
 
         let (contract_address, _) = world.dns(@"actions").unwrap();
         let actions_system = IActionsDispatcher { contract_address };
@@ -298,6 +299,7 @@ mod tests {
 
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
+        world.sync_perms_and_inits(contract_defs());
 
         let (contract_address, _) = world.dns(@"actions").unwrap();
         let actions_system = IActionsDispatcher { contract_address };
@@ -355,6 +357,7 @@ mod tests {
     fn test_move_piece31_forward_straight_fails() {
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
+        world.sync_perms_and_inits(contract_defs());
 
         let (contract_address, _) = world.dns(@"actions").unwrap();
         let actions_system = IActionsDispatcher { contract_address };
@@ -377,6 +380,7 @@ mod tests {
     fn test_move_piece37_forward_right_fails() {
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
+        world.sync_perms_and_inits(contract_defs());
 
         let (contract_address, _) = world.dns(@"actions").unwrap();
         let actions_system = IActionsDispatcher { contract_address };
@@ -397,6 +401,7 @@ mod tests {
     fn test_move_piece21_down_left() {
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
+        world.sync_perms_and_inits(contract_defs());
 
         let (contract_address, _) = world.dns(@"actions").unwrap();
         let actions_system = IActionsDispatcher { contract_address };
@@ -433,6 +438,7 @@ mod tests {
     fn test_move_piece23_down_left() {
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
+        world.sync_perms_and_inits(contract_defs());
 
         let (contract_address, _) = world.dns(@"actions").unwrap();
         let actions_system = IActionsDispatcher { contract_address };
@@ -468,6 +474,7 @@ mod tests {
     fn test_move_piece25_down_left() {
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
+        world.sync_perms_and_inits(contract_defs());
 
         let (contract_address, _) = world.dns(@"actions").unwrap();
         let actions_system = IActionsDispatcher { contract_address };
@@ -505,6 +512,7 @@ mod tests {
     fn test_move_piece27_down_left() {
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
+        world.sync_perms_and_inits(contract_defs());
 
         let (contract_address, _) = world.dns(@"actions").unwrap();
         let actions_system = IActionsDispatcher { contract_address };
@@ -542,6 +550,7 @@ mod tests {
     fn test_move_piece21_down_right() {
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
+        world.sync_perms_and_inits(contract_defs());
 
         let (contract_address, _) = world.dns(@"actions").unwrap();
         let actions_system = IActionsDispatcher { contract_address };
@@ -578,6 +587,7 @@ mod tests {
     fn test_move_piece21_down_right_move_piece56_up_left() {
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
+        world.sync_perms_and_inits(contract_defs());
 
         let (contract_address, _) = world.dns(@"actions").unwrap();
         let actions_system = IActionsDispatcher { contract_address };
@@ -630,6 +640,7 @@ mod tests {
     fn test_piece21_eat_piece54() {
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
+        world.sync_perms_and_inits(contract_defs());
 
         let (contract_address, _) = world.dns(@"actions").unwrap();
         let actions_system = IActionsDispatcher { contract_address };
@@ -712,6 +723,7 @@ mod tests {
     fn test_move_king_piece() {
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
+        world.sync_perms_and_inits(contract_defs());
 
         let (contract_address, _) = world.dns(@"actions").unwrap();
         let actions_system = IActionsDispatcher { contract_address };
@@ -848,6 +860,7 @@ mod tests {
     fn test_session_creation() {
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
+        world.sync_perms_and_inits(contract_defs());
 
         let player1 = starknet::contract_address_const::<0x0>();
         let (contract_address, _) = world.dns(@"actions").unwrap();
@@ -872,6 +885,7 @@ mod tests {
     fn test_turn_switch() {
         let ndef = namespace_def();
         let mut world = spawn_test_world([ndef].span());
+        world.sync_perms_and_inits(contract_defs());
 
         let player1 = starknet::contract_address_const::<0x0>();
         let (contract_address, _) = world.dns(@"actions").unwrap();
