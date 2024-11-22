@@ -13,7 +13,7 @@ Before you begin, ensure you have the following installed on your machine:
 
 - **[Node.js](https://nodejs.org/)**
 - **[pnpm](https://pnpm.io/)**
-- **[Dojo v1.0.0-rc.1](https://book.dojoengine.org/)**
+- **[Dojo v1.0.1](https://book.dojoengine.org/)**
 
 ---
 
@@ -35,7 +35,7 @@ Open a terminal and run:
 
 ```bash
 cd dojo-starter
-katana --disable-fee --allowed-origins "*"
+katana --dev --dev.no-fee --http.cors_origins=*
 ```
 
 ### Terminal 3: Build and Migrate the Project
@@ -46,7 +46,7 @@ In a second terminal, execute:
 cd dojo-starter
 sozo build
 sozo migrate
-torii --world 0x07e0aa9c93c6b71781b605aeeeb85ee7d097b592c85db0383515c7a17f262af3 --allowed-origins "*"
+torii --world 0x0376d7e046bfd27c3738419d7c6252b819ddf9318569ac69035c72519cfd14f2 --http.cors_origins=*
 ```
 
 ### Terminal 4: Start the Client
@@ -61,7 +61,7 @@ pnpm dev
 
 ## Play
 
-After completing the steps above, access the Checkers game by navigating to `http://localhost:3000` in your web browser.
+After completing the steps above, access the Checkers game by navigating to `http://localhost:5173` in your web browser.
 
 ---
 
