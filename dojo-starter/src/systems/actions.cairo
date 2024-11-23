@@ -243,6 +243,7 @@ pub mod actions {
         ) {
             let mut world = self.world_default();
             let mut row = start_row;
+            let mut pieces: Array<@Piece> = array![];
             while row <= end_row {
                 let start_col = (row + 1) % 2; // Alternates between 0 and 1
                 let mut col = start_col;
@@ -250,11 +251,12 @@ pub mod actions {
                     let piece = Piece {
                         session_id, row, col, player, position, is_king: false, is_alive: true,
                     };
-                    world.write_model(@piece);
+                    pieces.append(@piece);
                     col += 2;
                 };
                 row += 1;
-            }
+            };
+            world.write_models(pieces.span());
         }
 
         fn initialize_pieces_session_id(ref self: ContractState, session_id: u64) {
