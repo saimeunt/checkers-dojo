@@ -262,6 +262,7 @@ pub mod actions {
         fn initialize_pieces_session_id(ref self: ContractState, session_id: u64) {
             let mut world = self.world_default();
             let mut row = 0;
+            let mut pieces: Array<@Piece> = array![];
             while row < 8 {
                 let start_col = (row + 1) % 2; // Alternates between 0 and 1
                 let mut col = start_col;
@@ -275,11 +276,12 @@ pub mod actions {
                         is_king: false,
                         is_alive: false,
                     };
-                    world.write_model(@piece);
+                    pieces.append(@piece);
                     col += 2;
                 };
                 row += 1;
-            }
+            };
+            world.write_models(pieces.span());
         }
 
         fn change_is_alive(
@@ -302,15 +304,16 @@ pub mod actions {
             square.position = current_piece.position;
             square.is_king = current_piece.is_king;
 
-            world.write_model(@square);
-
             // Update the current piece attributes.
             current_piece.is_alive = false;
             current_piece.player = starknet::contract_address_const::<0x0>();
             current_piece.position = Position::None;
             current_piece.is_king = false;
+
             // Write the new coordinates to the world.
-            world.write_model(@current_piece);
+            let pieces: Array<@Piece> = array![@square, @current_piece];
+            world.write_models(pieces.span());
+
             // Emit an event about the move
             let row = new_coordinates_position.row;
             let col = new_coordinates_position.col;
