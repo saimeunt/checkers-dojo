@@ -8,7 +8,6 @@ use starknet::ContractAddress;
 trait IActions<T> {
     fn create_lobby(ref self: T) -> u64;
     fn join_lobby(ref self: T, session_id: u64);
-    fn spawn(ref self: T, player: ContractAddress, position: Position, session_id: u64);
     fn can_choose_piece(
         ref self: T, position: Position, coordinates_position: Coordinates, session_id: u64
     ) -> bool;
@@ -89,7 +88,6 @@ pub mod actions {
             0
         }
 
-
         fn join_lobby(ref self: ContractState, session_id: u64) {
             let mut world = self.world_default();
             let player = get_caller_address();
@@ -99,20 +97,6 @@ pub mod actions {
             world.write_model(@session);
             // Spawn the pieces for the player
             self.spawn(player, Position::Down, session_id);
-        }
-
-        fn spawn(
-            ref self: ContractState, player: ContractAddress, position: Position, session_id: u64
-        ) {
-            let mut world = self.world_default();
-            if position == Position::Up {
-                self.initialize_player_pieces(player, 0, 2, Position::Up, session_id);
-            } else if position == Position::Down {
-                self.initialize_player_pieces(player, 5, 7, Position::Down, session_id);
-            }
-            // Assign remaining pieces to player
-            let player_model = Player { player: player, remaining_pieces: 12, };
-            world.write_model(@player_model);
         }
 
         fn can_choose_piece(
@@ -203,6 +187,20 @@ pub mod actions {
             self.world(@"checkers_marq")
         }
 
+        fn spawn(
+            ref self: ContractState, player: ContractAddress, position: Position, session_id: u64
+        ) {
+            let mut world = self.world_default();
+            if position == Position::Up {
+                self.initialize_player_pieces(player, 0, 2, Position::Up, session_id);
+            } else if position == Position::Down {
+                self.initialize_player_pieces(player, 5, 7, Position::Down, session_id);
+            }
+            // Assign remaining pieces to player
+            let player_model = Player { player: player, remaining_pieces: 12, };
+            world.write_model(@player_model);
+        }
+
         fn check_diagonal_path(
             self: @ContractState,
             start_row: u8,
@@ -235,7 +233,6 @@ pub mod actions {
             good_move
         }
 
-
         fn initialize_player_pieces(
             ref self: ContractState,
             player: ContractAddress,
@@ -246,6 +243,7 @@ pub mod actions {
         ) {
             let mut world = self.world_default();
             let mut row = start_row;
+            let mut pieces: Array<@Piece> = array![];
             while row <= end_row {
                 let start_col = (row + 1) % 2; // Alternates between 0 and 1
                 let mut col = start_col;
@@ -253,16 +251,18 @@ pub mod actions {
                     let piece = Piece {
                         session_id, row, col, player, position, is_king: false, is_alive: true,
                     };
-                    world.write_model(@piece);
+                    pieces.append(@piece);
                     col += 2;
                 };
                 row += 1;
-            }
+            };
+            world.write_models(pieces.span());
         }
 
         fn initialize_pieces_session_id(ref self: ContractState, session_id: u64) {
             let mut world = self.world_default();
             let mut row = 0;
+            let mut pieces: Array<@Piece> = array![];
             while row < 8 {
                 let start_col = (row + 1) % 2; // Alternates between 0 and 1
                 let mut col = start_col;
@@ -276,11 +276,12 @@ pub mod actions {
                         is_king: false,
                         is_alive: false,
                     };
-                    world.write_model(@piece);
+                    pieces.append(@piece);
                     col += 2;
                 };
                 row += 1;
-            }
+            };
+            world.write_models(pieces.span());
         }
 
         fn change_is_alive(
@@ -303,15 +304,16 @@ pub mod actions {
             square.position = current_piece.position;
             square.is_king = current_piece.is_king;
 
-            world.write_model(@square);
-
             // Update the current piece attributes.
             current_piece.is_alive = false;
             current_piece.player = starknet::contract_address_const::<0x0>();
             current_piece.position = Position::None;
             current_piece.is_king = false;
+
             // Write the new coordinates to the world.
-            world.write_model(@current_piece);
+            let pieces: Array<@Piece> = array![@square, @current_piece];
+            world.write_models(pieces.span());
+
             // Emit an event about the move
             let row = new_coordinates_position.row;
             let col = new_coordinates_position.col;
