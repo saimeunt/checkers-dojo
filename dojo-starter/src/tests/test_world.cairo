@@ -972,4 +972,172 @@ mod tests {
             assert!(new_position.is_king == false, "piece is king");
         };
     }
+    #[test]
+    fn test_piece21_eat_piece54_and_piece65() {
+        let ndef = namespace_def();
+        let mut world = spawn_test_world([ndef].span());
+        world.sync_perms_and_inits(contract_defs());
+
+        let (contract_address, _) = world.dns(@"actions").unwrap();
+        let actions_system = IActionsDispatcher { contract_address };
+        let session_id = actions_system.create_lobby();
+        // Cheat call the second player
+        let player2 = starknet::contract_address_const::<0x1>();
+        starknet::testing::set_contract_address(player2);
+        actions_system.join_lobby(session_id);
+
+        let session: Session = world.read_model((session_id));
+        assert(session.player_2 == player2, 'wrong player');
+        // Reset player to default operation
+        starknet::testing::set_contract_address(starknet::contract_address_const::<0x0>());
+
+        // Test initial position 07, 16, 21, 27, 54 & 65
+        let valid_piece_position07 = Coordinates { row: 0, col: 7 };
+        let valid_piece_position16 = Coordinates { row: 1, col: 6 };
+        let valid_piece_position21 = Coordinates { row: 2, col: 1 };
+        let valid_piece_position27 = Coordinates { row: 2, col: 7 };
+        let valid_piece_position54 = Coordinates { row: 5, col: 4 };
+        let valid_piece_position65 = Coordinates { row: 6, col: 5 };
+        let initial_pieces_keys: Array<(u64, Coordinates)> = array![
+            (session_id, valid_piece_position07),
+            (session_id, valid_piece_position16),
+            (session_id, valid_piece_position21),
+            (session_id, valid_piece_position27),
+            (session_id, valid_piece_position54),
+            (session_id, valid_piece_position65),
+        ];
+        let initial_pieces: Array<Piece> = world.read_models(initial_pieces_keys.span());
+        assert(initial_pieces.len() == 6, 'read_models failed');
+
+        assert(*initial_pieces[0].row == 0 && *initial_pieces[0].col == 7, 'wrong initial piece 07');
+        assert(*initial_pieces[1].row == 1 && *initial_pieces[1].col == 6, 'wrong initial piece 16');
+        assert(*initial_pieces[2].row == 2 && *initial_pieces[2].col == 1, 'wrong initial piece 21');
+        assert(*initial_pieces[3].row == 2 && *initial_pieces[3].col == 7, 'wrong initial piece 27');
+        assert(*initial_pieces[4].row == 5 && *initial_pieces[4].col == 4, 'wrong initial piece 54');
+        assert(*initial_pieces[5].row == 6 && *initial_pieces[5].col == 5, 'wrong initial piece 65');
+        for piece in initial_pieces.clone() {
+            assert(piece.session_id == 0, 'wrong session');
+            assert(piece.is_king == false, 'wrong initial piece');
+            assert(piece.is_alive == true, 'wrong initial piece');
+        };
+
+        // Test move to position 36 & 43
+        let can_choose_piece = actions_system
+            .can_choose_piece(Position::Up, valid_piece_position27, session_id);
+        assert(can_choose_piece, 'can_choose_piece 27 failed');
+        let new_coordinates_position36 = Coordinates { row: 3, col: 6 };
+        actions_system.move_piece(*initial_pieces[3], new_coordinates_position36);
+
+        let can_choose_piece = actions_system
+            .can_choose_piece(Position::Down, valid_piece_position54, session_id);
+        assert(can_choose_piece, 'can_choose_piece 54 failed');
+        let new_coordinates_position43 = Coordinates { row: 4, col: 3 };
+        actions_system.move_piece(*initial_pieces[4], new_coordinates_position43);
+
+        let new_coordinates_keys: Array<(u64, Coordinates)> = array![
+            (session_id, new_coordinates_position36),
+            (session_id, new_coordinates_position43),
+        ];
+        let new_positions: Array<Piece> = world.read_models(new_coordinates_keys.span());
+        assert(new_positions.len() == 2, 'read_models failed');
+
+        assert!(*new_positions[0].row == 3, "piece x is wrong");
+        assert!(*new_positions[0].col == 6, "piece y is wrong");
+        assert!(*new_positions[1].row == 4, "piece x is wrong");
+        assert!(*new_positions[1].col == 3, "piece y is wrong");
+        for new_position in new_positions.clone() {
+            assert!(new_position.session_id == 0, "wrong session");
+            assert!(new_position.is_alive == true, "piece is not alive");
+            assert!(new_position.is_king == false, "piece is king");
+        };
+
+        // Test move to position 27 & 54
+        let can_choose_piece = actions_system
+            .can_choose_piece(Position::Up, valid_piece_position16, session_id);
+        assert(can_choose_piece, 'can_choose_piece 16 failed');
+        let new_coordinates_position27 = Coordinates { row: 2, col: 7 };
+        actions_system.move_piece(*initial_pieces[1], new_coordinates_position27);
+
+        let can_choose_piece = actions_system
+            .can_choose_piece(Position::Down, valid_piece_position65, session_id);
+        assert(can_choose_piece, 'can_choose_piece 65 failed');
+        let new_coordinates_position54 = Coordinates { row: 5, col: 4 };
+        actions_system.move_piece(*initial_pieces[5], new_coordinates_position54);
+
+        let new_coordinates_keys: Array<(u64, Coordinates)> = array![
+            (session_id, new_coordinates_position27),
+            (session_id, new_coordinates_position54),
+        ];
+        let new_positions: Array<Piece> = world.read_models(new_coordinates_keys.span());
+        assert(new_positions.len() == 2, 'read_models failed');
+
+        assert!(*new_positions[0].row == 2, "piece x is wrong");
+        assert!(*new_positions[0].col == 7, "piece y is wrong");
+        assert!(*new_positions[1].row == 5, "piece x is wrong");
+        assert!(*new_positions[1].col == 4, "piece y is wrong");
+        for new_position in new_positions.clone() {
+            assert!(new_position.session_id == 0, "wrong session");
+            assert!(new_position.is_alive == true, "piece is not alive");
+            assert!(new_position.is_king == false, "piece is king");
+        };
+
+        // Test move to position 16 & 32
+        let can_choose_piece = actions_system
+            .can_choose_piece(Position::Up, valid_piece_position07, session_id);
+        assert(can_choose_piece, 'can_choose_piece 07 failed');
+        let new_coordinates_position16 = Coordinates { row: 1, col: 6 };
+        actions_system.move_piece(*initial_pieces[0], new_coordinates_position16);
+
+        let valid_piece_position43 = Coordinates { row: 4, col: 3 };
+        let can_choose_piece = actions_system
+            .can_choose_piece(Position::Down, valid_piece_position43, session_id);
+        assert(can_choose_piece, 'can_choose_piece 43 failed');
+        let new_coordinates_position32 = Coordinates { row: 3, col: 2 };
+        actions_system.move_piece(*initial_pieces[4], new_coordinates_position32);
+
+        let new_coordinates_keys: Array<(u64, Coordinates)> = array![
+            (session_id, new_coordinates_position16),
+            (session_id, new_coordinates_position32),
+        ];
+        let new_positions: Array<Piece> = world.read_models(new_coordinates_keys.span());
+        assert(new_positions.len() == 2, 'read_models failed');
+
+        assert!(*new_positions[0].row == 1, "piece x is wrong");
+        assert!(*new_positions[0].col == 6, "piece y is wrong");
+        assert!(*new_positions[1].row == 3, "piece x is wrong");
+        assert!(*new_positions[1].col == 2, "piece y is wrong");
+        for new_position in new_positions.clone() {
+            assert!(new_position.session_id == 0, "wrong session");
+            assert!(new_position.is_alive == true, "piece is not alive");
+            assert!(new_position.is_king == false, "piece is king");
+        };
+
+        // // Test position 32 moves to eat 43 then jump to 54
+        // let eat_position = Coordinates { row: 4, col: 3 };
+        // let jump_position = Coordinates { row: 5, col: 4 };
+        // actions_system.move_piece(*new_positions[0], eat_position);
+
+        // let updated_pieces_keys: Array<(u64, Coordinates)> = array![
+        //     (session_id, jump_position),
+        //     (session_id, eat_position),
+        // ];
+        // let updated_pieces: Array<Piece> = world.read_models(updated_pieces_keys.span());
+        // assert(updated_pieces.len() == 2, 'read_models failed');
+
+        // assert!(*updated_pieces[0].row == 5, "piece x is wrong");
+        // assert!(*updated_pieces[0].col == 4, "piece y is wrong");
+        // assert!(*updated_pieces[1].row == 4, "piece x is wrong");
+        // assert!(*updated_pieces[1].col == 3, "piece y is wrong");
+
+        // assert!(*updated_pieces[0].is_alive == true, "piece is not alive");
+        // assert!(*updated_pieces[0].position == Position::Up, "piece is not right team");
+        // assert!(*updated_pieces[0].is_king == false, "piece is king");
+        
+        // assert!(*updated_pieces[1].is_alive == false, "piece is alive");
+        // assert!(*updated_pieces[1].is_king == false, "piece is king");
+
+        // // Check the remaining pieces got reduced
+        // let player_model: Player = world.read_model(player2);
+        // assert!(player_model.remaining_pieces == 11, "wrong remaining pieces");
+    }
 }

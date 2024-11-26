@@ -367,49 +367,70 @@ pub mod actions {
                     if piece_row + 1 >= 8 {
                         return false;
                     }
-
+                    let mut target_coordinates_keys = array![];
                     // Check down-left diagonal
                     if piece_col > 0 {
                         let target_down_left = Coordinates {
                             row: piece_row + 1, col: piece_col - 1
                         };
-                        let target_square: Piece = world.read_model((session_id, target_down_left));
-                        return !target_square.is_alive;
+                        target_coordinates_keys.append((session_id, target_down_left));
                     }
-
                     // Check down-right diagonal
                     if piece_col + 1 < 8 {
                         let target_down_right = Coordinates {
                             row: piece_row + 1, col: piece_col + 1
                         };
-                        let target_square: Piece = world
-                            .read_model((session_id, target_down_right));
-                        return !target_square.is_alive;
+                        target_coordinates_keys.append((session_id, target_down_right));
                     }
-                    false
+                    let target_squares: Array<Piece> = world
+                        .read_models(target_coordinates_keys.span());
+                    let mut alive_squares: u32 = 0;
+                    for
+                    target_square
+                    in
+                    target_squares.clone()
+                    {
+                        alive_squares += if target_square.is_alive {
+                            1
+                        } else {
+                            0
+                        };
+                    };
+                    alive_squares < target_squares.len()
                 },
                 Position::Down => {
                     // Check forward moves (up direction)
                     if piece_row == 0 {
                         return false;
                     }
-
+                    let mut target_coordinates_keys = array![];
                     // Check up-left diagonal
                     if piece_col > 0 {
                         let target_up_left = Coordinates { row: piece_row - 1, col: piece_col - 1 };
-                        let target_square: Piece = world.read_model((session_id, target_up_left));
-                        return !target_square.is_alive;
+                        target_coordinates_keys.append((session_id, target_up_left));
                     }
-
                     // Check up-right diagonal
                     if piece_col + 1 < 8 {
                         let target_up_right = Coordinates {
                             row: piece_row - 1, col: piece_col + 1
                         };
-                        let target_square: Piece = world.read_model((session_id, target_up_right));
-                        return !target_square.is_alive;
+                        target_coordinates_keys.append((session_id, target_up_right));
                     }
-                    false
+                    let target_squares: Array<Piece> = world
+                        .read_models(target_coordinates_keys.span());
+                    let mut alive_squares: u32 = 0;
+                    for
+                    target_square
+                    in
+                    target_squares.clone()
+                    {
+                        alive_squares += if target_square.is_alive {
+                            1
+                        } else {
+                            0
+                        };
+                    };
+                    alive_squares < target_squares.len()
                 },
                 _ => false
             }
