@@ -12,6 +12,9 @@ trait IActions<T> {
         ref self: T, position: Position, coordinates_position: Coordinates, session_id: u64
     ) -> bool;
     fn move_piece(ref self: T, current_piece: Piece, new_coordinates_position: Coordinates);
+    fn move_piece_multiple(
+        ref self: T, current_piece: Piece, new_coordinates_positions: Array<Coordinates>
+    );
 
     //getter function
     fn get_session_id(self: @T) -> u64;
@@ -169,6 +172,21 @@ pub mod actions {
             world.write_model(@session);
         }
 
+        fn move_piece_multiple(
+            ref self: ContractState,
+            current_piece: Piece,
+            new_coordinates_positions: Array<Coordinates>
+        ) {
+            for new_coordinates_position in new_coordinates_positions {
+                self.move_piece_single(current_piece, new_coordinates_position);
+            };
+            let mut world = self.world_default();
+            // Update the session's turn
+            let mut session: Session = world.read_model((current_piece.session_id));
+            session.turn = (session.turn + 1) % 2;
+            world.write_model(@session);
+        }
+
         //Getter function
         fn get_session_id(self: @ContractState) -> u64 {
             let mut world = self.world_default();
@@ -185,6 +203,29 @@ pub mod actions {
         // constant.
         fn world_default(self: @ContractState) -> dojo::world::WorldStorage {
             self.world(@"checkers_marq")
+        }
+
+        fn move_piece_single(
+            ref self: ContractState, current_piece: Piece, new_coordinates_position: Coordinates
+        ) {
+            // Get the address of the current caller, possibly the player's address.
+            let world = self.world_default();
+
+            //let player = get_caller_address();
+
+            // Check is new coordinates is valid
+            let is_valid_position = self.check_is_valid_position(new_coordinates_position);
+            assert(is_valid_position, 'Invalid coordinates');
+
+            let row = new_coordinates_position.row;
+            let col = new_coordinates_position.col;
+            let session_id = current_piece.session_id;
+
+            // Get the piece from the world by its coordinates.
+            let square: Piece = world.read_model((session_id, row, col));
+
+            // Update the piece's coordinates based on the new coordinates.
+            self.update_piece_position(current_piece, square);
         }
 
         fn spawn(
@@ -361,78 +402,41 @@ pub mod actions {
                 return has_valid_move;
             }
 
-            match piece.position {
-                Position::Up => {
-                    // Check forward moves (down direction)
-                    if piece_row + 1 >= 8 {
-                        return false;
-                    }
-                    let mut target_coordinates_keys = array![];
-                    // Check down-left diagonal
-                    if piece_col > 0 {
-                        let target_down_left = Coordinates {
-                            row: piece_row + 1, col: piece_col - 1
-                        };
-                        target_coordinates_keys.append((session_id, target_down_left));
-                    }
-                    // Check down-right diagonal
-                    if piece_col + 1 < 8 {
-                        let target_down_right = Coordinates {
-                            row: piece_row + 1, col: piece_col + 1
-                        };
-                        target_coordinates_keys.append((session_id, target_down_right));
-                    }
-                    let target_squares: Array<Piece> = world
-                        .read_models(target_coordinates_keys.span());
-                    let mut alive_squares: u32 = 0;
-                    for
-                    target_square
-                    in
-                    target_squares.clone()
-                    {
+            if piece.position == Position::None {
+                return false;
+            } else {
+                if (piece.position == Position::Up && piece_row + 1 >= 8)
+                    || (piece.position == Position::Down && piece_row == 0) {
+                    return false;
+                }
+                let row = if piece.position == Position::Up {
+                    piece_row + 1
+                } else {
+                    piece_row - 1
+                };
+                let mut target_coordinates_keys = array![];
+                // Check left diagonal
+                if piece_col > 0 {
+                    let target_left = Coordinates { row, col: piece_col - 1 };
+                    target_coordinates_keys.append((session_id, target_left));
+                }
+                // Check right diagonal
+                if piece_col + 1 < 8 {
+                    let target_right = Coordinates { row, col: piece_col + 1 };
+                    target_coordinates_keys.append((session_id, target_right));
+                }
+                let target_squares: Array<Piece> = world
+                    .read_models(target_coordinates_keys.span());
+                let mut alive_squares: u32 = 0;
+                for target_square in target_squares
+                    .clone() {
                         alive_squares += if target_square.is_alive {
                             1
                         } else {
                             0
                         };
                     };
-                    alive_squares < target_squares.len()
-                },
-                Position::Down => {
-                    // Check forward moves (up direction)
-                    if piece_row == 0 {
-                        return false;
-                    }
-                    let mut target_coordinates_keys = array![];
-                    // Check up-left diagonal
-                    if piece_col > 0 {
-                        let target_up_left = Coordinates { row: piece_row - 1, col: piece_col - 1 };
-                        target_coordinates_keys.append((session_id, target_up_left));
-                    }
-                    // Check up-right diagonal
-                    if piece_col + 1 < 8 {
-                        let target_up_right = Coordinates {
-                            row: piece_row - 1, col: piece_col + 1
-                        };
-                        target_coordinates_keys.append((session_id, target_up_right));
-                    }
-                    let target_squares: Array<Piece> = world
-                        .read_models(target_coordinates_keys.span());
-                    let mut alive_squares: u32 = 0;
-                    for
-                    target_square
-                    in
-                    target_squares.clone()
-                    {
-                        alive_squares += if target_square.is_alive {
-                            1
-                        } else {
-                            0
-                        };
-                    };
-                    alive_squares < target_squares.len()
-                },
-                _ => false
+                return alive_squares < target_squares.len();
             }
         }
 
